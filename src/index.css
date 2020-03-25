@@ -1,0 +1,138 @@
+.unselectable {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.calendar {
+  color: #51565d;
+  font-size: 18px;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+}
+
+@media only screen and (max-width: 600px) {
+  .calendar {
+    overflow: auto;
+  }
+}
+
+.calendar-navigate {
+  padding: 10px;
+}
+
+.calendar-navigate:hover {
+  cursor: pointer;
+  color: rgba(81, 86, 93, 0.4);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.calendar-body {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(50px, 1fr));
+  grid-template-rows: 50px;
+  grid-auto-rows: minmax(120px, auto);
+}
+
+.day {
+  text-align: right;
+  padding: 14px 6px 20px 6px;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(166, 168, 179, 0.12);
+  border-right: 1px solid rgba(166, 168, 179, 0.12);
+  display: flex;
+  flex-direction: column; 
+}
+
+@media only screen and (min-width: 601px) {
+  .day {
+    padding: 14px 20px 20px 6px;
+  }
+}
+
+.innerDay {
+  display: flex;
+  flex-direction: column; 
+  width: 100%;
+}
+
+.day:nth-of-type(7n) {
+  border-left: none;
+}
+
+.day-name {
+  font-size: 16px;
+  text-transform: uppercase;
+  text-align: center;
+  border-bottom: 1px solid rgba(166, 168, 179, 0.12);
+  border-top: 1px solid rgba(166, 168, 179, 0.12);
+  line-height: 50px;
+  font-weight: 500;
+}
+
+.event-wrapper {
+  position: relative;
+}
+
+.event {
+  box-sizing: border-box;
+  border-left-width: 3px;
+  width: 100%;
+  margin: 5px 0px;
+  border-left-style: solid;
+  font-size: 14px;
+  position: relative;
+  border-left-color: #4786ff;
+  background: rgba(217, 230, 255, 0.7);
+  color: #4786ff;
+  position: relative;
+}
+
+.tooltip {
+  visibility: hidden;
+  width: 225px;
+  background: #fff;
+  color: #4786ff;
+  text-align: left;
+  padding: 5px;
+  border-radius: 6px;
+  border: 2px solid rgba(217, 230, 255, 0.7);
+ 
+
+  /* position tooltip */
+  position: absolute;
+  z-index: 1;
+  bottom: 110%;
+  left: 0%;
+  margin-left: -5px;
+}
+
+.details {
+  display : flex;
+  font-size: 14px;
+  align-items: center;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.event-text {
+  margin: 0px 6px;
+  padding: 5px 0px;
+  overflow-x: hidden;
+  white-space: nowrap;
+}
+
+.event-text:hover {
+  cursor: pointer;
+}
+
+.display-linebreak {
+  white-space: pre-line;
+}

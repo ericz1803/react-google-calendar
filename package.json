@@ -1,0 +1,31 @@
+{
+  "name": "@ericz1803/react-google-calendar",
+  "version": "1.0.0",
+  "description": "React Google Calendar Component",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "./node_modules/.bin/babel src --out-dir . && cp ./src/index.css ./index.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "___EDIT____"
+  },
+  "author": "Eric Zhou",
+  "license": "ISC",
+  "peerDependencies": {
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0"
+  },
+  "dependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.8.7",
+    "@babel/preset-env": "^7.8.7",
+    "@babel/preset-react": "^7.8.3",
+    "@material-ui/core": "^4.9.7",
+    "@material-ui/icons": "^4.9.1",
+    "moment": "^2.24.0",
+    "prop-types": "^15.7.2",
+    "rrule": "^2.6.4"
+  }
+}
