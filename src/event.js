@@ -2,6 +2,7 @@ import React from "react";
 import "./index.css";
 import Place from '@material-ui/icons/Place';
 import Subject from '@material-ui/icons/Subject';
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import PropTypes from 'prop-types';
 import moment from "moment";
 
@@ -16,9 +17,14 @@ export default class Event extends React.Component {
       description: this.props.description,
       location: this.props.location,
       showTooltip: false,
+      hover: false,
+      circleColor: "#4786ff",
+      color: "#4786ff",
+      background_color: "rgba(217, 230, 255, 0.7)",
     }
     this.toggleTooltip = this.toggleTooltip.bind(this);
     this.closeTooltip = this.closeTooltip.bind(this);
+    this.toggleHover = this.toggleHover.bind(this);
   }
 
   closeTooltip() {
@@ -27,6 +33,10 @@ export default class Event extends React.Component {
 
   toggleTooltip() {
     this.setState({showTooltip: !this.state.showTooltip});
+  }
+
+  toggleHover() {
+    this.setState({hover: !this.state.hover});
   }
 
   render() { 
@@ -51,16 +61,21 @@ export default class Event extends React.Component {
     }
 
     return (
-      <div className="event" tabIndex="0" onBlur={this.closeTooltip}>
+      <div className="event" tabIndex="0" onBlur={this.closeTooltip} onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} style={{
+        color: this.state.color,
+        background: (this.state.hover ? this.state.background_color : "#fff"),
+      }}>
         <div className="event-text" onClick={this.toggleTooltip}>
-          {
-            (this.state.name.length > 40) ?
-            this.state.name.substr(0, 39).substr(0, this.state.name.substr(0, 39).lastIndexOf(' ')) + '...' :
-            this.state.name
-          }
-          {/* Truncate strings over 40 chars long */}
+          <span style={{position: "absolute", top: "7px", left: "2px", color: this.props.circleColor }}>
+            <FiberManualRecordIcon fontSize="inherit" />
+          </span>
+          {this.state.name}
         </div>
-        <div className="tooltip" style={{visibility: this.state.showTooltip ? 'visible' : 'hidden'}}>
+        <div className="tooltip" style={{
+          visibility: this.state.showTooltip ? 'visible' : 'hidden',
+          color: this.state.color,
+          border: "2px solid " + this.state.background_color,
+        }}>
           <h2>{this.state.name}</h2>
           <p className="display-linebreak">
             {

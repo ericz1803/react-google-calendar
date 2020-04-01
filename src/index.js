@@ -30,6 +30,9 @@ export default class Calendar extends React.Component {
       events: [],
       calendarId: this.props.calendarId,
       apiKey: this.props.apiKey,
+      borderColor: this.props.borderColor,
+      textColor: this.props.textColor,
+      backgroundColor: this.props.backgroundColor,
     };
     this.lastMonth = this.lastMonth.bind(this);
     this.nextMonth = this.nextMonth.bind(this);
@@ -83,40 +86,60 @@ export default class Calendar extends React.Component {
           // Handle the results here (response.result has the parsed body).
           console.log("Response", response.result.items);
           let events = [];
+          let changed = [];
           let cancelled = [];
-          let cancelled_count = 0;
 
           response.result.items.forEach((event) => {
-            if (event.status == "confirmed") {
+            if (event.originalStartTime) { //cancelled/changed events
+              if (event.status == "cancelled") {
+                cancelled.push({
+                  recurringEventId: event.recurringEventId,
+                  originalStartTime: moment(event.originalStartTime.dateTime || event.originalStartTime.date), 
+                });
+              } else if (event.status == "confirmed") {
+                changed.push({
+                  recurringEventId: event.recurringEventId,
+                  name: event.summary,
+                  description: event.description,
+                  location: event.location,
+                  originalStartTime: moment(event.originalStartTime.dateTime || event.originalStartTime.date),
+                  newStartTime: moment(event.start.dateTime || event.start.date),
+                  newEndTime: moment(event.end.dateTime || event.end.date),
+                });
+              } else {
+                console.log("Not categorized: ", event);
+              }
+            } else if (event.status == "confirmed") {
               events.push({
-                "id": event.id,
-                "name": event.summary,
-                "start_time": moment(event.start.dateTime || event.start.date), //read date if datetime doesn't exist
-                "end_time": moment(event.end.dateTime || event.end.date),
-                "description": event.description,
-                "location": event.location,
-                "recurrence": event.recurrence,
-                "cancelled_events": [],
-              });
-            } else if (event.status == "cancelled") {
-              cancelled.push({
-                recurringEventId: event.recurringEventId,
-                originalStartTime: moment(event.originalStartTime.dateTime || event.originalStartTime.date), 
+                id: event.id,
+                name: event.summary,
+                start_time: moment(event.start.dateTime || event.start.date), //read date if datetime doesn't exist
+                end_time: moment(event.end.dateTime || event.end.date),
+                description: event.description,
+                location: event.location,
+                recurrence: event.recurrence,
+                changed_events: [],
+                cancelled_events: [],
               });
             } else {
-              console.log(event.status, event);
+              console.log("Not categorized: ", event);
             }
           });
 
+          console.log(changed);
           events.forEach((event, idx, arr) => {
             if (event.recurrence) {
+              //push changed events
+              changed.filter(change => change.recurringEventId == event.id).forEach((change) => {
+                arr[idx].changed_events.push(change);
+              });
+
+              //push cancelled events
               cancelled.filter(cancel => cancel.recurringEventId == event.id).forEach((cancel) => {
                 arr[idx].cancelled_events.push(cancel.originalStartTime);
-                cancelled_count++;
               });
             }
           });
-          console.log(cancelled_count, cancelled.length);
           this.setState({ events: events});
         },
         (err) => {
@@ -144,7 +167,15 @@ export default class Calendar extends React.Component {
   
 
   renderDays() {
-    return this.state.days.map((x, i) => <div className="day-name" key={"day-of-week-" + i}>{x}</div>);
+    return this.state.days.map((x, i) => (
+      <div
+        className="day-name"
+        key={"day-of-week-" + i}
+        style={{ borderColor: this.props.borderColor }}
+      >
+        {x}
+      </div>
+    ));
   }
 
   renderDates() {
@@ -156,9 +187,30 @@ export default class Calendar extends React.Component {
 
 
     return [
-      [...Array(day_of_week)].map((x, i) => (<div className="day" key={"empty-day-" + i}></div>)),
-      days.map((x) => (<div className="day" key={"day-" + x}>{x}<div className="innerDay" id={"day-" + x}></div></div>)),
-      [...Array(pad_days)].map((x, i) => (<div className="day" key={"empty-day-2-" + i}></div>))
+      [...Array(day_of_week)].map((x, i) => (
+        <div
+          className="day"
+          key={"empty-day-" + i}
+          style={{ borderColor: this.props.borderColor }}
+        ></div>
+      )),
+      days.map(x => (
+        <div
+          className="day"
+          key={"day-" + x}
+          style={{ borderColor: this.props.borderColor }}
+        >
+          {x}
+          <div className="innerDay" id={"day-" + x}></div>
+        </div>
+      )),
+      [...Array(pad_days)].map((x, i) => (
+        <div
+          className="day"
+          key={"empty-day-2-" + i}
+          style={{ borderColor: this.props.borderColor }}
+        ></div>
+      ))
     ];
   }
 
@@ -179,18 +231,33 @@ export default class Calendar extends React.Component {
             return;
           }
 
-          let event_start = moment(date);
-          let event_end = moment(event_start).add(duration);
-          let props = {
-            name: event.name,
-            start_time: event_start,
-            end_time: event_end,
-            description: event.description,
-            location: event.location,
-          };
+          
+
+          //if event has changed
+          const changed_event = event.changed_events.find((changed_event) => (changed_event.originalStartTime.isSame(date, 'day')));
+          if (changed_event) {
+            var props = {
+              name: changed_event.name,
+              start_time: changed_event.newStartTime,
+              end_time: changed_event.newEndTime,
+              description: changed_event.description,
+              location: changed_event.location,
+            }
+          } else {
+            let event_start = moment(date);
+            let event_end = moment(event_start).add(duration);
+            var props = {
+              name: event.name,
+              start_time: event_start,
+              end_time: event_end,
+              description: event.description,
+              location: event.location,
+            };
+          }
+          
 
           let temp_node = document.createElement('div');
-          document.getElementById("day-" + event_start.date()).appendChild(temp_node);
+          document.getElementById("day-" + props.start_time.date()).appendChild(temp_node);
           ReactDOM.render(<Event {...props}></Event>, temp_node);
         });
       } else {
@@ -207,7 +274,14 @@ export default class Calendar extends React.Component {
 
   render() {
     return (
-      <div className="calendar">
+      <div
+        className="calendar"
+        style={{
+          borderColor: this.props.borderColor,
+          color: this.props.textColor,
+          backgorund: this.props.backgroundColor,
+        }}
+      >
         <div className="calendar-header">
           <div
             className="calendar-navigate unselectable"
@@ -237,7 +311,16 @@ export default class Calendar extends React.Component {
   }
 }
 
+
 Calendar.propTypes = {
   calendarId: PropTypes.string.isRequired,
   apiKey: PropTypes.string.isRequired,
+}
+
+Calendar.defaultProps = {
+  textColor: "#51565d", // #51565d
+  borderColor: "rgba(166, 168, 179, 0.12)", // rgba(166, 168, 179, 0.12)
+  circleColor: "#4786ff",
+  color: "#4786ff",
+  backgroundColor: "default",
 }
