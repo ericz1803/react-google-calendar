@@ -219,7 +219,7 @@ export default class Calendar extends React.Component {
     this.state.events.forEach((event) => {
       if (event.recurrence) {
         let duration = moment.duration(event.end_time.diff(event.start_time));
-        let rule = RRule.fromString('DTSTART:' + moment.utc(event.start_time).format("YYYYMMDDTHHmmss") + "Z\n" + event.recurrence[0]);
+        let rule = RRule.fromString('DTSTART:' + moment(event.start_time).format("YYYYMMDDTHHmmss") + "Z\n" + event.recurrence[0]);
         let rruleSet = new RRuleSet();
         rruleSet.rrule(rule);
         let dates = rruleSet.between(this.state.current.toDate(), moment(this.state.current).add(1, "month").toDate()); //get occurences this month
@@ -244,7 +244,7 @@ export default class Calendar extends React.Component {
               location: changed_event.location,
             }
           } else {
-            let event_start = moment(date);
+            let event_start = moment.utc(date); //avoid bad timezone conversions
             let event_end = moment(event_start).add(duration);
             var props = {
               name: event.name,
