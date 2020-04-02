@@ -12,8 +12,8 @@ export default class Event extends React.Component {
 
     this.state = {
       name: this.props.name,
-      start_time: this.props.start_time,
-      end_time: this.props.end_time,
+      startTime: this.props.startTime,
+      endTime: this.props.endTime,
       description: this.props.description,
       location: this.props.location,
       
@@ -73,7 +73,7 @@ export default class Event extends React.Component {
             <FiberManualRecordIcon fontSize="inherit" />
           </span>
           {
-            this.state.start_time.isSame(moment(this.state.start_time).startOf('day')) ? '' : this.state.start_time.format('h:mma ')
+            this.state.startTime.isSame(moment(this.state.startTime).startOf('day')) ? '' : this.state.startTime.format('h:mma ')
           }
           <span style={{fontWeight: "500"}}>
             {this.state.name}
@@ -87,9 +87,9 @@ export default class Event extends React.Component {
           <h2>{this.state.name}</h2>
           <p className="display-linebreak">
             {
-              this.state.start_time.isSame(this.state.end_time, 'day') ? 
-              this.state.start_time.format("dddd, MMMM Do") + " \n" +  this.state.start_time.format("h:mma") + " - " + this.state.end_time.format("h:mma") :
-              this.state.start_time.format("MMM Do, YYYY, h:mma") + " - \n" + this.state.end_time.format("MMM Do, YYYY, h:mma")
+              this.state.startTime.isSame(this.state.endTime, 'day') ? 
+              this.state.startTime.format("dddd, MMMM Do") + " \n" +  this.state.startTime.format("h:mma") + " - " + this.state.endTime.format("h:mma") :
+              this.state.startTime.format("MMM Do, YYYY, h:mma") + " - \n" + this.state.endTime.format("MMM Do, YYYY, h:mma")
             }
           </p>
           {description}
@@ -102,8 +102,8 @@ export default class Event extends React.Component {
 
 Event.propTypes = {
   name: PropTypes.string.isRequired,
-  start_time: PropTypes.instanceOf(moment).isRequired,
-  end_time: PropTypes.instanceOf(moment).isRequired,
+  startTime: PropTypes.instanceOf(moment).isRequired,
+  endTime: PropTypes.instanceOf(moment).isRequired,
   description: PropTypes.string,
   location: PropTypes.string,
 }

@@ -122,13 +122,13 @@ export default class Calendar extends React.Component {
               events.push({
                 id: event.id,
                 name: event.summary,
-                start_time: moment(event.start.dateTime || event.start.date), //read date if datetime doesn't exist
-                end_time: moment(event.end.dateTime || event.end.date),
+                startTime: moment(event.start.dateTime || event.start.date), //read date if datetime doesn't exist
+                endTime: moment(event.end.dateTime || event.end.date),
                 description: event.description,
                 location: event.location,
                 recurrence: event.recurrence,
-                changed_events: [],
-                cancelled_events: [],
+                changedEvents: [],
+                cancelledEvents: [],
               });
             } else {
               console.log("Not categorized: ", event);
@@ -140,12 +140,12 @@ export default class Calendar extends React.Component {
             if (event.recurrence) {
               //push changed events
               changed.filter(change => change.recurringEventId == event.id).forEach((change) => {
-                arr[idx].changed_events.push(change);
+                arr[idx].changedEvents.push(change);
               });
 
               //push cancelled events
               cancelled.filter(cancel => cancel.recurringEventId == event.id).forEach((cancel) => {
-                arr[idx].cancelled_events.push(cancel.originalStartTime);
+                arr[idx].cancelledEvents.push(cancel.originalStartTime);
               });
             }
           });
@@ -190,13 +190,13 @@ export default class Calendar extends React.Component {
   renderDates() {
     var days = [...Array(this.state.current.daysInMonth() + 1).keys()].slice(1); // create array from 1 to number of days in month
 
-    var day_of_week = this.state.current.day(); //get day of week of first day in the month
+    var dayOfWeek = this.state.current.day(); //get day of week of first day in the month
 
-    var pad_days = (((-this.state.current.daysInMonth() - this.state.current.day()) % 7) + 7) % 7; //number of days to fill out the last row    
+    var padDays = (((-this.state.current.daysInMonth() - this.state.current.day()) % 7) + 7) % 7; //number of days to fill out the last row    
 
 
     return [
-      [...Array(day_of_week)].map((x, i) => (
+      [...Array(dayOfWeek)].map((x, i) => (
         <div
           className="day"
           key={"empty-day-" + i}
@@ -213,7 +213,7 @@ export default class Calendar extends React.Component {
           <div className="innerDay" id={"day-" + x}></div>
         </div>
       )),
-      [...Array(pad_days)].map((x, i) => (
+      [...Array(padDays)].map((x, i) => (
         <div
           className="day"
           key={"empty-day-2-" + i}
@@ -234,8 +234,8 @@ export default class Calendar extends React.Component {
 
     this.state.events.forEach((event) => {
       if (event.recurrence) {
-        let duration = moment.duration(event.end_time.diff(event.start_time));
-        let rule = RRule.fromString('DTSTART:' + moment(event.start_time).format("YYYYMMDDTHHmmss") + "Z\n" + event.recurrence[0]);
+        let duration = moment.duration(event.endTime.diff(event.startTime));
+        let rule = RRule.fromString('DTSTART:' + moment(event.startTime).format("YYYYMMDDTHHmmss") + "Z\n" + event.recurrence[0]);
         let rruleSet = new RRuleSet();
         rruleSet.rrule(rule);
         let dates = rruleSet.between(this.state.current.toDate(), moment(this.state.current).add(1, "month").toDate()); //get occurences this month
@@ -243,45 +243,45 @@ export default class Calendar extends React.Component {
         //render recurrences
         dates.forEach((date) => {
           //check if it is in cancelled
-          if (event.cancelled_events.some((cancelled_moment) => (cancelled_moment.isSame(date, 'day')))) {
+          if (event.cancelledEvents.some((cancelledMoment) => (cancelledMoment.isSame(date, 'day')))) {
             return;
           }
 
           
 
           //if event has changed
-          const changed_event = event.changed_events.find((changed_event) => (changed_event.originalStartTime.isSame(date, 'day')));
-          if (changed_event) {
+          const changedEvent = event.changedEvents.find((changedEvent) => (changedEvent.originalStartTime.isSame(date, 'day')));
+          if (changedEvent) {
             var props = {
-              name: changed_event.name,
-              start_time: changed_event.newStartTime,
-              end_time: changed_event.newEndTime,
-              description: changed_event.description,
-              location: changed_event.location,
+              name: changedEvent.name,
+              startTime: changedEvent.newStartTime,
+              endTime: changedEvent.newEndTime,
+              description: changedEvent.description,
+              location: changedEvent.location,
             }
           } else {
-            let event_start = moment.utc(date); //avoid bad timezone conversions
-            let event_end = moment(event_start).add(duration);
+            let eventStart = moment.utc(date); //avoid bad timezone conversions
+            let eventEnd = moment(eventStart).add(duration);
             var props = {
               name: event.name,
-              start_time: event_start,
-              end_time: event_end,
+              startTime: eventStart,
+              endTime: eventEnd,
               description: event.description,
               location: event.location,
             };
           }
           
-          let temp_node = document.createElement('div');
-          document.getElementById("day-" + props.start_time.date()).appendChild(temp_node);
-          ReactDOM.render(<Event {...props} {...eventProps}></Event>, temp_node);
+          let tempNode = document.createElement('div');
+          document.getElementById("day-" + props.startTime.date()).appendChild(tempNode);
+          ReactDOM.render(<Event {...props} {...eventProps}></Event>, tempNode);
         });
       } else {
         //render event
-        if (event.start_time.month() != this.state.current.month() || event.start_time.year() != this.state.current.year()) {
+        if (event.startTime.month() != this.state.current.month() || event.startTime.year() != this.state.current.year()) {
           return;
         }
         let node = document.createElement('div');
-        document.getElementById("day-" + event.start_time.date()).appendChild(node);
+        document.getElementById("day-" + event.startTime.date()).appendChild(node);
         ReactDOM.render(<Event {...event} {...eventProps}></Event>, node);
       }
     });
