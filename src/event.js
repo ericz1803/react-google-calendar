@@ -16,11 +16,14 @@ export default class Event extends React.Component {
       end_time: this.props.end_time,
       description: this.props.description,
       location: this.props.location,
+      
+      borderColor: this.props.borderColor,
+      circleColor: this.props.circleColor,
+      textColor: this.props.textColor,
+      hoverColor: this.props.hoverColor,
+
       showTooltip: false,
       hover: false,
-      circleColor: "#4786ff",
-      color: "#4786ff",
-      background_color: "rgba(217, 230, 255, 0.7)",
     }
     this.toggleTooltip = this.toggleTooltip.bind(this);
     this.closeTooltip = this.closeTooltip.bind(this);
@@ -62,19 +65,24 @@ export default class Event extends React.Component {
 
     return (
       <div className="event" tabIndex="0" onBlur={this.closeTooltip} onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} style={{
-        color: this.state.color,
-        background: (this.state.hover ? this.state.background_color : "#fff"),
+        color: this.state.textColor,
+        background: (this.state.hover ? this.state.hoverColor : "#fff"),
       }}>
         <div className="event-text" onClick={this.toggleTooltip}>
-          <span style={{position: "absolute", top: "7px", left: "2px", color: this.props.circleColor }}>
+          <span style={{position: "absolute", top: "7px", left: "2px", color: this.state.circleColor }}>
             <FiberManualRecordIcon fontSize="inherit" />
           </span>
-          {this.state.name}
+          {
+            this.state.start_time.isSame(moment(this.state.start_time).startOf('day')) ? '' : this.state.start_time.format('h:mma ')
+          }
+          <span style={{fontWeight: "500"}}>
+            {this.state.name}
+          </span>
         </div>
         <div className="tooltip" style={{
           visibility: this.state.showTooltip ? 'visible' : 'hidden',
-          color: this.state.color,
-          border: "2px solid " + this.state.background_color,
+          color: this.state.textColor,
+          border: "2px solid " + this.state.borderColor,
         }}>
           <h2>{this.state.name}</h2>
           <p className="display-linebreak">

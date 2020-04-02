@@ -30,9 +30,17 @@ export default class Calendar extends React.Component {
       events: [],
       calendarId: this.props.calendarId,
       apiKey: this.props.apiKey,
+      
+      //calendar colors
       borderColor: this.props.borderColor,
       textColor: this.props.textColor,
       backgroundColor: this.props.backgroundColor,
+
+      //event colors
+      eventBorderColor: this.props.eventBorderColor,
+      eventHoverColor: this.props.eventHoverColor,
+      eventTextColor: this.props.eventTextColor,
+      eventCircleColor: this.props.eventCircleColor,
     };
     this.lastMonth = this.lastMonth.bind(this);
     this.nextMonth = this.nextMonth.bind(this);
@@ -90,6 +98,7 @@ export default class Calendar extends React.Component {
           let cancelled = [];
 
           response.result.items.forEach((event) => {
+            console.log(event.colorId);
             if (event.originalStartTime) { //cancelled/changed events
               if (event.status == "cancelled") {
                 cancelled.push({
@@ -216,6 +225,13 @@ export default class Calendar extends React.Component {
 
   renderEvents() {
     console.log(this.state.events);
+    let eventProps = {
+      borderColor: this.state.eventBorderColor,
+      hoverColor: this.state.eventHoverColor,
+      textColor: this.state.eventTextColor,
+      circleColor: this.state.eventCircleColor,
+    }
+
     this.state.events.forEach((event) => {
       if (event.recurrence) {
         let duration = moment.duration(event.end_time.diff(event.start_time));
@@ -255,10 +271,9 @@ export default class Calendar extends React.Component {
             };
           }
           
-
           let temp_node = document.createElement('div');
           document.getElementById("day-" + props.start_time.date()).appendChild(temp_node);
-          ReactDOM.render(<Event {...props}></Event>, temp_node);
+          ReactDOM.render(<Event {...props} {...eventProps}></Event>, temp_node);
         });
       } else {
         //render event
@@ -267,7 +282,7 @@ export default class Calendar extends React.Component {
         }
         let node = document.createElement('div');
         document.getElementById("day-" + event.start_time.date()).appendChild(node);
-        ReactDOM.render(<Event {...event}></Event>, node);
+        ReactDOM.render(<Event {...event} {...eventProps}></Event>, node);
       }
     });
   }
@@ -320,7 +335,9 @@ Calendar.propTypes = {
 Calendar.defaultProps = {
   textColor: "#51565d", // #51565d
   borderColor: "rgba(166, 168, 179, 0.12)", // rgba(166, 168, 179, 0.12)
-  circleColor: "#4786ff",
-  color: "#4786ff",
-  backgroundColor: "default",
+  
+  eventBorderColor: "rgba(81, 86, 93, 0.1)",
+  eventHoverColor: "rgba(81, 86, 93, 0.1)",
+  eventTextColor: "#51565d",
+  eventCircleColor: "#4786ff",
 }
