@@ -8,7 +8,6 @@
 .calendar {
   font-size: 18px;
   border: 1px solid;
-  border-bottom: none;
 }
 
 @media only screen and (max-width: 600px) {
@@ -38,6 +37,22 @@
   grid-template-columns: repeat(7, minmax(50px, 1fr));
   grid-template-rows: 50px;
   grid-auto-rows: minmax(120px, auto);
+}
+
+.calendar-footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-text {
+  font-size: 14px;
+  padding-left: 5px;
+}
+
+.footer-button {
+  padding-right: 5px;
 }
 
 .day {

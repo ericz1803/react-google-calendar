@@ -106,4 +106,8 @@ Event.propTypes = {
   endTime: PropTypes.instanceOf(moment).isRequired,
   description: PropTypes.string,
   location: PropTypes.string,
+  borderColor: PropTypes.string,
+  circleColor: PropTypes.string,
+  textColor: PropTypes.string,
+  hoverColor: PropTypes.string,
 }

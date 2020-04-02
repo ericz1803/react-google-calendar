@@ -321,6 +321,16 @@ export default class Calendar extends React.Component {
           {this.renderDays()}
           {this.renderDates()}
         </div>
+        <div className="calendar-footer">
+          <div className="footer-text">
+            All times shown in Pacific Time
+          </div>
+          <div className="footer-button">
+            <a href="#">
+              Add to Calendar
+            </a>
+          </div>
+        </div>
       </div>
     );
   }
@@ -330,12 +340,25 @@ export default class Calendar extends React.Component {
 Calendar.propTypes = {
   calendarId: PropTypes.string.isRequired,
   apiKey: PropTypes.string.isRequired,
+  
+  //calendar colors
+  borderColor: PropTypes.string,
+  textColor: PropTypes.string,
+  backgroundColor: PropTypes.string,
+
+  //event colors
+  eventBorderColor: PropTypes.string,
+  eventHoverColor: PropTypes.string,
+  eventTextColor: PropTypes.string,
+  eventCircleColor: PropTypes.string,
 }
 
 Calendar.defaultProps = {
-  textColor: "#51565d", // #51565d
-  borderColor: "rgba(166, 168, 179, 0.12)", // rgba(166, 168, 179, 0.12)
+  //calendar colors
+  textColor: "#51565d",
+  borderColor: "rgba(166, 168, 179, 0.12)",
   
+  //event colors
   eventBorderColor: "rgba(81, 86, 93, 0.1)",
   eventHoverColor: "rgba(81, 86, 93, 0.1)",
   eventTextColor: "#51565d",
