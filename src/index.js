@@ -1,10 +1,15 @@
 import React from "react";
 import ReactDOM from 'react-dom'
-import moment from "moment";
-import Event from "./event";
-import { RRule, RRuleSet } from 'rrule';
-import "./index.css";
 import PropTypes from 'prop-types';
+
+import moment from "moment";
+import { RRule, RRuleSet } from 'rrule';
+
+import "./index.css";
+
+import Event from "./event";
+
+import AddBoxIcon from '@material-ui/icons/Add';
 
 export default class Calendar extends React.Component {
   constructor(props) {
@@ -325,9 +330,17 @@ export default class Calendar extends React.Component {
           <div className="footer-text">
             All times shown in Pacific Time
           </div>
-          <div className="footer-button">
-            <a href="#">
-              Add to Calendar
+          <div style={{
+            height: '24px',
+            color: this.state.textColor,
+          }}>
+            <a href={"https://calendar.google.com/calendar/r?cid=" + this.state.calendarId} target="_blank" id="add-to-calendar">
+              <div className="footer-button">
+                <AddBoxIcon />
+                <p style={{ margin: 0 }}>
+                  Google Calendar
+              </p>
+              </div>
             </a>
           </div>
         </div>

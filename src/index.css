@@ -53,6 +53,14 @@
 
 .footer-button {
   padding-right: 5px;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+#add-to-calendar {
+  text-decoration: none;
+  color: inherit;
 }
 
 .day {

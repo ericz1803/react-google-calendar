@@ -1,10 +1,14 @@
 import React from "react";
+import PropTypes from 'prop-types';
+
+import moment from "moment";
+
 import "./index.css";
+
+
 import Place from '@material-ui/icons/Place';
 import Subject from '@material-ui/icons/Subject';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
-import PropTypes from 'prop-types';
-import moment from "moment";
 
 export default class Event extends React.Component {
   constructor(props) {
