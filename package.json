@@ -2,17 +2,20 @@
   "name": "@ericz1803/react-google-calendar",
   "version": "1.0.0",
   "description": "React Google Calendar Component",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "files": [
+    "dist/",
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "./node_modules/.bin/babel src --out-dir . && cp ./src/index.css ./index.css"
+    "build": "./node_modules/.bin/babel src --out-dir ./dist && cp ./src/index.css ./dist/index.css"
   },
   "repository": {
     "type": "git",
-    "url": "___EDIT____"
+    "url": "git+https://github.com/ericz1803/react-google-calendar.git"
   },
   "author": "Eric Zhou",
-  "license": "ISC",
+  "license": "MIT",
   "peerDependencies": {
     "react": "^16.13.0",
     "react-dom": "^16.13.0"
