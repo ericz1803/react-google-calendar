@@ -40,6 +40,8 @@ export default class Calendar extends React.Component {
       borderColor: this.props.borderColor,
       textColor: this.props.textColor,
       backgroundColor: this.props.backgroundColor,
+      todayTextColor: this.props.todayTextColor,
+      todayBackgroundColor: this.props.todayBackgroundColor,
 
       //event colors
       eventBorderColor: this.props.eventBorderColor,
@@ -179,7 +181,6 @@ export default class Calendar extends React.Component {
     }
   }
   
-
   renderDays() {
     return this.state.days.map((x, i) => (
       <div
@@ -208,16 +209,35 @@ export default class Calendar extends React.Component {
           style={{ borderColor: this.props.borderColor }}
         ></div>
       )),
-      days.map(x => (
-        <div
-          className="day"
-          key={"day-" + x}
-          style={{ borderColor: this.props.borderColor }}
-        >
-          {x}
-          <div className="innerDay" id={"day-" + x}></div>
-        </div>
-      )),
+      days.map(x => {
+        if (x == this.state.today.date() && this.state.current.isSame(this.state.today, 'month')) {
+          return (
+            <div
+              className="day"
+              key={"day-" + x}
+              style={{ 
+                borderColor: this.props.borderColor,
+                color: this.state.todayTextColor,
+                background: this.state.todayBackgroundColor,
+              }}
+            >
+              {x}
+              <div className="innerDay" id={"day-" + x}></div>
+            </div>
+          );
+        } else {
+          return (
+            <div
+              className="day"
+              key={"day-" + x}
+              style={{ borderColor: this.props.borderColor }}
+            >
+              {x}
+              <div className="innerDay" id={"day-" + x}></div>
+            </div>
+          );
+        }
+      }),
       [...Array(padDays)].map((x, i) => (
         <div
           className="day"
@@ -358,6 +378,8 @@ Calendar.propTypes = {
   borderColor: PropTypes.string,
   textColor: PropTypes.string,
   backgroundColor: PropTypes.string,
+  todayTextColor: PropTypes.string,
+  todayBackgroundColor: PropTypes.string,
 
   //event colors
   eventBorderColor: PropTypes.string,
