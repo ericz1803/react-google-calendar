@@ -1,6 +1,6 @@
 {
   "name": "@ericz1803/react-google-calendar",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "React Google Calendar Component",
   "main": "dist/index.js",
   "files": [

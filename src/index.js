@@ -330,7 +330,7 @@ export default class Calendar extends React.Component {
             &#10094;
           </div>
           <div>
-            <h2>
+            <h2 className="calendar-title">
               {this.state.monthNames[this.state.current.month()]}{" "}
               {this.state.current.year()}
             </h2>
