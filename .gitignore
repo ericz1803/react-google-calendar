@@ -1,7 +1,2 @@
 node_modules/
 dist/
-
-# ignore build files
-event.js
-index.css
-index.js
