@@ -391,7 +391,7 @@ Calendar.propTypes = {
 Calendar.defaultProps = {
   //calendar colors
   textColor: "#51565d",
-  borderColor: "rgba(166, 168, 179, 0.12)",
+  borderColor: "LightGray",
   
   //event colors
   eventBorderColor: "rgba(81, 86, 93, 0.1)",
