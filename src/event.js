@@ -96,7 +96,7 @@ export default class Event extends React.Component {
     return (
       <div className="event" tabIndex="0" onBlur={this.closeTooltip} onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} style={{
         color: this.state.textColor,
-        background: (this.state.hover ? this.state.hoverColor : "#fff"),
+        background: (this.state.hover ? this.state.hoverColor : "inherit"),
       }}>
         <div className="event-text" onClick={this.toggleTooltip}>
           <span style={{position: "absolute", top: "7px", left: "2px", color: this.state.circleColor }}>

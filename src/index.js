@@ -9,7 +9,8 @@ import "./index.css";
 
 import Event from "./event";
 
-import AddBoxIcon from '@material-ui/icons/Add';
+import AddBoxIcon from '@material-ui/icons/AddBox';
+import { FormHelperText } from "@material-ui/core";
 
 export default class Calendar extends React.Component {
   constructor(props) {
@@ -336,7 +337,7 @@ export default class Calendar extends React.Component {
         style={{
           borderColor: this.props.borderColor,
           color: this.props.textColor,
-          backgorund: this.props.backgroundColor,
+          background: this.props.backgroundColor,
         }}
       >
         <div className="calendar-header">
@@ -367,16 +368,13 @@ export default class Calendar extends React.Component {
           <div className="footer-text">
             All times shown in timezone: {this.state.calendarTimezone.replace("_", " ")}
           </div>
-          <div style={{
-            height: '24px',
-            color: this.state.textColor,
-          }}>
+          <div className="footer-button">
             <a href={"https://calendar.google.com/calendar/r?cid=" + this.state.calendarId} target="_blank" id="add-to-calendar">
-              <div className="footer-button">
-                <AddBoxIcon />
-                <p style={{ margin: 0 }}>
-                  Google Calendar
-              </p>
+              <div class="logo-plus-button">
+                <div class="logo-plus-button-plus-icon"></div>
+                <div class="logo-plus-button-lockup">
+                  <span class="logo-plus-button-lockup-text">Calendar</span>
+                </div>
               </div>
             </a>
           </div>
@@ -385,7 +383,7 @@ export default class Calendar extends React.Component {
     );
   }
 }
-
+  
 
 Calendar.propTypes = {
   calendarId: PropTypes.string.isRequired,

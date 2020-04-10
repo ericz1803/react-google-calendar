@@ -57,19 +57,51 @@
 }
 
 .footer-button {
-  padding-right: 5px;
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.footer-button:hover {
-  text-decoration: underline;
+  height: 20px;
+  vertical-align: bottom;
+  margin-right: 1px;
 }
 
 #add-to-calendar {
   text-decoration: none;
   color: inherit;
+  font-size: 13px;
+
+}
+
+.logo-plus-button {
+  height: 18px;
+  background-color: #fff;
+  padding-right: 2px;
+  display: inline-block;
+}
+
+.logo-plus-button-plus-icon {
+  background-color: #4285f4;
+  background-image: url(//calendar.google.com/googlecalendar/images/logo-plus.png);
+  background-position: center center;
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+}
+
+.logo-plus-button-lockup {
+  padding-left: 47px;
+  background-image: url(//www.gstatic.com/images/branding/googlelogo/1x/googlelogo_color_46x16dp.png);
+  background-size: 46px 16px;
+  background-repeat: no-repeat;
+  background-position-y: 3px;
+  position: relative;
+  top: -4px;
+  margin-left: 3px;
+  margin-right: 1px;
+  display: inline-block;
+}
+
+.logo-plus-button-lockup-text {
+  padding-left: 1px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, .54);
 }
 
 .day {
