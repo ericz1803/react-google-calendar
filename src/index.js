@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types';
 
-import moment from "moment";
+import moment from "moment-timezone";
 import { RRule, RRuleSet } from 'rrule';
 
 import "./index.css";
@@ -33,6 +33,9 @@ export default class Calendar extends React.Component {
       today: moment(),
       current: moment().startOf('month'), //current position on calendar (first day of month)
       events: [],
+      offset: moment.duration(0),
+      calendarTimezone: "",
+      useCalendarTimezone: this.props.useCalendarTimezone,
       calendarId: this.props.calendarId,
       apiKey: this.props.apiKey,
       
@@ -103,10 +106,14 @@ export default class Calendar extends React.Component {
           let events = [];
           let changed = [];
           let cancelled = [];
+          let calendarTimezone = "";
 
           response.result.items.forEach((event) => {
-            console.log(event.colorId);
+            
             if (event.originalStartTime) { //cancelled/changed events
+              if ((!calendarTimezone) && event.originalStartTime.timeZone && this.state.useCalendarTimezone) {
+                calendarTimezone = event.originalStartTime.timeZone;
+              }
               if (event.status == "cancelled") {
                 cancelled.push({
                   recurringEventId: event.recurringEventId,
@@ -126,6 +133,9 @@ export default class Calendar extends React.Component {
                 console.log("Not categorized: ", event);
               }
             } else if (event.status == "confirmed") {
+              if ((!calendarTimezone) && event.start.timeZone && this.state.useCalendarTimezone) {
+                calendarTimezone = event.start.timeZone;
+              }
               events.push({
                 id: event.id,
                 name: event.summary,
@@ -156,6 +166,14 @@ export default class Calendar extends React.Component {
               });
             }
           });
+          if (this.state.useCalendarTimezone) {
+            console.log(calendarTimezone);
+            let offset = moment.duration(moment.tz.zone(calendarTimezone).parse(this.state.today) - moment.tz.zone(moment.tz.guess()).parse(this.state.today), 'minutes');
+            console.log(offset);
+            this.setState({offset: offset, calendarTimezone: calendarTimezone});
+          } else {
+            this.setState({calendarTimezone: moment.tz.guess()});
+          }
           this.setState({ events: events});
         },
         (err) => {
@@ -255,6 +273,7 @@ export default class Calendar extends React.Component {
       hoverColor: this.state.eventHoverColor,
       textColor: this.state.eventTextColor,
       circleColor: this.state.eventCircleColor,
+      offset: this.state.offset,
     }
 
     this.state.events.forEach((event) => {
@@ -271,8 +290,6 @@ export default class Calendar extends React.Component {
           if (event.cancelledEvents.some((cancelledMoment) => (cancelledMoment.isSame(date, 'day')))) {
             return;
           }
-
-          
 
           //if event has changed
           const changedEvent = event.changedEvents.find((changedEvent) => (changedEvent.originalStartTime.isSame(date, 'day')));
@@ -348,7 +365,7 @@ export default class Calendar extends React.Component {
         </div>
         <div className="calendar-footer">
           <div className="footer-text">
-            All times shown in Pacific Time
+            All times shown in timezone: {this.state.calendarTimezone.replace("_", " ")}
           </div>
           <div style={{
             height: '24px',
@@ -373,6 +390,8 @@ export default class Calendar extends React.Component {
 Calendar.propTypes = {
   calendarId: PropTypes.string.isRequired,
   apiKey: PropTypes.string.isRequired,
+
+  useCalendarTimezone: PropTypes.bool,
   
   //calendar colors
   borderColor: PropTypes.string,
@@ -389,6 +408,8 @@ Calendar.propTypes = {
 }
 
 Calendar.defaultProps = {
+  useCalendarTimezone: false,
+
   //calendar colors
   textColor: "#51565d",
   borderColor: "LightGray",

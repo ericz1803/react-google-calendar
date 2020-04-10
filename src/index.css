@@ -63,6 +63,10 @@
   align-items: center;
 }
 
+.footer-button:hover {
+  text-decoration: underline;
+}
+
 #add-to-calendar {
   text-decoration: none;
   color: inherit;

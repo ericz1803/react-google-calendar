@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from 'prop-types';
 
-import moment from "moment";
+import moment from "moment-timezone";
 
 import "./index.css";
 
@@ -16,8 +16,8 @@ export default class Event extends React.Component {
 
     this.state = {
       name: this.props.name,
-      startTime: this.props.startTime,
-      endTime: this.props.endTime,
+      startTime: this.props.startTime.subtract(this.props.offset),
+      endTime: this.props.endTime.subtract(this.props.offset),
       description: this.props.description,
       location: this.props.location,
       
@@ -108,6 +108,7 @@ Event.propTypes = {
   name: PropTypes.string.isRequired,
   startTime: PropTypes.instanceOf(moment).isRequired,
   endTime: PropTypes.instanceOf(moment).isRequired,
+  offset: PropTypes.object.isRequired, //moment duration
   description: PropTypes.string,
   location: PropTypes.string,
   borderColor: PropTypes.string,

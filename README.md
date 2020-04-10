@@ -18,22 +18,33 @@ Alternately, you can go to https://console.developers.google.com/flows/enableapi
 Then, get the calendar id from the google calendar. It will look somehting like `s9ajkhr604dfrmvm7185lesou0@group.calendar.google.com`.   
 You can find it by going to a calendar's settings and scrolling down to the section that is labelled `Integrate calendar`.
 
+### Properties
+| Parameter             | Type   | Description                                                                                                                                 | Default |
+|-----------------------|--------|---------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| `apiKey`              | string | google api key (required)                                                                                                                   |         |
+| `calendarId`          | string | google calendar id (required)                                                                                                               |         |
+| `useCalendarTimezone` | bool   | Make all of the times in the same timezone as the calendar<br>(true = times are in calendar timezone, false = times are in user's timezone) | false   |
+
 ### Customization
 
 You can change the color of different aspects of the calendar by passing css colors (eg. `#51565d` or `rgba(166, 168, 179, 0.12)`) into the following props (as a string).
 
 #### Calendar Colors
-`borderColor`: color of calendar lines (default: `LightGray`)  
-`textColor`: color of the calendar text (default: `51565d`)  
-`backgroundColor`: color of the calendar (default: none)  
-`todayTextColor`:  text color of today (default: none (same as calendar text color))  
-`todayBackgroundColor`:  color of today square (default: none (same as `backgroundColor`))
+| Parameter              | Type   | Description                | Default                          |
+|------------------------|--------|----------------------------|----------------------------------|
+| `borderColor`          | string | color of calendar lines    | "LightGray"                      |
+| `textColor`            | string | color of the calendar text | "#51565d"                        |
+| `backgroundColor`      | string | color of the calendar      | null                             |
+| `todayTextColor`       | string | text color of today        | null (same as `textColor`)       |
+| `todayBackgroundColor` | string | color of today             | null (same as `backgroundColor`) |
 
 #### Event Colors 
-`eventBorderColor`: border color of tooltip that pops up when you click on an event (default: `rgba(81, 86, 93, 0.1)`)  
-`eventHoverColor`: color of the event on hover (default: `rgba(81, 86, 93, 0.1)`)  
-`eventTextColor`: color of the event text (default: `#51565d`)  
-`eventCircleColor`: color of the circle in front of the event text (default: `#4786ff`)  
+| Parameter          | Type   | Description                                                     | Default                 |
+|--------------------|--------|-----------------------------------------------------------------|-------------------------|
+| `eventBorderColor` | string | border color of tooltip that pops up when you click on an event | "rgba(81, 86, 93, 0.1)" |
+| `eventHoverColor`  | string | color of the event on hover                                     | "rgba(81, 86, 93, 0.1)" |
+| `eventTextColor`   | string | text color of event                                             | "#51565d"               |
+| `eventCircleColor` | string | color of the circle in front of the event text                  | "#4786ff"               |
 
 ### Example
 
@@ -46,6 +57,7 @@ const CALENDAR_ID = "YOUR_CALENDAR_ID";
 class Example extends React.Component {
   render() {
     let props = {
+      useCalendarTimezone: true,
       eventCircleColor: 'SpringGreen',
       borderColor: 'SlateGrey',
     }
