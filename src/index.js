@@ -314,7 +314,7 @@ export default class Calendar extends React.Component {
           }
           
           let tempNode = document.createElement('div');
-          document.getElementById("day-" + props.startTime.date()).appendChild(tempNode);
+          document.getElementById("day-" + moment(props.startTime).date()).appendChild(tempNode);
           ReactDOM.render(<Event {...props} {...eventProps}></Event>, tempNode);
         });
       } else {
@@ -323,7 +323,7 @@ export default class Calendar extends React.Component {
           return;
         }
         let node = document.createElement('div');
-        document.getElementById("day-" + event.startTime.date()).appendChild(node);
+        document.getElementById("day-" + moment(event.startTime).date()).appendChild(node);
         ReactDOM.render(<Event {...event} {...eventProps}></Event>, node);
       }
     });

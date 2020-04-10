@@ -14,10 +14,14 @@ export default class Event extends React.Component {
   constructor(props) {
     super(props);
 
+    let allDay = this.props.startTime.isSame(moment(this.props.startTime).startOf('day'), 'second') 
+      && this.props.endTime.isSame(moment(this.props.endTime).startOf('day'), 'second');
+
     this.state = {
       name: this.props.name,
-      startTime: this.props.startTime.subtract(this.props.offset),
-      endTime: this.props.endTime.subtract(this.props.offset),
+      startTime: allDay ? this.props.startTime : moment(this.props.startTime).subtract(this.props.offset),
+      endTime: allDay ? moment(this.props.endTime).subtract(1, 'day') : moment(this.props.endTime).subtract(this.props.offset),
+      allDay: allDay,
       description: this.props.description,
       location: this.props.location,
       
@@ -29,6 +33,28 @@ export default class Event extends React.Component {
       showTooltip: false,
       hover: false,
     }
+
+    //calculate time display in tooltip
+    if (allDay) {
+      //event spans 1 day or more than 1 day
+      if (this.state.startTime.isSame(this.state.endTime, 'day')) {
+        this.state.timeDisplay = this.state.startTime.format("dddd, MMMM Do")
+      } else {
+        this.state.timeDisplay = this.state.startTime.format("MMM Do, YYYY") + " - "
+          + this.state.endTime.format("MMM Do, YYYY");
+      }
+    } else {
+      //event spans 1 day or more than 1 day
+      if (this.state.startTime.isSame(this.state.endTime, 'day')) {
+        this.state.timeDisplay = this.state.startTime.format("dddd, MMMM Do") + " \n" 
+          + this.state.startTime.format("h:mma") + " - " + this.state.endTime.format("h:mma");
+      } else {
+        this.state.timeDisplay = this.state.startTime.format("MMM Do, YYYY, h:mma") + " - \n"
+         + this.state.endTime.format("MMM Do, YYYY, h:mma");
+      }
+    }
+    
+
     this.toggleTooltip = this.toggleTooltip.bind(this);
     this.closeTooltip = this.closeTooltip.bind(this);
     this.toggleHover = this.toggleHover.bind(this);
@@ -77,7 +103,7 @@ export default class Event extends React.Component {
             <FiberManualRecordIcon fontSize="inherit" />
           </span>
           {
-            this.state.startTime.isSame(moment(this.state.startTime).startOf('day')) ? '' : this.state.startTime.format('h:mma ')
+            this.state.allDay ? '' : this.state.startTime.format('h:mma ')
           }
           <span style={{fontWeight: "500"}}>
             {this.state.name}
@@ -90,11 +116,7 @@ export default class Event extends React.Component {
         }}>
           <h2>{this.state.name}</h2>
           <p className="display-linebreak">
-            {
-              this.state.startTime.isSame(this.state.endTime, 'day') ? 
-              this.state.startTime.format("dddd, MMMM Do") + " \n" +  this.state.startTime.format("h:mma") + " - " + this.state.endTime.format("h:mma") :
-              this.state.startTime.format("MMM Do, YYYY, h:mma") + " - \n" + this.state.endTime.format("MMM Do, YYYY, h:mma")
-            }
+            { this.state.timeDisplay }
           </p>
           {description}
           {location}
