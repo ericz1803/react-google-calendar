@@ -14,16 +14,16 @@ export default class Event extends React.Component {
   constructor(props) {
     super(props);
 
-    let allDay = this.props.startTime.isSame(moment(this.props.startTime).startOf('day'), 'second') 
-      && this.props.endTime.isSame(moment(this.props.endTime).startOf('day'), 'second');
+    let allDay = this.props.startTime.isSame(moment.parseZone(this.props.startTime).startOf('day'), 'second') 
+      && this.props.endTime.isSame(moment.parseZone(this.props.endTime).startOf('day'), 'second');
 
     this.state = {
       name: this.props.name,
-      startTime: allDay ? this.props.startTime : moment(this.props.startTime).subtract(this.props.offset),
-      endTime: allDay ? moment(this.props.endTime).subtract(1, 'day') : moment(this.props.endTime).subtract(this.props.offset),
-      allDay: allDay,
+      startTime: this.props.startTime,
+      endTime: allDay ? moment.parseZone(this.props.endTime).subtract(1, 'day') : moment.parseZone(this.props.endTime),
       description: this.props.description,
       location: this.props.location,
+      allDay: allDay,
       
       borderColor: this.props.borderColor,
       circleColor: this.props.circleColor,
@@ -36,24 +36,21 @@ export default class Event extends React.Component {
 
     //calculate time display in tooltip
     if (allDay) {
-      //event spans 1 day or more than 1 day
-      if (this.state.startTime.isSame(this.state.endTime, 'day')) {
+      if (this.state.startTime.isSame(this.state.endTime, 'day')) { //event spans 1 day
         this.state.timeDisplay = this.state.startTime.format("dddd, MMMM Do")
-      } else {
+      } else { // more than 1 day
         this.state.timeDisplay = this.state.startTime.format("MMM Do, YYYY") + " - "
           + this.state.endTime.format("MMM Do, YYYY");
       }
     } else {
-      //event spans 1 day or more than 1 day
-      if (this.state.startTime.isSame(this.state.endTime, 'day')) {
+      if (this.state.startTime.isSame(this.state.endTime, 'day')) { //event spans 1 day
         this.state.timeDisplay = this.state.startTime.format("dddd, MMMM Do") + " \n" 
           + this.state.startTime.format("h:mma") + " - " + this.state.endTime.format("h:mma");
-      } else {
+      } else { // more than 1 day
         this.state.timeDisplay = this.state.startTime.format("MMM Do, YYYY, h:mma") + " - \n"
          + this.state.endTime.format("MMM Do, YYYY, h:mma");
       }
     }
-    
 
     this.toggleTooltip = this.toggleTooltip.bind(this);
     this.closeTooltip = this.closeTooltip.bind(this);
@@ -130,7 +127,6 @@ Event.propTypes = {
   name: PropTypes.string.isRequired,
   startTime: PropTypes.instanceOf(moment).isRequired,
   endTime: PropTypes.instanceOf(moment).isRequired,
-  offset: PropTypes.object.isRequired, //moment duration
   description: PropTypes.string,
   location: PropTypes.string,
   borderColor: PropTypes.string,

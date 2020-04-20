@@ -31,7 +31,6 @@ export default class Calendar extends React.Component {
       today: moment(),
       current: moment().startOf('month'), //current position on calendar (first day of month)
       events: [],
-      offset: moment.duration(0),
       calendarTimezone: "",
       useCalendarTimezone: this.props.useCalendarTimezone,
       calendarId: this.props.calendarId,
@@ -115,7 +114,7 @@ export default class Calendar extends React.Component {
               if (event.status == "cancelled") {
                 cancelled.push({
                   recurringEventId: event.recurringEventId,
-                  originalStartTime: moment(event.originalStartTime.dateTime || event.originalStartTime.date), 
+                  originalStartTime: this.state.useCalendarTimezone ? moment.parseZone(event.originalStartTime.dateTime || event.originalStartTime.date) : moment(event.originalStartTime.dateTime || event.originalStartTime.date), 
                 });
               } else if (event.status == "confirmed") {
                 changed.push({
@@ -123,9 +122,9 @@ export default class Calendar extends React.Component {
                   name: event.summary,
                   description: event.description,
                   location: event.location,
-                  originalStartTime: moment(event.originalStartTime.dateTime || event.originalStartTime.date),
-                  newStartTime: moment(event.start.dateTime || event.start.date),
-                  newEndTime: moment(event.end.dateTime || event.end.date),
+                  originalStartTime: this.state.useCalendarTimezone ? moment.parseZone(event.originalStartTime.dateTime || event.originalStartTime.date) : moment(event.originalStartTime.dateTime || event.originalStartTime.date),
+                  newStartTime: this.state.useCalendarTimezone ? moment.parseZone(event.start.dateTime || event.start.date) : moment(event.start.dateTime || event.start.date),
+                  newEndTime: this.state.useCalendarTimezone ? moment.parseZone(event.end.dateTime || event.end.date) : moment(event.end.dateTime || event.end.date),
                 });
               } else {
                 console.log("Not categorized: ", event);
@@ -137,8 +136,8 @@ export default class Calendar extends React.Component {
               events.push({
                 id: event.id,
                 name: event.summary,
-                startTime: moment(event.start.dateTime || event.start.date), //read date if datetime doesn't exist
-                endTime: moment(event.end.dateTime || event.end.date),
+                startTime: this.state.useCalendarTimezone ? moment.parseZone(event.start.dateTime || event.start.date) : moment(event.start.dateTime || event.start.date), //read date if datetime doesn't exist
+                endTime: this.state.useCalendarTimezone ? moment.parseZone(event.end.dateTime || event.end.date) : moment(event.end.dateTime || event.end.date),
                 description: event.description,
                 location: event.location,
                 recurrence: event.recurrence,
@@ -166,9 +165,7 @@ export default class Calendar extends React.Component {
           });
           if (this.state.useCalendarTimezone) {
             console.log(calendarTimezone);
-            let offset = moment.duration(moment.tz.zone(calendarTimezone).parse(this.state.today) - moment.tz.zone(moment.tz.guess()).parse(this.state.today), 'minutes');
-            console.log(offset);
-            this.setState({offset: offset, calendarTimezone: calendarTimezone});
+            this.setState({calendarTimezone: calendarTimezone});
           } else {
             this.setState({calendarTimezone: moment.tz.guess()});
           }
@@ -271,7 +268,6 @@ export default class Calendar extends React.Component {
       hoverColor: this.state.eventHoverColor,
       textColor: this.state.eventTextColor,
       circleColor: this.state.eventCircleColor,
-      offset: this.state.offset,
     }
 
     this.state.events.forEach((event) => {
@@ -367,10 +363,10 @@ export default class Calendar extends React.Component {
           </div>
           <div className="footer-button">
             <a href={"https://calendar.google.com/calendar/r?cid=" + this.state.calendarId} target="_blank" id="add-to-calendar">
-              <div class="logo-plus-button">
-                <div class="logo-plus-button-plus-icon"></div>
-                <div class="logo-plus-button-lockup">
-                  <span class="logo-plus-button-lockup-text">Calendar</span>
+              <div className="logo-plus-button">
+                <div className="logo-plus-button-plus-icon"></div>
+                <div className="logo-plus-button-lockup">
+                  <span className="logo-plus-button-lockup-text">Calendar</span>
                 </div>
               </div>
             </a>
