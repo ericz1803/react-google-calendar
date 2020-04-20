@@ -54,9 +54,11 @@
 .footer-text {
   font-size: 14px;
   padding-left: 5px;
+  text-align: left;
 }
 
 .footer-button {
+  min-width: 123px;
   height: 20px;
   vertical-align: bottom;
   margin-right: 1px;

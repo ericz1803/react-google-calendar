@@ -1,7 +1,7 @@
 # React Google Calendar
 A react component that displays an event calendar using data from google calendar.
 
-Design based on [this calendar](https://codepen.io/knyttneve/pen/QVqyNg).
+Design inspired by [this calendar](https://codepen.io/knyttneve/pen/QVqyNg).
 
 ## Installation
 

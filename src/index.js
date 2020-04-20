@@ -9,9 +9,6 @@ import "./index.css";
 
 import Event from "./event";
 
-import AddBoxIcon from '@material-ui/icons/AddBox';
-import { FormHelperText } from "@material-ui/core";
-
 export default class Calendar extends React.Component {
   constructor(props) {
     super(props);
