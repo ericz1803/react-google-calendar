@@ -99,7 +99,6 @@ export default class Calendar extends React.Component {
       .then(
         (response) => {
           // Handle the results here (response.result has the parsed body).
-          console.log("Response", response.result.items);
           let events = [];
           let changed = [];
           let cancelled = [];
@@ -149,7 +148,6 @@ export default class Calendar extends React.Component {
             }
           });
 
-          console.log(changed);
           events.forEach((event, idx, arr) => {
             if (event.recurrence) {
               //push changed events
@@ -164,7 +162,6 @@ export default class Calendar extends React.Component {
             }
           });
           if (this.state.useCalendarTimezone) {
-            console.log(calendarTimezone);
             this.setState({calendarTimezone: calendarTimezone});
           } else {
             this.setState({calendarTimezone: moment.tz.guess()});
@@ -262,7 +259,6 @@ export default class Calendar extends React.Component {
   }
 
   renderEvents() {
-    console.log(this.state.events);
     let eventProps = {
       borderColor: this.state.eventBorderColor,
       hoverColor: this.state.eventHoverColor,
