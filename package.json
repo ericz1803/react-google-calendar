@@ -7,7 +7,7 @@
     "dist/"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "./node_modules/.bin/babel src --out-dir ./dist && cp ./src/index.css ./dist/index.css"
   },
   "repository": {
@@ -31,5 +31,20 @@
     "moment-timezone": "^0.5.28",
     "prop-types": "^15.7.2",
     "rrule": "^2.6.4"
+  },
+  "devDependencies": {
+    "babel-jest": "^25.4.0",
+    "jest": "^25.4.0",
+    "jest-transform-css": "^2.0.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-test-renderer": "^16.13.1"
+  },
+  "jest": {
+    "verbose": true,
+    "transform": {
+      "^.+\\.js$": "babel-jest",
+      ".+\\.(css|styl|less|sass|scss)$": "jest-transform-css"
+    }
   }
 }

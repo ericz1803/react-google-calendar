@@ -1,9 +1,9 @@
 import React from "react";
-import ReactDOM from 'react-dom'
-import PropTypes from 'prop-types';
+import ReactDOM from "react-dom"
+import PropTypes from "prop-types";
 
 import moment from "moment-timezone";
-import { RRule, RRuleSet } from 'rrule';
+import { RRule, RRuleSet } from "rrule";
 
 import "./index.css";
 
@@ -29,7 +29,7 @@ export default class Calendar extends React.Component {
       ],
       days: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
       today: moment(),
-      current: moment().startOf('month'), //current position on calendar (first day of month)
+      current: moment().startOf("month"), //current position on calendar (first day of month)
       events: [],
       calendarTimezone: "",
       useCalendarTimezone: this.props.useCalendarTimezone,
@@ -135,7 +135,7 @@ export default class Calendar extends React.Component {
               events.push({
                 id: event.id,
                 name: event.summary,
-                startTime: this.state.useCalendarTimezone ? moment.parseZone(event.start.dateTime || event.start.date) : moment(event.start.dateTime || event.start.date), //read date if datetime doesn't exist
+                startTime: this.state.useCalendarTimezone ? moment.parseZone(event.start.dateTime || event.start.date) : moment(event.start.dateTime || event.start.date), //read date if datetime doesn"t exist
                 endTime: this.state.useCalendarTimezone ? moment.parseZone(event.end.dateTime || event.end.date) : moment(event.end.dateTime || event.end.date),
                 description: event.description,
                 location: event.location,
@@ -175,11 +175,11 @@ export default class Calendar extends React.Component {
   }
 
   lastMonth() {
-    this.setState({ current: this.state.current.subtract(1, 'months') });
+    this.setState({ current: this.state.current.subtract(1, "months") });
   }
 
   nextMonth() {
-    this.setState({ current: this.state.current.add(1, 'months') });
+    this.setState({ current: this.state.current.add(1, "months") });
   }
 
   clearEvents() {
@@ -220,7 +220,7 @@ export default class Calendar extends React.Component {
         ></div>
       )),
       days.map(x => {
-        if (x == this.state.today.date() && this.state.current.isSame(this.state.today, 'month')) {
+        if (x == this.state.today.date() && this.state.current.isSame(this.state.today, "month")) {
           return (
             <div
               className="day"
@@ -269,7 +269,7 @@ export default class Calendar extends React.Component {
     this.state.events.forEach((event) => {
       if (event.recurrence) {
         let duration = moment.duration(event.endTime.diff(event.startTime));
-        let rule = RRule.fromString('DTSTART:' + moment(event.startTime).format("YYYYMMDDTHHmmss") + "Z\n" + event.recurrence[0]);
+        let rule = RRule.fromString("DTSTART:" + moment(event.startTime).format("YYYYMMDDTHHmmss") + "Z\n" + event.recurrence[0]);
         let rruleSet = new RRuleSet();
         rruleSet.rrule(rule);
         let dates = rruleSet.between(this.state.current.toDate(), moment(this.state.current).add(1, "month").toDate()); //get occurences this month
@@ -277,12 +277,12 @@ export default class Calendar extends React.Component {
         //render recurrences
         dates.forEach((date) => {
           //check if it is in cancelled
-          if (event.cancelledEvents.some((cancelledMoment) => (cancelledMoment.isSame(date, 'day')))) {
+          if (event.cancelledEvents.some((cancelledMoment) => (cancelledMoment.isSame(date, "day")))) {
             return;
           }
 
           //if event has changed
-          const changedEvent = event.changedEvents.find((changedEvent) => (changedEvent.originalStartTime.isSame(date, 'day')));
+          const changedEvent = event.changedEvents.find((changedEvent) => (changedEvent.originalStartTime.isSame(date, "day")));
           if (changedEvent) {
             var props = {
               name: changedEvent.name,
@@ -303,7 +303,7 @@ export default class Calendar extends React.Component {
             };
           }
           
-          let tempNode = document.createElement('div');
+          let tempNode = document.createElement("div");
           document.getElementById("day-" + moment(props.startTime).date()).appendChild(tempNode);
           ReactDOM.render(<Event {...props} {...eventProps}></Event>, tempNode);
         });
@@ -312,7 +312,7 @@ export default class Calendar extends React.Component {
         if (event.startTime.month() != this.state.current.month() || event.startTime.year() != this.state.current.year()) {
           return;
         }
-        let node = document.createElement('div');
+        let node = document.createElement("div");
         document.getElementById("day-" + moment(event.startTime).date()).appendChild(node);
         ReactDOM.render(<Event {...event} {...eventProps}></Event>, node);
       }
