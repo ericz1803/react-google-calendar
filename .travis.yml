@@ -2,6 +2,6 @@ language: node_js
 node_js:
   - 12
 install:
-  - npm install --dev
+  - npm install
 script:
   - npm run test
