@@ -162,19 +162,19 @@ describe("Event Component", () => {
       ReactDOM.render(<Event {...basicProps} {...props} />, container);
     });
 
-    expect(container.querySelector(".tooltip").style.visibility).toEqual("hidden");
+    expect(window.getComputedStyle(container.querySelector('.tooltip')).visibility).toEqual("hidden");
     
     act(() => {
       container.querySelector(".event-text").dispatchEvent(new MouseEvent("click", { bubbles: true }));
     });
 
-    expect(container.querySelector(".tooltip").style.visibility).toEqual("visible");
+    expect(window.getComputedStyle(container.querySelector('.tooltip')).visibility).toEqual("visible");
 
     act(() => {
       container.querySelector(".event-text").dispatchEvent(new MouseEvent("click", { bubbles: true }));
     });
 
-    expect(container.querySelector(".tooltip").style.visibility).toEqual("hidden");
+    expect(window.getComputedStyle(container.querySelector('.tooltip')).visibility).toEqual("hidden");
   });
 
 });

@@ -1,3 +1,4 @@
+/** @jsx jsx */
 import React from "react";
 import ReactDOM from "react-dom"
 import PropTypes from "prop-types";
@@ -8,6 +9,8 @@ import { RRule, RRuleSet } from "rrule";
 import "./index.css";
 
 import Event from "./event";
+
+import { css, jsx } from '@emotion/core'
 
 export default class Calendar extends React.Component {
   constructor(props) {
@@ -68,7 +71,7 @@ export default class Calendar extends React.Component {
     };
   }
 
-  //add in events after rendering
+  //add in events after rendering calendar
   componentDidUpdate() {
     this.clearEvents();
     this.renderEvents();
@@ -196,7 +199,7 @@ export default class Calendar extends React.Component {
       <div
         className="day-name"
         key={"day-of-week-" + i}
-        style={{ borderColor: this.props.borderColor }}
+        css={{ borderColor: this.props.borderColor }}
       >
         {x}
       </div>
@@ -216,7 +219,7 @@ export default class Calendar extends React.Component {
         <div
           className="day"
           key={"empty-day-" + i}
-          style={{ borderColor: this.props.borderColor }}
+          css={{ borderColor: this.props.borderColor }}
         ></div>
       )),
       days.map(x => {
@@ -225,13 +228,19 @@ export default class Calendar extends React.Component {
             <div
               className="day"
               key={"day-" + x}
-              style={{ 
+              css={{ 
                 borderColor: this.props.borderColor,
                 color: this.state.todayTextColor,
                 background: this.state.todayBackgroundColor,
               }}
             >
-              {x}
+              <span
+                css={{
+                  paddingRight: '6px',
+                }}
+              >
+                {x}
+              </span>
               <div className="innerDay" id={"day-" + x}></div>
             </div>
           );
@@ -240,9 +249,15 @@ export default class Calendar extends React.Component {
             <div
               className="day"
               key={"day-" + x}
-              style={{ borderColor: this.props.borderColor }}
+              css={{ borderColor: this.props.borderColor }}
             >
-              {x}
+              <span
+                css={{
+                  paddingRight: '6px',
+                }}
+              >
+                {x}
+              </span>
               <div className="innerDay" id={"day-" + x}></div>
             </div>
           );
@@ -252,7 +267,7 @@ export default class Calendar extends React.Component {
         <div
           className="day"
           key={"empty-day-2-" + i}
-          style={{ borderColor: this.props.borderColor }}
+          css={{ borderColor: this.props.borderColor }}
         ></div>
       ))
     ];
@@ -323,7 +338,7 @@ export default class Calendar extends React.Component {
     return (
       <div
         className="calendar"
-        style={{
+        css={{
           borderColor: this.props.borderColor,
           color: this.props.textColor,
           background: this.props.backgroundColor,

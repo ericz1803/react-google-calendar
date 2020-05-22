@@ -1,3 +1,4 @@
+/** @jsx jsx */
 import React from "react";
 import PropTypes from "prop-types";
 
@@ -5,6 +6,7 @@ import moment from "moment-timezone";
 
 import "./index.css";
 
+import { css, jsx } from '@emotion/core'
 
 import Place from "@material-ui/icons/Place";
 import Subject from "@material-ui/icons/Subject";
@@ -74,7 +76,7 @@ export default class Event extends React.Component {
     let description;
     if (this.state.description) {
       description = <div className="details description">
-      <div style={{paddingRight: "10px"}}><Subject fontSize="small" /></div>
+      <div css={{paddingRight: "10px"}}><Subject fontSize="small" /></div>
       <div dangerouslySetInnerHTML={{__html: this.state.description}} />
       </div>;
     } else {
@@ -84,7 +86,7 @@ export default class Event extends React.Component {
     let location;
     if (this.state.location) {
       location = <div className="details location">
-        <div style={{paddingRight: "10px"}}><Place fontSize="small" /></div>
+        <div css={{paddingRight: "10px"}}><Place fontSize="small" /></div>
         <div>{this.state.location}</div>
       </div>;
     } else {
@@ -92,22 +94,45 @@ export default class Event extends React.Component {
     }
 
     return (
-      <div className="event" tabIndex="0" onBlur={this.closeTooltip} onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} style={{
-        color: this.state.textColor,
-        background: (this.state.hover ? this.state.hoverColor : "inherit"),
-      }}>
-        <div className="event-text" onClick={this.toggleTooltip}>
-          <span style={{position: "absolute", top: "7px", left: "2px", color: this.state.circleColor }}>
-            <FiberManualRecordIcon fontSize="inherit" />
-          </span>
+      <div 
+        className="event"
+        tabIndex="0"
+        onBlur={this.closeTooltip}
+        onMouseEnter={this.toggleHover}
+        onMouseLeave={this.toggleHover} 
+        css={{
+          color: (this.state.allDay ? 'white' : this.state.textColor),
+          background: (this.state.allDay ? (this.state.hover ? "#244480" : this.state.circleColor) : this.state.hover && this.state.hoverColor),
+        }}
+      >
+        <div 
+          className="event-text" 
+          css={{
+            padding: this.state.allDay ? '5px 0px 5px 5px' : '5px 0px 5px 20px',
+            marginRight: '5px',
+            overflowX: 'hidden',
+            whiteSpace: 'nowrap',
+            position: 'relative',
+            textAlign: 'left',
+            '&:hover': {
+              cursor: 'pointer',
+            },
+          }}
+          onClick={this.toggleTooltip}
+        >
+          { !this.state.allDay &&
+            <span css={{position: "absolute", top: "7px", left: "2px", color: this.state.circleColor }}>
+              <FiberManualRecordIcon fontSize="inherit" />
+            </span>
+          }
           {
             this.state.allDay ? "" : this.state.startTime.format("h:mma ")
           }
-          <span style={{fontWeight: "500"}}>
+          <span css={{fontWeight: "500"}}>
             {this.state.name}
           </span>
         </div>
-        <div className="tooltip" style={{
+        <div className="tooltip" css={{
           visibility: this.state.showTooltip ? "visible" : "hidden",
           color: this.state.textColor,
           border: "2px solid " + this.state.borderColor,
