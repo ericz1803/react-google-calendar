@@ -148,11 +148,11 @@
 
 .event {
   box-sizing: border-box;
-  width: 100%;
-  margin: 5px 0px;
+  margin: 1px 0px;
   font-size: 14px;
   position: relative;
   border-radius: 2px;
+  height: 29px;
 }
 
 .tooltip {

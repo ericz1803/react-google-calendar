@@ -10,17 +10,23 @@ import { css } from '@emotion/core';
 
 import Place from "@material-ui/icons/Place";
 import Subject from "@material-ui/icons/Subject";
-import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 
-export default class Event extends React.Component {
+export default class MultiEvent extends React.Component {
   constructor(props) {
     super(props);
+
+    //date only event
+    let dateOnly = this.props.startTime.isSame(moment.parseZone(this.props.startTime).startOf("day"), "second") 
+      && this.props.endTime.isSame(moment.parseZone(this.props.endTime).startOf("day"), "second");
+
     this.state = {
       name: this.props.name,
       startTime: this.props.startTime,
-      endTime: moment.parseZone(this.props.endTime),
+      endTime: dateOnly ? moment.parseZone(this.props.endTime).subtract(1, "day") : moment.parseZone(this.props.endTime),
       description: this.props.description,
       location: this.props.location,
+      length: this.props.length,
+      dateOnly: dateOnly,
       
       borderColor: this.props.borderColor,
       circleColor: this.props.circleColor,
@@ -31,12 +37,13 @@ export default class Event extends React.Component {
       hover: false,
     }
 
-    if (this.state.startTime.isSame(this.state.endTime, 'day')) {
-      this.state.timeDisplay = this.state.startTime.format("dddd, MMMM Do") + "\n" 
-      + this.state.startTime.format("h:mma") + " - " + this.state.endTime.format("h:mma")
+    //calculate time display in tooltip
+    if (dateOnly) {
+      this.state.timeDisplay = this.state.startTime.format("MMM Do, YYYY") + " - "
+        + this.state.endTime.format("MMM Do, YYYY");
     } else {
       this.state.timeDisplay = this.state.startTime.format("MMM Do, YYYY, h:mma") + " -\n"
-      + this.state.endTime.format("MMM Do, YYYY, h:mma");
+        + this.state.endTime.format("MMM Do, YYYY, h:mma");
     }
 
     this.toggleTooltip = this.toggleTooltip.bind(this);
@@ -85,15 +92,15 @@ export default class Event extends React.Component {
         onMouseEnter={this.toggleHover}
         onMouseLeave={this.toggleHover} 
         css={{
-          width: '100%',
-          color: this.state.textColor, 
-          background: this.state.hover && this.state.hoverColor,
+          width: 'calc(' + this.state.length + '00% + ' + this.state.length + 'px)', // 100% + 1px for each box
+          color: 'white', //TODO: Make user editable
+          background: (this.state.hover ? "#244480" : this.state.circleColor),
         }}
       >
         <div 
           className="event-text" 
           css={{
-            padding: '5px 0px 5px 20px',
+            padding: '5px 0px 5px 5px',
             marginRight: '5px',
             overflowX: 'hidden',
             whiteSpace: 'nowrap',
@@ -105,11 +112,9 @@ export default class Event extends React.Component {
           }}
           onClick={this.toggleTooltip}
         >
-          <span css={{position: "absolute", top: "7px", left: "2px", color: this.state.circleColor }}>
-            <FiberManualRecordIcon fontSize="inherit" />
-          </span>
-
-          { this.state.startTime.format("h:mma ") }
+          {
+            this.state.dateOnly ? "" : this.state.startTime.format("h:mma ")
+          }
           <span css={{fontWeight: "500"}}>
             {this.state.name}
           </span>
@@ -131,14 +136,19 @@ export default class Event extends React.Component {
   }
 }
 
-Event.propTypes = {
+MultiEvent.propTypes = {
   name: PropTypes.string.isRequired,
   startTime: PropTypes.instanceOf(moment).isRequired,
   endTime: PropTypes.instanceOf(moment).isRequired,
+  length: PropTypes.number,
   description: PropTypes.string,
   location: PropTypes.string,
   borderColor: PropTypes.string,
   circleColor: PropTypes.string,
   textColor: PropTypes.string,
   hoverColor: PropTypes.string,
+}
+
+MultiEvent.defaultProps = {
+  length: 1,
 }

@@ -1,4 +1,3 @@
-/** @jsx jsx */
 import React from "react";
 import ReactDOM from "react-dom"
 import PropTypes from "prop-types";
@@ -9,8 +8,10 @@ import { RRule, RRuleSet } from "rrule";
 import "./index.css";
 
 import Event from "./event";
+import MultiEvent from './multiEvent';
 
-import { css, jsx } from '@emotion/core'
+import { css } from '@emotion/core';
+
 
 export default class Calendar extends React.Component {
   constructor(props) {
@@ -33,7 +34,8 @@ export default class Calendar extends React.Component {
       days: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
       today: moment(),
       current: moment().startOf("month"), //current position on calendar (first day of month)
-      events: [],
+      events: [],//all day or multi day events
+      singleEvents: [], //single day events
       calendarTimezone: "",
       useCalendarTimezone: this.props.useCalendarTimezone,
       calendarId: this.props.calendarId,
@@ -102,6 +104,7 @@ export default class Calendar extends React.Component {
       .then(
         (response) => {
           // Handle the results here (response.result has the parsed body).
+          let singleEvents = [];
           let events = [];
           let changed = [];
           let cancelled = [];
@@ -135,7 +138,7 @@ export default class Calendar extends React.Component {
               if ((!calendarTimezone) && event.start.timeZone && this.state.useCalendarTimezone) {
                 calendarTimezone = event.start.timeZone;
               }
-              events.push({
+              let newEvent = {
                 id: event.id,
                 name: event.summary,
                 startTime: this.state.useCalendarTimezone ? moment.parseZone(event.start.dateTime || event.start.date) : moment(event.start.dateTime || event.start.date), //read date if datetime doesn"t exist
@@ -145,13 +148,35 @@ export default class Calendar extends React.Component {
                 recurrence: event.recurrence,
                 changedEvents: [],
                 cancelledEvents: [],
-              });
+              };
+
+              //use same way of distinguishing as google calendar
+              //duration is at least 24 hours or ends after 12pm on the next day
+              if (moment.duration(newEvent.endTime.diff(newEvent.startTime)).asHours() >= 24 || (!newEvent.startTime.isSame(newEvent.endTime, 'day') && newEvent.endTime.hour() >= 12)) {
+                events.push(newEvent);
+              } else {
+                singleEvents.push(newEvent);
+              }
             } else {
-              console.log("Not categorized: ", event);
+              console.log("Not categorized: ", newEvent);
             }
           });
 
           events.forEach((event, idx, arr) => {
+            if (event.recurrence) {
+              //push changed events
+              changed.filter(change => change.recurringEventId == event.id).forEach((change) => {
+                arr[idx].changedEvents.push(change);
+              });
+
+              //push cancelled events
+              cancelled.filter(cancel => cancel.recurringEventId == event.id).forEach((cancel) => {
+                arr[idx].cancelledEvents.push(cancel.originalStartTime);
+              });
+            }
+          });
+
+          singleEvents.forEach((event, idx, arr) => {
             if (event.recurrence) {
               //push changed events
               changed.filter(change => change.recurringEventId == event.id).forEach((change) => {
@@ -169,7 +194,7 @@ export default class Calendar extends React.Component {
           } else {
             this.setState({calendarTimezone: moment.tz.guess()});
           }
-          this.setState({ events: events});
+          this.setState({ events: events, singleEvents: singleEvents });
         },
         (err) => {
           console.error("Execute error", err);
@@ -280,14 +305,82 @@ export default class Calendar extends React.Component {
       textColor: this.state.eventTextColor,
       circleColor: this.state.eventCircleColor,
     }
-
     this.state.events.forEach((event) => {
       if (event.recurrence) {
         let duration = moment.duration(event.endTime.diff(event.startTime));
-        let rule = RRule.fromString("DTSTART:" + moment(event.startTime).format("YYYYMMDDTHHmmss") + "Z\n" + event.recurrence[0]);
+        
+        //get recurrences using RRule
+        let options = RRule.parseString(event.recurrence[0]);
+        options.dtstart = new Date(Date.UTC(event.startTime.year(), event.startTime.month(), event.startTime.day(), event.startTime.hour(), event.startTime.minute()));
+        console.log("START", options.dtstart.toUTCString());
+        let rule = new RRule(options);
         let rruleSet = new RRuleSet();
         rruleSet.rrule(rule);
-        let dates = rruleSet.between(this.state.current.toDate(), moment(this.state.current).add(1, "month").toDate()); //get occurences this month
+        
+        let beginTime = moment(this.state.current).subtract(duration);
+        let begin = new Date(Date.UTC(beginTime.year(), beginTime.month(), beginTime.date(), beginTime.hour(), beginTime.minute()));
+        let endTime = moment(this.state.current).add(1, "month")
+        let end = new Date(Date.UTC(endTime.year(), endTime.month(), endTime.date(), endTime.hour(), endTime.minute()));
+        let dates = rruleSet.between(begin, end); //shitty workaround bc js timezone sucks
+        console.log("BEGIN", begin, beginTime);
+        console.log("END", end, endTime);
+        console.log(dates);
+        console.log(this.state.current);
+        //render recurrences
+        dates.forEach((date) => {
+          //check if it is in cancelled
+          if (event.cancelledEvents.some((cancelledMoment) => (cancelledMoment.isSame(date, "day")))) {
+            return;
+          }
+          //if event has changed
+          const changedEvent = event.changedEvents.find((changedEvent) => (changedEvent.originalStartTime.isSame(date, "day")));
+          if (changedEvent) {
+            var props = {
+              name: changedEvent.name,
+              startTime: changedEvent.newStartTime,
+              endTime: changedEvent.newEndTime,
+              description: changedEvent.description,
+              location: changedEvent.location,
+            }
+          } else {
+            let eventStart = moment.utc(date); //avoid bad timezone conversions
+            let eventEnd = moment(eventStart).add(duration);
+            var props = {
+              name: event.name,
+              startTime: eventStart,
+              endTime: eventEnd,
+              description: event.description,
+              location: event.location,
+            };
+          }
+          
+          let tempNode = document.createElement("div");
+          document.getElementById("day-" + moment(props.startTime).date()).appendChild(tempNode);
+          ReactDOM.render(<MultiEvent {...props} {...eventProps}></MultiEvent>, tempNode);
+        });
+      } else {
+        //render event
+        if (event.startTime.month() != this.state.current.month() || event.startTime.year() != this.state.current.year()) {
+          return;
+        }
+        let node = document.createElement("div");
+        document.getElementById("day-" + moment(event.startTime).date()).appendChild(node);
+        ReactDOM.render(<MultiEvent {...event} {...eventProps}></MultiEvent>, node);
+      }
+    });
+
+    this.state.singleEvents.forEach((event) => {
+      if (event.recurrence) {
+        let duration = moment.duration(event.endTime.diff(event.startTime));
+        
+        //get recurrences using RRule
+        let options = RRule.parseString(event.recurrence[0]);
+        options.dtstart = new Date(Date.UTC(event.startTime.year(), event.startTime.month(), event.startTime.day(), event.startTime.hour(), event.startTime.minute()));
+        let rule = new RRule(options);
+        let rruleSet = new RRuleSet();
+        rruleSet.rrule(rule);
+        console.log(moment(this.state.current).subtract(duration).toDate(), moment(this.state.current).add(1, "month").toDate());
+        let dates = rruleSet.between(moment(this.state.current).subtract(duration).toDate(), moment(this.state.current).add(1, "month").toDate()); //get occurences this month
         
         //render recurrences
         dates.forEach((date) => {
