@@ -108,14 +108,11 @@ export default class Calendar extends React.Component {
           let events = [];
           let changed = [];
           let cancelled = [];
-          let calendarTimezone = "";
+          let calendarTimezone = response.result.timeZone || "";
 
           response.result.items.forEach((event) => {
             
             if (event.originalStartTime) { //cancelled/changed events
-              if ((!calendarTimezone) && event.originalStartTime.timeZone && this.state.useCalendarTimezone) {
-                calendarTimezone = event.originalStartTime.timeZone;
-              }
               if (event.status == "cancelled") {
                 cancelled.push({
                   recurringEventId: event.recurringEventId,
@@ -135,9 +132,6 @@ export default class Calendar extends React.Component {
                 console.log("Not categorized: ", event);
               }
             } else if (event.status == "confirmed") {
-              if ((!calendarTimezone) && event.start.timeZone && this.state.useCalendarTimezone) {
-                calendarTimezone = event.start.timeZone;
-              }
               let newEvent = {
                 id: event.id,
                 name: event.summary,
@@ -305,24 +299,23 @@ export default class Calendar extends React.Component {
     let endDate;
 
     if (props.endTime.isSame(moment(props.endTime).startOf("day"))) {
-      endDate = moment(props.endTime).subtract(1, "day");
+      endDate = moment(props.endTime).utc(true).subtract(1, "day");
     } else {
-      endDate = moment(props.endTime);
+      endDate = moment(props.endTime).utc(true);
     }
 
     if (props.startTime.isBefore(this.state.current)) {
       startDrawDate = 1;
-      curDate = moment(this.state.current);
+      curDate = moment(this.state.current).utc(true);
     } else {
       startDrawDate = props.startTime.date();
-      curDate = moment(props.startTime);
+      curDate = moment(props.startTime).utc(true);
     }
 
 
     while (curDate.isSameOrBefore(endDate, "day")) {
-      console.log(props.name, curDate, startDrawDate, blockLength, props.endTime);
       if (curDate.date() == this.state.current.daysInMonth() || curDate.isSame(endDate, "day")) {
-        //draw the quit
+        //draw then quit
         this.renderMultiEventBlock(startDrawDate, blockLength, props);
         break;
       }
@@ -347,14 +340,59 @@ export default class Calendar extends React.Component {
     }
     //helper function to draw in block
 
-    let tempNode = document.createElement("div");
-    document.getElementById("day-" + startDate).appendChild(tempNode);
-    ReactDOM.render(<MultiEvent {...props} {...eventProps} length={length}></MultiEvent>, tempNode);
+    let maxBlocks = 0;
+    let closedSlots = []; //keep track of rows that cannot be the one
+    for (let i = 0; i < length; i++) {
+      let dayEvents = document.getElementById("day-" + (startDate + i)).children;
+      if (dayEvents.length > maxBlocks) {
+        maxBlocks = dayEvents.length;
+      }
 
-    for (let i = 1; i <= length - 1; i++) {
+      //address rows that are not the last element in openSlots
+      for (let j = 0; j < maxBlocks; j++) {
+        if (j > dayEvents.length) {
+          break;
+        } else if (closedSlots.includes(j)) {
+          continue;
+        } 
+        if (dayEvents[j].classList.contains("isEvent")) {
+          closedSlots.push(j);
+        }
+      }
+    }
+
+    let chosenRow;
+    for (let i = 0; i <= maxBlocks; i++) {
+      if (!closedSlots.includes(i)) {
+        chosenRow = i;
+        break;
+      }
+    }
+    console.log(props.name, startDate, length, chosenRow);
+    if (chosenRow < maxBlocks) {
+      let node = document.getElementById("day-" + startDate).children[chosenRow];
+      node.className = "isEvent";
+      ReactDOM.render(<MultiEvent {...props} {...eventProps} length={length}></MultiEvent>, node);
+    }
+    else {
+      let tempNode = document.createElement("div");
+      tempNode.className = "isEvent";
+      document.getElementById("day-" + startDate).appendChild(tempNode);
+      ReactDOM.render(<MultiEvent {...props} {...eventProps} length={length}></MultiEvent>, tempNode);
+    }
+    
+
+    for (let i = 1; i < length; i++) {
+      //fill in placeholders
+      while (document.getElementById("day-" + (startDate + i)).children.length < chosenRow) {
+        let tempNode = document.createElement("div");
+        tempNode.className = "event";
+        document.getElementById("day-" + (startDate + i)).appendChild(tempNode);
+      }
+
       //fill in empty squares for the rest of the event 
       let tempNode = document.createElement("div");
-      tempNode.className = "event below";
+      tempNode.className = "isEvent event below";
       document.getElementById("day-" + (startDate + i)).appendChild(tempNode);
     }
   }
@@ -374,16 +412,14 @@ export default class Calendar extends React.Component {
         //get recurrences using RRule
         let options = RRule.parseString(event.recurrence[0]);
         options.dtstart = new Date(Date.UTC(event.startTime.year(), event.startTime.month(), event.startTime.day(), event.startTime.hour(), event.startTime.minute()));
-        console.log("START", options.dtstart.toUTCString());
         let rule = new RRule(options);
         let rruleSet = new RRuleSet();
         rruleSet.rrule(rule);
         
         let beginTime = moment(this.state.current).subtract(duration);
-        let begin = new Date(Date.UTC(beginTime.year(), beginTime.month(), beginTime.date(), beginTime.hour(), beginTime.minute()));
-        let endTime = moment(this.state.current).add(1, "month")
-        let end = new Date(Date.UTC(endTime.year(), endTime.month(), endTime.date(), endTime.hour(), endTime.minute()));
-        let dates = rruleSet.between(begin, end); //shitty workaround bc js timezone sucks
+        let begin = moment(this.state.current).subtract(duration).utc(true).toDate();
+        let end = moment(this.state.current).add(1, "month").utc(true).toDate();
+        let dates = rruleSet.between(begin, end); 
 
         //render recurrences
         dates.forEach((date) => {
@@ -438,7 +474,6 @@ export default class Calendar extends React.Component {
         let rule = new RRule(options);
         let rruleSet = new RRuleSet();
         rruleSet.rrule(rule);
-        console.log(moment(this.state.current).subtract(duration).toDate(), moment(this.state.current).add(1, "month").toDate());
         let dates = rruleSet.between(moment(this.state.current).subtract(duration).toDate(), moment(this.state.current).add(1, "month").toDate()); //get occurences this month
         
         //render recurrences
