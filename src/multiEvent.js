@@ -39,8 +39,13 @@ export default class MultiEvent extends React.Component {
 
     //calculate time display in tooltip
     if (dateOnly) {
-      this.state.timeDisplay = this.state.startTime.format("MMM Do, YYYY") + " - "
+      if (this.state.endTime.isSame(this.state.startTime, "day")) {
+        this.state.timeDisplay = this.state.startTime.format("MMM Do, YYYY");
+      } else {
+        this.state.timeDisplay = this.state.startTime.format("MMM Do, YYYY") + " - "
         + this.state.endTime.format("MMM Do, YYYY");
+      }
+      
     } else {
       this.state.timeDisplay = this.state.startTime.format("MMM Do, YYYY, h:mma") + " -\n"
         + this.state.endTime.format("MMM Do, YYYY, h:mma");
@@ -92,7 +97,7 @@ export default class MultiEvent extends React.Component {
         onMouseEnter={this.toggleHover}
         onMouseLeave={this.toggleHover} 
         css={{
-          width: 'calc(' + this.state.length + '00% + ' + this.state.length + 'px)', // 100% + 1px for each box
+          width: 'calc(' + this.state.length + '00% + ' + (this.state.length - 1)+ 'px)', // 100% + 1px for each box (-1px)
           color: 'white', //TODO: Make user editable
           background: (this.state.hover ? "#244480" : this.state.circleColor),
         }}

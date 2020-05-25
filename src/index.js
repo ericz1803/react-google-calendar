@@ -298,6 +298,67 @@ export default class Calendar extends React.Component {
     ];
   }
 
+  drawMultiEvent(props) {
+    let startDrawDate;
+    let blockLength = 1;
+    let curDate;
+    let endDate;
+
+    if (props.endTime.isSame(moment(props.endTime).startOf("day"))) {
+      endDate = moment(props.endTime).subtract(1, "day");
+    } else {
+      endDate = moment(props.endTime);
+    }
+
+    if (props.startTime.isBefore(this.state.current)) {
+      startDrawDate = 1;
+      curDate = moment(this.state.current);
+    } else {
+      startDrawDate = props.startTime.date();
+      curDate = moment(props.startTime);
+    }
+
+
+    while (curDate.isSameOrBefore(endDate, "day")) {
+      console.log(props.name, curDate, startDrawDate, blockLength, props.endTime);
+      if (curDate.date() == this.state.current.daysInMonth() || curDate.isSame(endDate, "day")) {
+        //draw the quit
+        this.renderMultiEventBlock(startDrawDate, blockLength, props);
+        break;
+      }
+      if (curDate.day() == 6) {
+        //draw then reset
+        this.renderMultiEventBlock(startDrawDate, blockLength, props);
+        startDrawDate = moment(curDate).add(1, "day").date();
+        blockLength = 0;
+      }
+
+      blockLength++;
+      curDate.add(1, "day");
+    }
+  }
+
+  renderMultiEventBlock(startDate, length, props) { //TODO: Handle overlapping events //also slight problem with some multiweek events
+    let eventProps = {
+      borderColor: this.state.eventBorderColor,
+      hoverColor: this.state.eventHoverColor,
+      textColor: this.state.eventTextColor,
+      circleColor: this.state.eventCircleColor,
+    }
+    //helper function to draw in block
+
+    let tempNode = document.createElement("div");
+    document.getElementById("day-" + startDate).appendChild(tempNode);
+    ReactDOM.render(<MultiEvent {...props} {...eventProps} length={length}></MultiEvent>, tempNode);
+
+    for (let i = 1; i <= length - 1; i++) {
+      //fill in empty squares for the rest of the event 
+      let tempNode = document.createElement("div");
+      tempNode.className = "event below";
+      document.getElementById("day-" + (startDate + i)).appendChild(tempNode);
+    }
+  }
+
   renderEvents() {
     let eventProps = {
       borderColor: this.state.eventBorderColor,
@@ -305,6 +366,7 @@ export default class Calendar extends React.Component {
       textColor: this.state.eventTextColor,
       circleColor: this.state.eventCircleColor,
     }
+
     this.state.events.forEach((event) => {
       if (event.recurrence) {
         let duration = moment.duration(event.endTime.diff(event.startTime));
@@ -322,10 +384,7 @@ export default class Calendar extends React.Component {
         let endTime = moment(this.state.current).add(1, "month")
         let end = new Date(Date.UTC(endTime.year(), endTime.month(), endTime.date(), endTime.hour(), endTime.minute()));
         let dates = rruleSet.between(begin, end); //shitty workaround bc js timezone sucks
-        console.log("BEGIN", begin, beginTime);
-        console.log("END", end, endTime);
-        console.log(dates);
-        console.log(this.state.current);
+
         //render recurrences
         dates.forEach((date) => {
           //check if it is in cancelled
@@ -354,18 +413,18 @@ export default class Calendar extends React.Component {
             };
           }
           
-          let tempNode = document.createElement("div");
-          document.getElementById("day-" + moment(props.startTime).date()).appendChild(tempNode);
-          ReactDOM.render(<MultiEvent {...props} {...eventProps}></MultiEvent>, tempNode);
+          this.drawMultiEvent(props);   
         });
       } else {
         //render event
-        if (event.startTime.month() != this.state.current.month() || event.startTime.year() != this.state.current.year()) {
+        //check if event is in range
+        if ((event.startTime.month() != this.state.current.month() || event.startTime.year() != this.state.current.year()) &&
+        event.endTime.month() != this.state.current.month() || event.endTime.year() != this.state.current.year()
+        ) {
           return;
         }
-        let node = document.createElement("div");
-        document.getElementById("day-" + moment(event.startTime).date()).appendChild(node);
-        ReactDOM.render(<MultiEvent {...event} {...eventProps}></MultiEvent>, node);
+
+        this.drawMultiEvent(event);
       }
     });
 

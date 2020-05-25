@@ -155,6 +155,10 @@
   height: 29px;
 }
 
+.below {
+  z-index: -1;
+}
+
 .tooltip {
   visibility: hidden;
   width: 225px;
