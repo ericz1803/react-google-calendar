@@ -58,19 +58,35 @@ export default class Calendar extends React.Component {
     this.nextMonth = this.nextMonth.bind(this);
   }
 
-  //init and load google calendar api
-  componentDidMount() {
-    const script = document.createElement("script");
-    script.src = "https://apis.google.com/js/api.js";
-    document.body.appendChild(script);
-    script.onload = () => {
-      gapi.load("client", () => {
-        gapi.client.init({ apiKey: this.props.apiKey })
-          .then(() => {
-            this.loadCalendarAPI();
-          });
-      });
-    };
+  async componentDidMount() {
+    //init and load google calendar api
+    try {
+      const res = await this.loadCalendarAPI();
+      console.log(res);
+    } catch(err) {
+      console.error("Error loading GAPI client for API", err);
+    }
+
+    //Get events
+    try {
+      //query api for events
+      const res = await this.getEvents(this.state.calendarId);
+      console.log(res);
+
+      //process events
+      let events = this.processEvents(res, this.state.useCalendarTimezone);
+
+      //get timezone
+      let timezone = this.getTimezone(res, this.state.useCalendarTimezone);
+
+      //set state with calculated values
+      this.setState({"calendarTimezone": timezone, "events": events[0], "singleEvents": events[1]});
+
+    } catch(err) {
+      console.error("Error getting events", err);
+    }
+
+
   }
 
   //add in events after rendering calendar
@@ -80,126 +96,134 @@ export default class Calendar extends React.Component {
   }
 
   loadCalendarAPI() {
-    gapi.client
-      .load(
-        "https://content.googleapis.com/discovery/v1/apis/calendar/v3/rest"
-      )
-      .then(
-        () => {
-          console.log("GAPI client loaded for API");
-          this.getEventsList();
-        },
-        (err) => {
-          console.error("Error loading GAPI client for API", err);
-        }
-      );
+    return new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://apis.google.com/js/api.js";
+      document.body.appendChild(script);
+      script.onload = () => {
+        gapi.load("client", () => {
+          gapi.client.init({ apiKey: this.props.apiKey })
+            .then(() => {
+              gapi.client
+                .load(
+                  "https://content.googleapis.com/discovery/v1/apis/calendar/v3/rest"
+                )
+                .then(
+                  () => resolve("GAPI client successfully loaded for API"),
+                  (err) => reject(err)
+                );
+            });
+        });
+      }
+    })
+  }
+
+  getEvents(calendarId, maxResults = 1000) {
+    return gapi.client.calendar.events.list({
+      calendarId: calendarId,
+      maxResults: maxResults,
+    });
+  }
+
+  //get timezone from response object based on useCalendarTimezone
+  getTimezone(res, useCalendarTimezone) {
+    if (useCalendarTimezone) {
+      return res.result.timeZone;
+    } else {
+      return moment.tz.guess();
+    }
   }
 
   //stores events from google calendar into state
-  getEventsList() {
-    gapi.client.calendar.events.list({
-      calendarId: this.props.calendarId,
-      maxResults: 1000,
-    })
-      .then(
-        (response) => {
-          // Handle the results here (response.result has the parsed body).
-          let singleEvents = [];
-          let events = [];
-          let changed = [];
-          let cancelled = [];
-          let calendarTimezone = response.result.timeZone || "";
+  processEvents(res, useCalendarTimezone) {
+    let singleEvents = [];
+    let events = [];
+    let changed = [];
+    let cancelled = [];
 
-          response.result.items.forEach((event) => {
-            
-            if (event.originalStartTime) { //cancelled/changed events
-              if (event.status == "cancelled") {
-                cancelled.push({
-                  recurringEventId: event.recurringEventId,
-                  originalStartTime: this.state.useCalendarTimezone ? moment.parseZone(event.originalStartTime.dateTime || event.originalStartTime.date) : moment(event.originalStartTime.dateTime || event.originalStartTime.date), 
-                });
-              } else if (event.status == "confirmed") {
-                changed.push({
-                  recurringEventId: event.recurringEventId,
-                  name: event.summary,
-                  description: event.description,
-                  location: event.location,
-                  originalStartTime: this.state.useCalendarTimezone ? moment.parseZone(event.originalStartTime.dateTime || event.originalStartTime.date) : moment(event.originalStartTime.dateTime || event.originalStartTime.date),
-                  newStartTime: this.state.useCalendarTimezone ? moment.parseZone(event.start.dateTime || event.start.date) : moment(event.start.dateTime || event.start.date),
-                  newEndTime: this.state.useCalendarTimezone ? moment.parseZone(event.end.dateTime || event.end.date) : moment(event.end.dateTime || event.end.date),
-                });
-              } else {
-                console.log("Not categorized: ", event);
-              }
-            } else if (event.status == "confirmed") {
-              let newEvent = {
-                id: event.id,
-                name: event.summary,
-                startTime: this.state.useCalendarTimezone ? moment.parseZone(event.start.dateTime || event.start.date) : moment(event.start.dateTime || event.start.date), //read date if datetime doesn"t exist
-                endTime: this.state.useCalendarTimezone ? moment.parseZone(event.end.dateTime || event.end.date) : moment(event.end.dateTime || event.end.date),
-                description: event.description,
-                location: event.location,
-                recurrence: event.recurrence,
-                changedEvents: [],
-                cancelledEvents: [],
-              };
-
-              //use same way of distinguishing as google calendar
-              //duration is at least 24 hours or ends after 12pm on the next day
-              if (moment.duration(newEvent.endTime.diff(newEvent.startTime)).asHours() >= 24 || (!newEvent.startTime.isSame(newEvent.endTime, 'day') && newEvent.endTime.hour() >= 12)) {
-                events.push(newEvent);
-              } else {
-                singleEvents.push(newEvent);
-              }
-            } else {
-              console.log("Not categorized: ", newEvent);
-            }
+    res.result.items.forEach((event) => {
+      
+      if (event.originalStartTime) { //cancelled/changed events
+        if (event.status == "cancelled") {
+          cancelled.push({
+            recurringEventId: event.recurringEventId,
+            originalStartTime: useCalendarTimezone ? moment.parseZone(event.originalStartTime.dateTime || event.originalStartTime.date) : moment(event.originalStartTime.dateTime || event.originalStartTime.date), 
           });
-
-          events.forEach((event, idx, arr) => {
-            if (event.recurrence) {
-              //push changed events
-              changed.filter(change => change.recurringEventId == event.id).forEach((change) => {
-                arr[idx].changedEvents.push(change);
-              });
-
-              //push cancelled events
-              cancelled.filter(cancel => cancel.recurringEventId == event.id).forEach((cancel) => {
-                arr[idx].cancelledEvents.push(cancel.originalStartTime);
-              });
-            }
+        } else if (event.status == "confirmed") {
+          changed.push({
+            recurringEventId: event.recurringEventId,
+            name: event.summary,
+            description: event.description,
+            location: event.location,
+            originalStartTime: useCalendarTimezone ? moment.parseZone(event.originalStartTime.dateTime || event.originalStartTime.date) : moment(event.originalStartTime.dateTime || event.originalStartTime.date),
+            newStartTime: useCalendarTimezone ? moment.parseZone(event.start.dateTime || event.start.date) : moment(event.start.dateTime || event.start.date),
+            newEndTime: useCalendarTimezone ? moment.parseZone(event.end.dateTime || event.end.date) : moment(event.end.dateTime || event.end.date),
           });
-
-          singleEvents.forEach((event, idx, arr) => {
-            if (event.recurrence) {
-              //push changed events
-              changed.filter(change => change.recurringEventId == event.id).forEach((change) => {
-                arr[idx].changedEvents.push(change);
-              });
-
-              //push cancelled events
-              cancelled.filter(cancel => cancel.recurringEventId == event.id).forEach((cancel) => {
-                arr[idx].cancelledEvents.push(cancel.originalStartTime);
-              });
-            }
-          });
-          if (this.state.useCalendarTimezone) {
-            this.setState({calendarTimezone: calendarTimezone});
-          } else {
-            this.setState({calendarTimezone: moment.tz.guess()});
-          }
-          this.setState({ events: events, singleEvents: singleEvents });
-        },
-        (err) => {
-          console.error("Execute error", err);
+        } else {
+          console.log("Not categorized: ", event);
         }
-      );
+      } else if (event.status == "confirmed") {
+        let newEvent = {
+          id: event.id,
+          name: event.summary,
+          startTime: useCalendarTimezone ? moment.parseZone(event.start.dateTime || event.start.date) : moment(event.start.dateTime || event.start.date), //read date if datetime doesn"t exist
+          endTime: useCalendarTimezone ? moment.parseZone(event.end.dateTime || event.end.date) : moment(event.end.dateTime || event.end.date),
+          description: event.description,
+          location: event.location,
+          recurrence: event.recurrence,
+          changedEvents: [],
+          cancelledEvents: [],
+        };
+
+        //use same way of distinguishing as google calendar
+        //duration is at least 24 hours or ends after 12pm on the next day
+        if (moment.duration(newEvent.endTime.diff(newEvent.startTime)).asHours() >= 24 || (!newEvent.startTime.isSame(newEvent.endTime, 'day') && newEvent.endTime.hour() >= 12)) {
+          events.push(newEvent);
+        } else {
+          singleEvents.push(newEvent);
+        }
+      } else {
+        console.log("Not categorized: ", newEvent);
+      }
+    });
+
+    events.forEach((event, idx, arr) => {
+      if (event.recurrence) {
+        //push changed events
+        changed.filter(change => change.recurringEventId == event.id).forEach((change) => {
+          arr[idx].changedEvents.push(change);
+        });
+
+        //push cancelled events
+        cancelled.filter(cancel => cancel.recurringEventId == event.id).forEach((cancel) => {
+          arr[idx].cancelledEvents.push(cancel.originalStartTime);
+        });
+      }
+    });
+
+    singleEvents.forEach((event, idx, arr) => {
+      if (event.recurrence) {
+        //push changed events
+        changed.filter(change => change.recurringEventId == event.id).forEach((change) => {
+          arr[idx].changedEvents.push(change);
+        });
+
+        //push cancelled events
+        cancelled.filter(cancel => cancel.recurringEventId == event.id).forEach((cancel) => {
+          arr[idx].cancelledEvents.push(cancel.originalStartTime);
+        });
+      }
+    });
+
+    return [events, singleEvents];
   }
 
+  //sets current month to previous month
   lastMonth() {
     this.setState({ current: this.state.current.subtract(1, "months") });
   }
 
+  //sets current month to following
   nextMonth() {
     this.setState({ current: this.state.current.add(1, "months") });
   }
@@ -597,7 +621,7 @@ Calendar.propTypes = {
 }
 
 Calendar.defaultProps = {
-  useCalendarTimezone: false,
+  useCalendarTimezone: true,
 
   //calendar colors
   textColor: "#51565d",
