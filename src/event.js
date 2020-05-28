@@ -22,7 +22,11 @@ export default class Event extends React.Component {
       description: this.props.description,
       location: this.props.location,
       
-      borderColor: this.props.borderColor,
+      //tooltip
+      tooltipBorderColor: this.props.tooltipBorderColor,
+      tooltipTextColor: this.props.tooltipTextColor,
+      
+      //event
       circleColor: this.props.circleColor,
       textColor: this.props.textColor,
       hoverColor: this.props.hoverColor,
@@ -120,7 +124,7 @@ export default class Event extends React.Component {
         <div className="tooltip" css={{
           visibility: this.state.showTooltip ? "visible" : "hidden",
           color: this.state.textColor,
-          border: "2px solid " + this.state.borderColor,
+          border: "2px solid " + this.state.tooltipBorderColor,
         }}>
           <h2>{this.state.name}</h2>
           <p className="display-linebreak">
@@ -140,7 +144,8 @@ Event.propTypes = {
   endTime: PropTypes.instanceOf(moment).isRequired,
   description: PropTypes.string,
   location: PropTypes.string,
-  borderColor: PropTypes.string,
+  tooltipBorderColor: PropTypes.string,
+  tooltipTextColor: PropTypes.string,
   circleColor: PropTypes.string,
   textColor: PropTypes.string,
   hoverColor: PropTypes.string,

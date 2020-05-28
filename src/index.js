@@ -48,11 +48,19 @@ export default class Calendar extends React.Component {
       todayTextColor: this.props.todayTextColor,
       todayBackgroundColor: this.props.todayBackgroundColor,
 
-      //event colors
-      eventBorderColor: this.props.eventBorderColor,
-      eventHoverColor: this.props.eventHoverColor,
+      //tooltip colors
+      tooltipBorderColor: this.props.tooltipBorderColor,
+      tooltipTextColor: this.props.tooltipTextColor,
+
+      //single event colors
+      singleEventHoverColor: this.props.singleEventHoverColor,
+      singleEventTextColor: this.props.singleEventTextColor,
+      singleEventCircleColor: this.props.singleEventCircleColor,
+
+      //long event colors
       eventTextColor: this.props.eventTextColor,
-      eventCircleColor: this.props.eventCircleColor,
+      eventBackgroundColor: this.props.eventBackgroundColor,
+      eventHoverColor: this.props.eventHoverColor,
     };
 
     this.lastMonth = this.lastMonth.bind(this);
@@ -319,7 +327,7 @@ export default class Calendar extends React.Component {
     ];
   }
 
-  drawMultiEvent(props) {
+  drawMultiEvent(props) { 
     let startDrawDate;
     let blockLength = 1;
     let curDate;
@@ -359,13 +367,13 @@ export default class Calendar extends React.Component {
   }
 
   renderMultiEventBlock(startDate, length, props) { 
-    let eventProps = {
-      borderColor: this.state.eventBorderColor,
-      hoverColor: this.state.eventHoverColor,
+    let multiEventProps = {
+      tooltipBorderColor: this.state.tooltipBorderColor,
+      tooltipTextColor: this.state.tooltipTextColor,
       textColor: this.state.eventTextColor,
-      circleColor: this.state.eventCircleColor,
+      backgroundColor: this.state.eventBackgroundColor,
+      hoverColor: this.state.eventHoverColor,
     }
-    //helper function to draw in block
 
     let maxBlocks = 0;
     let closedSlots = []; //keep track of rows that cannot be the one
@@ -399,13 +407,13 @@ export default class Calendar extends React.Component {
     if (chosenRow < maxBlocks) {
       let node = document.getElementById("day-" + startDate).children[chosenRow];
       node.className = "isEvent";
-      ReactDOM.render(<MultiEvent {...props} {...eventProps} length={length}></MultiEvent>, node);
+      ReactDOM.render(<MultiEvent {...props} {...multiEventProps} length={length}></MultiEvent>, node);
     }
     else {
       let tempNode = document.createElement("div");
       tempNode.className = "isEvent";
       document.getElementById("day-" + startDate).appendChild(tempNode);
-      ReactDOM.render(<MultiEvent {...props} {...eventProps} length={length}></MultiEvent>, tempNode);
+      ReactDOM.render(<MultiEvent {...props} {...multiEventProps} length={length}></MultiEvent>, tempNode);
     }
     
 
@@ -425,13 +433,6 @@ export default class Calendar extends React.Component {
   }
 
   renderEvents() {
-    let eventProps = {
-      borderColor: this.state.eventBorderColor,
-      hoverColor: this.state.eventHoverColor,
-      textColor: this.state.eventTextColor,
-      circleColor: this.state.eventCircleColor,
-    }
-
     this.state.events.forEach((event) => {
       if (event.recurrence) {
         let duration = moment.duration(event.endTime.diff(event.startTime));
@@ -490,6 +491,15 @@ export default class Calendar extends React.Component {
         this.drawMultiEvent(event);
       }
     });
+
+    let eventProps = {
+      tooltipBorderColor: this.state.tooltipBorderColor,
+      tooltipTextColor: this.state.tooltipTextColor,
+      borderColor: this.state.singleEventBorderColor,
+      hoverColor: this.state.singleEventHoverColor,
+      textColor: this.state.singleEventTextColor,
+      circleColor: this.state.singleEventCircleColor,
+    }
 
     this.state.singleEvents.forEach((event) => {
       if (event.recurrence) {
@@ -616,11 +626,19 @@ Calendar.propTypes = {
   todayTextColor: PropTypes.string,
   todayBackgroundColor: PropTypes.string,
 
-  //event colors
-  eventBorderColor: PropTypes.string,
-  eventHoverColor: PropTypes.string,
+  //tooltip colors
+  tooltipBorderColor: PropTypes.string,
+  tooltipTextColor: PropTypes.string,
+
+  //single event colors
+  singleEventHoverColor: PropTypes.string,
+  singleEventTextColor: PropTypes.string,
+  singleEventCircleColor: PropTypes.string,
+
+  //long event colors
   eventTextColor: PropTypes.string,
-  eventCircleColor: PropTypes.string,
+  eventBackgroundColor: PropTypes.string,
+  eventHoverColor: PropTypes.string,
 }
 
 Calendar.defaultProps = {
@@ -630,9 +648,17 @@ Calendar.defaultProps = {
   textColor: "#51565d",
   borderColor: "LightGray",
   
-  //event colors
-  eventBorderColor: "rgba(81, 86, 93, 0.1)",
-  eventHoverColor: "rgba(81, 86, 93, 0.1)",
-  eventTextColor: "#51565d",
-  eventCircleColor: "#4786ff",
+  //tooltip colors
+  tooltipBorderColor: "rgba(81, 86, 93, 0.1)",
+  tooltipTextColor: "#51565d",
+
+  //single event colors
+  singleEventHoverColor: "rgba(81, 86, 93, 0.1)",
+  singleEventTextColor: "#51565d",
+  singleEventCircleColor: "#4786ff",
+
+  //long event colors
+  eventTextColor: "white",
+  eventBackgroundColor: "#4786ff",
+  eventHoverColor: "#396DCC",
 }

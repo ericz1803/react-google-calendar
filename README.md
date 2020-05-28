@@ -30,7 +30,7 @@ You can find it by going to a calendar's settings and scrolling down to the sect
 |-----------------------|--------|---------------------------------------------------------------------------------------------------------------------------------------------|---------|
 | `apiKey`              | string | google api key (required)                                                                                                                   |         |
 | `calendarId`          | string | google calendar id (required)                                                                                                               |         |
-| `useCalendarTimezone` | bool   | Make all of the times in the same timezone as the calendar<br>(true = times are in calendar timezone, false = times are in user's timezone) | false   |
+| `useCalendarTimezone` | bool   | Make all of the times in the same timezone as the calendar<br>(true = times are in calendar timezone, false = times are in user's timezone) | true    |
 
 ### Customization
 
@@ -45,13 +45,30 @@ You can change the color of different aspects of the calendar by passing css col
 | `todayTextColor`       | string | text color of today        | null (same as `textColor`)       |
 | `todayBackgroundColor` | string | color of today             | null (same as `backgroundColor`) |
 
-#### Event Colors 
-| Parameter          | Type   | Description                                                     | Default                 |
-|--------------------|--------|-----------------------------------------------------------------|-------------------------|
-| `eventBorderColor` | string | border color of tooltip that pops up when you click on an event | "rgba(81, 86, 93, 0.1)" |
-| `eventHoverColor`  | string | color of the event on hover                                     | "rgba(81, 86, 93, 0.1)" |
-| `eventTextColor`   | string | text color of event                                             | "#51565d"               |
-| `eventCircleColor` | string | color of the circle in front of the event text                  | "#4786ff"               |
+#### Tooltip Colors
+| Parameter            | Type   | Description                                                     | Default                 |
+|----------------------|--------|-----------------------------------------------------------------|-------------------------|
+| `tooltipBorderColor` | string | border color of tooltip that pops up when you click on an event | "rgba(81, 86, 93, 0.1)" |
+| `tooltipTextColor`   | string | color of tooltip text                                           | "#51565d"               |
+
+#### Single Event Colors 
+Applies to events that are shorter than 24h.
+
+| Parameter                | Type   | Description                                    | Default                 |
+|--------------------------|--------|------------------------------------------------|-------------------------|
+| `singleEventHoverColor`  | string | color of the event on hover                    | "rgba(81, 86, 93, 0.1)" |
+| `singleEventTextColor`   | string | text color of event                            | "#51565d"               |
+| `singleEventCircleColor` | string | color of the circle in front of the event text | "#4786ff"               |
+
+#### Event Colors
+Applies to events that are All Day Events or span multiple days.
+
+
+| Parameter              | Type   | Description                 | Default   |
+|------------------------|--------|-----------------------------|-----------|
+| `eventTextColor`       | string | text color of event         | "white"   |
+| `eventBackgroundColor` | string | background color of event   | "#4786ff" |
+| `eventHoverColor`      | string | color of the event on hover | "#396DCC" |
 
 ### Example
 
@@ -64,8 +81,7 @@ const CALENDAR_ID = "YOUR_CALENDAR_ID";
 class Example extends React.Component {
   render() {
     let props = {
-      useCalendarTimezone: true,
-      eventCircleColor: 'SpringGreen',
+      singleEventCircleColor: 'SpringGreen',
       borderColor: 'SlateGrey',
     }
 

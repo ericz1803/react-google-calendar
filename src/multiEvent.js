@@ -26,9 +26,13 @@ export default class MultiEvent extends React.Component {
       length: this.props.length,
       dateOnly: dateOnly,
       
-      borderColor: this.props.borderColor,
-      circleColor: this.props.circleColor,
+      //tooltip
+      tooltipBorderColor: this.props.tooltipBorderColor,
+      tooltipTextColor: this.props.tooltipTextColor,
+
+      //event
       textColor: this.props.textColor,
+      backgroundColor: this.props.backgroundColor,
       hoverColor: this.props.hoverColor,
 
       showTooltip: false,
@@ -104,8 +108,8 @@ export default class MultiEvent extends React.Component {
         onMouseLeave={this.toggleHover} 
         css={{
           width: 'calc(' + this.state.length + '00% + ' + (this.state.length - 1)+ 'px)', // 100% + 1px for each box (-1px)
-          color: 'white', //TODO: Make user editable
-          background: (this.state.hover ? "#244480" : this.state.circleColor),
+          color: this.state.textColor,
+          background: (this.state.hover ? this.state.hoverColor : this.state.backgroundColor),
         }}
       >
         <div 
@@ -132,8 +136,8 @@ export default class MultiEvent extends React.Component {
         </div>
         <div className="tooltip" css={{
           visibility: this.state.showTooltip ? "visible" : "hidden",
-          color: this.state.textColor,
-          border: "2px solid " + this.state.borderColor,
+          color: this.state.tooltipTextColor,
+          border: "2px solid " + this.state.tooltipBorderColor,
         }}>
           <h2>{this.state.name}</h2>
           <p className="display-linebreak">
@@ -154,9 +158,10 @@ MultiEvent.propTypes = {
   length: PropTypes.number,
   description: PropTypes.string,
   location: PropTypes.string,
-  borderColor: PropTypes.string,
-  circleColor: PropTypes.string,
+  tooltipBorderColor: PropTypes.string,
+  tooltipTextColor: PropTypes.string,
   textColor: PropTypes.string,
+  backgroundColor: PropTypes.string,
   hoverColor: PropTypes.string,
 }
 
