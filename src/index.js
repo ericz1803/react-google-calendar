@@ -54,6 +54,7 @@ export default class Calendar extends React.Component {
       eventTextColor: this.props.eventTextColor,
       eventCircleColor: this.props.eventCircleColor,
     };
+
     this.lastMonth = this.lastMonth.bind(this);
     this.nextMonth = this.nextMonth.bind(this);
   }
@@ -61,7 +62,7 @@ export default class Calendar extends React.Component {
   async componentDidMount() {
     //init and load google calendar api
     try {
-      const res = await this.loadCalendarAPI();
+      const res = await Calendar.loadCalendarAPI(this.state.apiKey);
       console.log(res);
     } catch(err) {
       console.error("Error loading GAPI client for API", err);
@@ -70,14 +71,14 @@ export default class Calendar extends React.Component {
     //Get events
     try {
       //query api for events
-      const res = await this.getEvents(this.state.calendarId);
+      const res = await Calendar.getEvents(this.state.calendarId);
       console.log(res);
 
       //process events
-      let events = this.processEvents(res, this.state.useCalendarTimezone);
+      const events = Calendar.processEvents(res.result.items, this.state.useCalendarTimezone);
 
       //get timezone
-      let timezone = this.getTimezone(res, this.state.useCalendarTimezone);
+      const timezone = Calendar.getTimezone(res.result.timeZone, this.state.useCalendarTimezone);
 
       //set state with calculated values
       this.setState({"calendarTimezone": timezone, "events": events[0], "singleEvents": events[1]});
@@ -95,14 +96,14 @@ export default class Calendar extends React.Component {
     this.renderEvents();
   }
 
-  loadCalendarAPI() {
+  static loadCalendarAPI(apiKey) {
     return new Promise((resolve, reject) => {
       const script = document.createElement("script");
       script.src = "https://apis.google.com/js/api.js";
       document.body.appendChild(script);
       script.onload = () => {
         gapi.load("client", () => {
-          gapi.client.init({ apiKey: this.props.apiKey })
+          gapi.client.init({ apiKey: apiKey })
             .then(() => {
               gapi.client
                 .load(
@@ -118,7 +119,7 @@ export default class Calendar extends React.Component {
     })
   }
 
-  getEvents(calendarId, maxResults = 1000) {
+  static getEvents(calendarId, maxResults = 1000) {
     return gapi.client.calendar.events.list({
       calendarId: calendarId,
       maxResults: maxResults,
@@ -126,30 +127,29 @@ export default class Calendar extends React.Component {
   }
 
   //get timezone from response object based on useCalendarTimezone
-  getTimezone(res, useCalendarTimezone) {
+  static getTimezone(timezone, useCalendarTimezone) {
     if (useCalendarTimezone) {
-      return res.result.timeZone;
+      return timezone;
     } else {
       return moment.tz.guess();
     }
   }
 
-  //stores events from google calendar into state
-  processEvents(res, useCalendarTimezone) {
+  //get easy to work with events and singleEvents from response
+  static processEvents(items, useCalendarTimezone) {
     let singleEvents = [];
     let events = [];
     let changed = [];
     let cancelled = [];
 
-    res.result.items.forEach((event) => {
-      
-      if (event.originalStartTime) { //cancelled/changed events
+    items.forEach((event) => {
+      if (event.originalStartTime) { //cancelled events
         if (event.status == "cancelled") {
           cancelled.push({
             recurringEventId: event.recurringEventId,
             originalStartTime: useCalendarTimezone ? moment.parseZone(event.originalStartTime.dateTime || event.originalStartTime.date) : moment(event.originalStartTime.dateTime || event.originalStartTime.date), 
           });
-        } else if (event.status == "confirmed") {
+        } else if (event.status == "confirmed") { //changed events
           changed.push({
             recurringEventId: event.recurringEventId,
             name: event.summary,
@@ -162,7 +162,7 @@ export default class Calendar extends React.Component {
         } else {
           console.log("Not categorized: ", event);
         }
-      } else if (event.status == "confirmed") {
+      } else if (event.status == "confirmed") { //normal events
         let newEvent = {
           id: event.id,
           name: event.summary,
@@ -175,7 +175,7 @@ export default class Calendar extends React.Component {
           cancelledEvents: [],
         };
 
-        //use same way of distinguishing as google calendar
+        //use same way of distinguishing between singleEvents and longer events as google calendar
         //duration is at least 24 hours or ends after 12pm on the next day
         if (moment.duration(newEvent.endTime.diff(newEvent.startTime)).asHours() >= 24 || (!newEvent.startTime.isSame(newEvent.endTime, 'day') && newEvent.endTime.hour() >= 12)) {
           events.push(newEvent);
@@ -187,6 +187,7 @@ export default class Calendar extends React.Component {
       }
     });
 
+    //add changed events and cancelled events to corresponding event object
     events.forEach((event, idx, arr) => {
       if (event.recurrence) {
         //push changed events
@@ -215,6 +216,8 @@ export default class Calendar extends React.Component {
       }
     });
 
+    console.log(JSON.stringify(items));
+    console.log(JSON.stringify([events, singleEvents]));
     return [events, singleEvents];
   }
 
@@ -223,32 +226,34 @@ export default class Calendar extends React.Component {
     this.setState({ current: this.state.current.subtract(1, "months") });
   }
 
-  //sets current month to following
+  //sets current month to following month
   nextMonth() {
     this.setState({ current: this.state.current.add(1, "months") });
   }
 
   clearEvents() {
     for (let i = 1; i <= this.state.current.daysInMonth(); i++) {
-      const myNode = document.getElementById("day-" + i);
-      while (myNode.lastElementChild) {
-        myNode.removeChild(myNode.lastElementChild);
+      const node = document.getElementById("day-" + i);
+      while (node.lastElementChild) {
+        node.removeChild(node.lastElementChild);
       }
     }
   }
   
+  //renders the day of week names
   renderDays() {
     return this.state.days.map((x, i) => (
       <div
         className="day-name"
         key={"day-of-week-" + i}
-        css={{ borderColor: this.props.borderColor }}
+        css={{ borderColor: this.state.borderColor }}
       >
         {x}
       </div>
     ));
   }
 
+  //renders the blocks for the days of each month
   renderDates() {
     var days = [...Array(this.state.current.daysInMonth() + 1).keys()].slice(1); // create array from 1 to number of days in month
 
@@ -262,7 +267,7 @@ export default class Calendar extends React.Component {
         <div
           className="day"
           key={"empty-day-" + i}
-          css={{ borderColor: this.props.borderColor }}
+          css={{ borderColor: this.state.borderColor }}
         ></div>
       )),
       days.map(x => {
@@ -272,7 +277,7 @@ export default class Calendar extends React.Component {
               className="day"
               key={"day-" + x}
               css={{ 
-                borderColor: this.props.borderColor,
+                borderColor: this.state.borderColor,
                 color: this.state.todayTextColor,
                 background: this.state.todayBackgroundColor,
               }}
@@ -292,7 +297,7 @@ export default class Calendar extends React.Component {
             <div
               className="day"
               key={"day-" + x}
-              css={{ borderColor: this.props.borderColor }}
+              css={{ borderColor: this.state.borderColor }}
             >
               <span
                 css={{
@@ -310,7 +315,7 @@ export default class Calendar extends React.Component {
         <div
           className="day"
           key={"empty-day-2-" + i}
-          css={{ borderColor: this.props.borderColor }}
+          css={{ borderColor: this.state.borderColor }}
         ></div>
       ))
     ];
@@ -355,7 +360,7 @@ export default class Calendar extends React.Component {
     }
   }
 
-  renderMultiEventBlock(startDate, length, props) { //TODO: Handle overlapping events //also slight problem with some multiweek events
+  renderMultiEventBlock(startDate, length, props) { 
     let eventProps = {
       borderColor: this.state.eventBorderColor,
       hoverColor: this.state.eventHoverColor,
@@ -435,12 +440,12 @@ export default class Calendar extends React.Component {
         
         //get recurrences using RRule
         let options = RRule.parseString(event.recurrence[0]);
-        options.dtstart = new Date(Date.UTC(event.startTime.year(), event.startTime.month(), event.startTime.day(), event.startTime.hour(), event.startTime.minute()));
+        options.dtstart = moment.parseZone(event.startTime).utc(true).toDate();
         let rule = new RRule(options);
         let rruleSet = new RRuleSet();
         rruleSet.rrule(rule);
         
-        let beginTime = moment(this.state.current).subtract(duration);
+        //get dates
         let begin = moment(this.state.current).subtract(duration).utc(true).toDate();
         let end = moment(this.state.current).add(1, "month").utc(true).toDate();
         let dates = rruleSet.between(begin, end); 
@@ -494,7 +499,7 @@ export default class Calendar extends React.Component {
         
         //get recurrences using RRule
         let options = RRule.parseString(event.recurrence[0]);
-        options.dtstart = new Date(Date.UTC(event.startTime.year(), event.startTime.month(), event.startTime.day(), event.startTime.hour(), event.startTime.minute()));
+        options.dtstart = moment.parseZone(event.startTime).utc(true).toDate();
         let rule = new RRule(options);
         let rruleSet = new RRuleSet();
         rruleSet.rrule(rule);
@@ -550,9 +555,9 @@ export default class Calendar extends React.Component {
       <div
         className="calendar"
         css={{
-          borderColor: this.props.borderColor,
-          color: this.props.textColor,
-          background: this.props.backgroundColor,
+          borderColor: this.state.borderColor,
+          color: this.state.textColor,
+          background: this.state.backgroundColor,
         }}
       >
         <div className="calendar-header">

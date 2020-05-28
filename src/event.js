@@ -29,19 +29,22 @@ export default class Event extends React.Component {
 
       showTooltip: false,
       hover: false,
-    }
-
-    if (this.state.startTime.isSame(this.state.endTime, 'day')) {
-      this.state.timeDisplay = this.state.startTime.format("dddd, MMMM Do") + "\n" 
-      + this.state.startTime.format("h:mma") + " - " + this.state.endTime.format("h:mma")
-    } else {
-      this.state.timeDisplay = this.state.startTime.format("MMM Do, YYYY, h:mma") + " -\n"
-      + this.state.endTime.format("MMM Do, YYYY, h:mma");
+      timeDisplay: this.getTimeDisplay(this.props.startTime, moment.parseZone(this.props.endTime)),
     }
 
     this.toggleTooltip = this.toggleTooltip.bind(this);
     this.closeTooltip = this.closeTooltip.bind(this);
     this.toggleHover = this.toggleHover.bind(this);
+  }
+
+  getTimeDisplay(startTime, endTime) {
+    if (startTime.isSame(endTime, 'day')) {
+      return startTime.format("dddd, MMMM Do") + "\n"
+        + startTime.format("h:mma") + " - " + endTime.format("h:mma");
+    } else {
+      return startTime.format("MMM Do, YYYY, h:mma") + " -\n"
+        + endTime.format("MMM Do, YYYY, h:mma");;
+    }
   }
 
   closeTooltip() {

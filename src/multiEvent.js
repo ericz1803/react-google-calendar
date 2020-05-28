@@ -15,9 +15,7 @@ export default class MultiEvent extends React.Component {
   constructor(props) {
     super(props);
 
-    //date only event
-    let dateOnly = this.props.startTime.isSame(moment.parseZone(this.props.startTime).startOf("day"), "second") 
-      && this.props.endTime.isSame(moment.parseZone(this.props.endTime).startOf("day"), "second");
+    let dateOnly = this.isDateOnly(this.props.startTime, this.props.endTime);
 
     this.state = {
       name: this.props.name,
@@ -37,23 +35,31 @@ export default class MultiEvent extends React.Component {
       hover: false,
     }
 
-    //calculate time display in tooltip
-    if (dateOnly) {
-      if (this.state.endTime.isSame(this.state.startTime, "day")) {
-        this.state.timeDisplay = this.state.startTime.format("MMM Do, YYYY");
-      } else {
-        this.state.timeDisplay = this.state.startTime.format("MMM Do, YYYY") + " - "
-        + this.state.endTime.format("MMM Do, YYYY");
-      }
-      
-    } else {
-      this.state.timeDisplay = this.state.startTime.format("MMM Do, YYYY, h:mma") + " -\n"
-        + this.state.endTime.format("MMM Do, YYYY, h:mma");
-    }
+    //get time display
+    this.state.timeDisplay = this.getTimeDisplay(this.state.startTime, this.state.endTime, dateOnly);
 
     this.toggleTooltip = this.toggleTooltip.bind(this);
     this.closeTooltip = this.closeTooltip.bind(this);
     this.toggleHover = this.toggleHover.bind(this);
+  }
+
+  // determines if an event is a date only event (times for both start and end are 12am)
+  isDateOnly(startTime, endTime) {
+    return startTime.isSame(moment.parseZone(startTime).startOf("day"), "second")
+      && endTime.isSame(moment.parseZone(endTime).startOf("day"), "second");
+  }
+
+  getTimeDisplay(startTime, endTime, dateOnly) {
+    if (dateOnly) {
+      if (endTime.isSame(startTime, "day")) {
+        return startTime.format("dddd, MMMM Do");
+      } else {
+        return startTime.format("MMM Do, YYYY") + " - " + endTime.format("MMM Do, YYYY");
+      }
+
+    } else {
+      return startTime.format("MMM Do, YYYY, h:mma") + " -\n" + endTime.format("MMM Do, YYYY, h:mma");
+    }
   }
 
   closeTooltip() {
