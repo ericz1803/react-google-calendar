@@ -216,8 +216,6 @@ export default class Calendar extends React.Component {
       }
     });
 
-    console.log(JSON.stringify(items));
-    console.log(JSON.stringify([events, singleEvents]));
     return [events, singleEvents];
   }
 
