@@ -22,7 +22,7 @@ First, get an api key from [here](https://developers.google.com/calendar/quickst
 
 Alternately, you can go to https://console.developers.google.com/flows/enableapi?apiid=calendar.
 
-Then, get the calendar id from the google calendar. It will look somehting like `s9ajkhr604dfrmvm7185lesou0@group.calendar.google.com`.   
+Then, get the calendar id from the google calendar. It will look something like `s9ajkhr604dfrmvm7185lesou0@group.calendar.google.com`.   
 You can find it by going to a calendar's settings and scrolling down to the section that is labelled `Integrate calendar`.
 
 ### Properties
@@ -30,7 +30,6 @@ You can find it by going to a calendar's settings and scrolling down to the sect
 |-----------------------|--------|---------------------------------------------------------------------------------------------------------------------------------------------|---------|
 | `apiKey`              | string | google api key (required)                                                                                                                   |         |
 | `calendarId`          | string | google calendar id (required)                                                                                                               |         |
-| `useCalendarTimezone` | bool   | Make all of the times in the same timezone as the calendar<br>(true = times are in calendar timezone, false = times are in user's timezone) | true    |
 
 ### Customization
 
