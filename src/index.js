@@ -71,7 +71,6 @@ export default class Calendar extends React.Component {
     //init and load google calendar api
     try {
       const res = await Calendar.loadCalendarAPI(this.state.apiKey);
-      console.log(res);
     } catch(err) {
       console.error("Error loading GAPI client for API", err);
     }
@@ -80,7 +79,6 @@ export default class Calendar extends React.Component {
     try {
       //query api for events
       const res = await Calendar.getEvents(this.state.calendarId);
-      console.log(res);
 
       //process events
       const events = Calendar.processEvents(res.result.items, this.state.useCalendarTimezone);
@@ -403,7 +401,6 @@ export default class Calendar extends React.Component {
         break;
       }
     }
-    console.log(props.name, startDate, length, chosenRow);
     if (chosenRow < maxBlocks) {
       let node = document.getElementById("day-" + startDate).children[chosenRow];
       node.className = "isEvent";
