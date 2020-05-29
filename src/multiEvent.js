@@ -10,44 +10,59 @@ import { css } from '@emotion/core';
 
 import Place from "@material-ui/icons/Place";
 import Subject from "@material-ui/icons/Subject";
-import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 
-export default class Event extends React.Component {
+export default class MultiEvent extends React.Component {
   constructor(props) {
     super(props);
+
+    let dateOnly = this.isDateOnly(this.props.startTime, this.props.endTime);
+
     this.state = {
       name: this.props.name,
       startTime: this.props.startTime,
-      endTime: moment.parseZone(this.props.endTime),
+      endTime: dateOnly ? moment.parseZone(this.props.endTime).subtract(1, "day") : moment.parseZone(this.props.endTime),
       description: this.props.description,
       location: this.props.location,
+      length: this.props.length,
+      dateOnly: dateOnly,
       
       //tooltip
       tooltipBorderColor: this.props.tooltipBorderColor,
       tooltipTextColor: this.props.tooltipTextColor,
-      
+
       //event
-      circleColor: this.props.circleColor,
       textColor: this.props.textColor,
+      backgroundColor: this.props.backgroundColor,
       hoverColor: this.props.hoverColor,
 
       showTooltip: false,
       hover: false,
-      timeDisplay: this.getTimeDisplay(this.props.startTime, moment.parseZone(this.props.endTime)),
     }
+
+    //get time display
+    this.state.timeDisplay = this.getTimeDisplay(this.state.startTime, this.state.endTime, dateOnly);
 
     this.toggleTooltip = this.toggleTooltip.bind(this);
     this.closeTooltip = this.closeTooltip.bind(this);
     this.toggleHover = this.toggleHover.bind(this);
   }
 
-  getTimeDisplay(startTime, endTime) {
-    if (startTime.isSame(endTime, 'day')) {
-      return startTime.format("dddd, MMMM Do") + "\n"
-        + startTime.format("h:mma") + " - " + endTime.format("h:mma");
+  // determines if an event is a date only event (times for both start and end are 12am)
+  isDateOnly(startTime, endTime) {
+    return startTime.isSame(moment.parseZone(startTime).startOf("day"), "second")
+      && endTime.isSame(moment.parseZone(endTime).startOf("day"), "second");
+  }
+
+  getTimeDisplay(startTime, endTime, dateOnly) {
+    if (dateOnly) {
+      if (endTime.isSame(startTime, "day")) {
+        return startTime.format("dddd, MMMM Do");
+      } else {
+        return startTime.format("MMM Do, YYYY") + " - " + endTime.format("MMM Do, YYYY");
+      }
+
     } else {
-      return startTime.format("MMM Do, YYYY, h:mma") + " -\n"
-        + endTime.format("MMM Do, YYYY, h:mma");;
+      return startTime.format("MMM Do, YYYY, h:mma") + " -\n" + endTime.format("MMM Do, YYYY, h:mma");
     }
   }
 
@@ -92,15 +107,15 @@ export default class Event extends React.Component {
         onMouseEnter={this.toggleHover}
         onMouseLeave={this.toggleHover} 
         css={{
-          width: '100%',
-          color: this.state.textColor, 
-          background: this.state.hover && this.state.hoverColor,
+          width: 'calc(' + this.state.length + '00% + ' + (this.state.length - 1)+ 'px)', // 100% + 1px for each box (-1px)
+          color: this.state.textColor,
+          background: (this.state.hover ? this.state.hoverColor : this.state.backgroundColor),
         }}
       >
         <div 
           className="event-text" 
           css={{
-            padding: '5px 0px 5px 20px',
+            padding: '5px 0px 5px 5px',
             marginRight: '5px',
             overflowX: 'hidden',
             whiteSpace: 'nowrap',
@@ -112,18 +127,16 @@ export default class Event extends React.Component {
           }}
           onClick={this.toggleTooltip}
         >
-          <span css={{position: "absolute", top: "7px", left: "2px", color: this.state.circleColor }}>
-            <FiberManualRecordIcon fontSize="inherit" />
-          </span>
-
-          { this.state.startTime.format("h:mma ") }
+          {
+            this.state.dateOnly ? "" : this.state.startTime.format("h:mma ")
+          }
           <span css={{fontWeight: "500"}}>
             {this.state.name}
           </span>
         </div>
         <div className="tooltip" css={{
           visibility: this.state.showTooltip ? "visible" : "hidden",
-          color: this.state.textColor,
+          color: this.state.tooltipTextColor,
           border: "2px solid " + this.state.tooltipBorderColor,
         }}>
           <h2>{this.state.name}</h2>
@@ -138,15 +151,20 @@ export default class Event extends React.Component {
   }
 }
 
-Event.propTypes = {
+MultiEvent.propTypes = {
   name: PropTypes.string.isRequired,
   startTime: PropTypes.instanceOf(moment).isRequired,
   endTime: PropTypes.instanceOf(moment).isRequired,
+  length: PropTypes.number,
   description: PropTypes.string,
   location: PropTypes.string,
   tooltipBorderColor: PropTypes.string,
   tooltipTextColor: PropTypes.string,
-  circleColor: PropTypes.string,
   textColor: PropTypes.string,
+  backgroundColor: PropTypes.string,
   hoverColor: PropTypes.string,
+}
+
+MultiEvent.defaultProps = {
+  length: 1,
 }

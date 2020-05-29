@@ -108,7 +108,7 @@
 
 .day {
   text-align: right;
-  padding: 14px 6px 14px 0px;
+  padding: 14px 0px;
   font-size: 14px;
   border-bottom: 1px solid;
   border-right: 1px solid;
@@ -148,11 +148,15 @@
 
 .event {
   box-sizing: border-box;
-  width: 100%;
-  margin: 5px 0px;
+  margin: 1px 0px;
   font-size: 14px;
   position: relative;
-  border-radius: 2px;
+  border-radius: 3px;
+  height: 29px;
+}
+
+.below {
+  z-index: -1;
 }
 
 .tooltip {
@@ -177,18 +181,6 @@
   align-items: center;
   margin-top: 12px;
   margin-bottom: 12px;
-}
-
-.event-text {
-  padding: 5px 0px 5px 20px;
-  overflow-x: hidden;
-  white-space: nowrap;
-  position: relative;
-  text-align: left;
-}
-
-.event-text:hover {
-  cursor: pointer;
 }
 
 .display-linebreak {
