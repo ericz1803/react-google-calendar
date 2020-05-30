@@ -26,6 +26,10 @@ export default class MultiEvent extends React.Component {
       length: this.props.length,
       dateOnly: dateOnly,
       
+      //arrows on either side
+      arrowLeft: this.props.arrowLeft,
+      arrowRight: this.props.arrowRight,
+
       //tooltip
       tooltipBorderColor: this.props.tooltipBorderColor,
       tooltipTextColor: this.props.tooltipTextColor,
@@ -82,8 +86,8 @@ export default class MultiEvent extends React.Component {
     let description;
     if (this.state.description) {
       description = <div className="details description">
-      <div css={{paddingRight: "10px"}}><Subject fontSize="small" /></div>
-      <div dangerouslySetInnerHTML={{__html: this.state.description}} />
+        <div css={{paddingRight: "10px"}}><Subject fontSize="small" /></div>
+        <div dangerouslySetInnerHTML={{__html: this.state.description}} />
       </div>;
     } else {
       description = <div></div>;
@@ -99,24 +103,67 @@ export default class MultiEvent extends React.Component {
       location = <div></div>;
     }
 
+    const leftArrow = css`
+      margin-left: 8px;
+      border-top-left-radius: 0px;
+      border-bottom-left-radius: 0px;
+      &:before {
+        content: "";
+        position: absolute;
+        left: -8px;
+        bottom: 0; 
+        width: 0;
+        height: 0;
+        border-right: 8px solid ${((this.state.hover || this.state.showTooltip) ? this.state.hoverColor : this.state.backgroundColor)};
+        border-top: 13px solid transparent;
+        border-bottom: 13px solid transparent;
+      }
+    `;
+
+    const rightArrow = css`
+      margin-right: 8px;
+      border-top-right-radius: 0px;
+      border-bottom-right-radius: 0px;
+      &:after {
+        content: "";
+        position: absolute;
+        right: -8px;
+        bottom: 0; 
+        width: 0;
+        height: 0;
+        border-left: 8px solid ${((this.state.hover || this.state.showTooltip) ? this.state.hoverColor : this.state.backgroundColor)};
+        border-top: 13px solid transparent;
+        border-bottom: 13px solid transparent;
+      }
+    `;
+
     return (
       <div 
         className="event"
         tabIndex="0"
         onBlur={this.closeTooltip}
         onMouseEnter={this.toggleHover}
-        onMouseLeave={this.toggleHover} 
-        css={{
-          width: 'calc(' + this.state.length + '00% + ' + (this.state.length - 1)+ 'px)', // 100% + 1px for each box (-1px)
-          color: this.state.textColor,
-          background: (this.state.hover ? this.state.hoverColor : this.state.backgroundColor),
-        }}
+        onMouseLeave={this.toggleHover}
+        onClick={this.toggleTooltip}
+        css={css`
+          
+          border-radius: 3px;
+          width: ${'calc(' + this.state.length + '00% + ' + (this.state.length - 1 - 8 * (this.state.arrowLeft + this.state.arrowRight)) + 'px)'};
+          color: ${this.state.textColor};
+          background: ${((this.state.hover || this.state.showTooltip) ? this.state.hoverColor : this.state.backgroundColor)};
+          ${this.state.arrowLeft && leftArrow}
+          ${this.state.arrowRight && rightArrow}
+          :focus {
+            outline: none;
+          }
+        `}
       >
         <div 
           className="event-text" 
           css={{
-            padding: '5px 0px 5px 5px',
-            marginRight: '5px',
+            padding: '3px 0px',
+            marginLeft: this.state.arrowLeft ? '2px' : '5px',
+            marginRight: this.state.arrowRight ? '0px' : '5px',
             overflowX: 'hidden',
             whiteSpace: 'nowrap',
             position: 'relative',
@@ -125,7 +172,6 @@ export default class MultiEvent extends React.Component {
               cursor: 'pointer',
             },
           }}
-          onClick={this.toggleTooltip}
         >
           {
             this.state.dateOnly ? "" : this.state.startTime.format("h:mma ")
@@ -163,8 +209,12 @@ MultiEvent.propTypes = {
   textColor: PropTypes.string,
   backgroundColor: PropTypes.string,
   hoverColor: PropTypes.string,
+  arrowLeft: PropTypes.bool,
+  arrowRight: PropTypes.bool,
 }
 
 MultiEvent.defaultProps = {
   length: 1,
+  arrowLeft: false,
+  arrowRight: false,
 }

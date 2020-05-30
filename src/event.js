@@ -91,16 +91,20 @@ export default class Event extends React.Component {
         onBlur={this.closeTooltip}
         onMouseEnter={this.toggleHover}
         onMouseLeave={this.toggleHover} 
-        css={{
-          width: '100%',
-          color: this.state.textColor, 
-          background: this.state.hover && this.state.hoverColor,
-        }}
+        css={css`
+          border-radius: 3px;
+          width: 100%;
+          color: ${this.state.textColor}; 
+          background: ${(this.state.hover || this.state.showTooltip) && this.state.hoverColor};
+          :focus {
+            outline: none;
+          }
+        `}
       >
         <div 
           className="event-text" 
           css={{
-            padding: '5px 0px 5px 20px',
+            padding: '3px 0px 3px 20px',
             marginRight: '5px',
             overflowX: 'hidden',
             whiteSpace: 'nowrap',
@@ -112,7 +116,7 @@ export default class Event extends React.Component {
           }}
           onClick={this.toggleTooltip}
         >
-          <span css={{position: "absolute", top: "7px", left: "2px", color: this.state.circleColor }}>
+          <span css={{position: "absolute", top: "5px", left: "2px", color: this.state.circleColor }}>
             <FiberManualRecordIcon fontSize="inherit" />
           </span>
 
