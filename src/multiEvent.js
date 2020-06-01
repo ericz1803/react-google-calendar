@@ -19,8 +19,8 @@ export default class MultiEvent extends React.Component {
 
     this.state = {
       name: this.props.name,
-      startTime: this.props.startTime,
-      endTime: dateOnly ? moment.parseZone(this.props.endTime).subtract(1, "day") : moment.parseZone(this.props.endTime),
+      startTime: moment.parseZone(this.props.startTime),
+      endTime: moment.parseZone(this.props.endTime),
       description: this.props.description,
       location: this.props.location,
       length: this.props.length,
@@ -51,6 +51,23 @@ export default class MultiEvent extends React.Component {
     this.toggleHover = this.toggleHover.bind(this);
   }
 
+  //get google calendar link
+  static getCalendarURL(startTime, endTime, name, description, location, isDateOnly) {
+    const url = new URL("https://calendar.google.com/calendar/render");
+    url.searchParams.append("action", "TEMPLATE");
+    url.searchParams.append("text", name || "");
+    
+    if (isDateOnly) {
+      url.searchParams.append("dates", startTime.format("YYYYMMDD") + "/" + endTime.format("YYYYMMDD"));
+    } else {
+      url.searchParams.append("dates", startTime.format("YYYYMMDDTHHmmss") + "/" + endTime.format("YYYYMMDDTHHmmss"));
+    }
+    
+    url.searchParams.append("details", description || "");
+    url.searchParams.append("location", location || "");
+    return url.href;
+  }
+
   // determines if an event is a date only event (times for both start and end are 12am)
   isDateOnly(startTime, endTime) {
     return startTime.isSame(moment.parseZone(startTime).startOf("day"), "second")
@@ -59,12 +76,13 @@ export default class MultiEvent extends React.Component {
 
   getTimeDisplay(startTime, endTime, dateOnly) {
     if (dateOnly) {
-      if (endTime.isSame(startTime, "day")) {
+      let endDate = moment(endTime).subtract(1, "day");
+
+      if (endDate.isSame(startTime, "day")) {
         return startTime.format("dddd, MMMM Do");
       } else {
-        return startTime.format("MMM Do, YYYY") + " - " + endTime.format("MMM Do, YYYY");
+        return startTime.format("MMM Do, YYYY") + " - " + endDate.format("MMM Do, YYYY");
       }
-
     } else {
       return startTime.format("MMM Do, YYYY, h:mma") + " -\n" + endTime.format("MMM Do, YYYY, h:mma");
     }
@@ -144,7 +162,6 @@ export default class MultiEvent extends React.Component {
         onBlur={this.closeTooltip}
         onMouseEnter={this.toggleHover}
         onMouseLeave={this.toggleHover}
-        onClick={this.toggleTooltip}
         css={css`
           
           border-radius: 3px;
@@ -172,6 +189,7 @@ export default class MultiEvent extends React.Component {
               cursor: 'pointer',
             },
           }}
+          onClick={this.toggleTooltip}
         >
           {
             this.state.dateOnly ? "" : this.state.startTime.format("h:mma ")
@@ -191,6 +209,16 @@ export default class MultiEvent extends React.Component {
           </p>
           {description}
           {location}
+          <a 
+            href={MultiEvent.getCalendarURL(this.state.startTime, this.state.endTime, this.state.name, this.state.description, this.state.location, this.state.dateOnly)}
+            target="_blank"
+            onMouseDown={e => e.preventDefault()}
+            css={{
+              fontSize: "13px",
+            }}
+          >
+            Add to Calendar
+          </a>
         </div>
       </div>
     )

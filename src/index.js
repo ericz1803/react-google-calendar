@@ -80,7 +80,7 @@ export default class Calendar extends React.Component {
 
       //process events
       const events = Calendar.processEvents(res.result.items, this.state.useCalendarTimezone);
-
+      
       //get timezone
       const timezone = Calendar.getTimezone(res.result.timeZone, this.state.useCalendarTimezone);
 
@@ -90,8 +90,6 @@ export default class Calendar extends React.Component {
     } catch(err) {
       console.error("Error getting events", err);
     }
-
-
   }
 
   //add in events after rendering calendar

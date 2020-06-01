@@ -17,7 +17,7 @@ export default class Event extends React.Component {
     super(props);
     this.state = {
       name: this.props.name,
-      startTime: this.props.startTime,
+      startTime: moment.parseZone(this.props.startTime),
       endTime: moment.parseZone(this.props.endTime),
       description: this.props.description,
       location: this.props.location,
@@ -39,6 +39,17 @@ export default class Event extends React.Component {
     this.toggleTooltip = this.toggleTooltip.bind(this);
     this.closeTooltip = this.closeTooltip.bind(this);
     this.toggleHover = this.toggleHover.bind(this);
+  }
+
+  //get google calendar link
+  static getCalendarURL(startTime, endTime, name, description, location) {
+    const url = new URL("https://calendar.google.com/calendar/render");
+    url.searchParams.append("action", "TEMPLATE");
+    url.searchParams.append("text", name || "");
+    url.searchParams.append("dates", startTime.format("YYYYMMDDTHHmmss") + "/" + endTime.format("YYYYMMDDTHHmmss"));
+    url.searchParams.append("details", description || "");
+    url.searchParams.append("location", location || "");
+    return url.href;
   }
 
   getTimeDisplay(startTime, endTime) {
@@ -136,6 +147,16 @@ export default class Event extends React.Component {
           </p>
           {description}
           {location}
+          <a 
+            href={Event.getCalendarURL(this.state.startTime, this.state.endTime, this.state.name, this.state.description, this.state.location)}
+            target="_blank"
+            onMouseDown={e => e.preventDefault()}
+            css={{
+              fontSize: "13px",
+            }}
+          >
+            Add to Calendar
+          </a>
         </div>
       </div>
     )
