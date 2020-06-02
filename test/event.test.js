@@ -134,4 +134,19 @@ describe("Event Component", () => {
     expect(window.getComputedStyle(container.querySelector('.tooltip')).visibility).toEqual("hidden");
   });
 
+  test("correct event url", () => {
+    const props = {
+      startTime: moment("2020-05-02 16:30"),
+      endTime: moment("2020-05-02 17:30"),
+      name: "Event",
+      description: "Some Description",
+      location: "A Location",
+    };
+
+    const outputURL = Event.getCalendarURL(props.startTime, props.endTime, props.name, props.description, props.location);
+
+    const expectedURL = "https://calendar.google.com/calendar/r/eventedit?text=Event&dates=20200502T163000%2F20200502T173000&details=Some+Description&location=A+Location";
+    expect(outputURL).toBe(expectedURL);
+  });
+
 });

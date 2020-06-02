@@ -53,8 +53,7 @@ export default class MultiEvent extends React.Component {
 
   //get google calendar link
   static getCalendarURL(startTime, endTime, name, description, location, isDateOnly) {
-    const url = new URL("https://calendar.google.com/calendar/render");
-    url.searchParams.append("action", "TEMPLATE");
+    const url = new URL("https://calendar.google.com/calendar/r/eventedit");
     url.searchParams.append("text", name || "");
     
     if (isDateOnly) {

@@ -43,8 +43,7 @@ export default class Event extends React.Component {
 
   //get google calendar link
   static getCalendarURL(startTime, endTime, name, description, location) {
-    const url = new URL("https://calendar.google.com/calendar/render");
-    url.searchParams.append("action", "TEMPLATE");
+    const url = new URL("https://calendar.google.com/calendar/r/eventedit");
     url.searchParams.append("text", name || "");
     url.searchParams.append("dates", startTime.format("YYYYMMDDTHHmmss") + "/" + endTime.format("YYYYMMDDTHHmmss"));
     url.searchParams.append("details", description || "");
