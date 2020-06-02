@@ -17,7 +17,7 @@ export default class Event extends React.Component {
     super(props);
     this.state = {
       name: this.props.name,
-      startTime: this.props.startTime,
+      startTime: moment.parseZone(this.props.startTime),
       endTime: moment.parseZone(this.props.endTime),
       description: this.props.description,
       location: this.props.location,
@@ -39,6 +39,16 @@ export default class Event extends React.Component {
     this.toggleTooltip = this.toggleTooltip.bind(this);
     this.closeTooltip = this.closeTooltip.bind(this);
     this.toggleHover = this.toggleHover.bind(this);
+  }
+
+  //get google calendar link
+  static getCalendarURL(startTime, endTime, name, description, location) {
+    const url = new URL("https://calendar.google.com/calendar/r/eventedit");
+    url.searchParams.append("text", name || "");
+    url.searchParams.append("dates", startTime.format("YYYYMMDDTHHmmss") + "/" + endTime.format("YYYYMMDDTHHmmss"));
+    url.searchParams.append("details", description || "");
+    url.searchParams.append("location", location || "");
+    return url.href;
   }
 
   getTimeDisplay(startTime, endTime) {
@@ -91,16 +101,20 @@ export default class Event extends React.Component {
         onBlur={this.closeTooltip}
         onMouseEnter={this.toggleHover}
         onMouseLeave={this.toggleHover} 
-        css={{
-          width: '100%',
-          color: this.state.textColor, 
-          background: this.state.hover && this.state.hoverColor,
-        }}
+        css={css`
+          border-radius: 3px;
+          width: 100%;
+          color: ${this.state.textColor}; 
+          background: ${(this.state.hover || this.state.showTooltip) && this.state.hoverColor};
+          :focus {
+            outline: none;
+          }
+        `}
       >
         <div 
           className="event-text" 
           css={{
-            padding: '5px 0px 5px 20px',
+            padding: '3px 0px 3px 20px',
             marginRight: '5px',
             overflowX: 'hidden',
             whiteSpace: 'nowrap',
@@ -112,7 +126,7 @@ export default class Event extends React.Component {
           }}
           onClick={this.toggleTooltip}
         >
-          <span css={{position: "absolute", top: "7px", left: "2px", color: this.state.circleColor }}>
+          <span css={{position: "absolute", top: "5px", left: "2px", color: this.state.circleColor }}>
             <FiberManualRecordIcon fontSize="inherit" />
           </span>
 
@@ -132,6 +146,16 @@ export default class Event extends React.Component {
           </p>
           {description}
           {location}
+          <a 
+            href={Event.getCalendarURL(this.state.startTime, this.state.endTime, this.state.name, this.state.description, this.state.location)}
+            target="_blank"
+            onMouseDown={e => e.preventDefault()}
+            css={{
+              fontSize: "13px",
+            }}
+          >
+            Add to Calendar
+          </a>
         </div>
       </div>
     )

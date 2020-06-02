@@ -163,4 +163,34 @@ describe("Multi Event Component", () => {
     expect(window.getComputedStyle(container.querySelector('.tooltip')).visibility).toEqual("hidden");
   });
 
+  test("correct all day event url", () => {
+    const props = {
+      startTime: moment("2020-05-01"),
+      endTime: moment("2020-05-02"),
+      name: "Event",
+      description: "Some Description",
+      location: "A Location",
+      allDay: true,
+    }
+    const outputURL = MultiEvent.getCalendarURL(props.startTime, props.endTime, props.name, props.description, props.location, props.allDay);
+
+    const expectedURL = "https://calendar.google.com/calendar/r/eventedit?text=Event&dates=20200501%2F20200502&details=Some+Description&location=A+Location";
+    expect(outputURL).toBe(expectedURL);
+  });
+
+  test("correct event url", () => {
+    const props = {
+      startTime: moment("2020-05-02 16:30"),
+      endTime: moment("2020-05-04 17:30"),
+      name: "Event",
+      description: "Some Description",
+      location: "A Location",
+      allDay: false,
+    }
+    const outputURL = MultiEvent.getCalendarURL(props.startTime, props.endTime, props.name, props.description, props.location, props.allDay);
+
+    const expectedURL = "https://calendar.google.com/calendar/r/eventedit?text=Event&dates=20200502T163000%2F20200504T173000&details=Some+Description&location=A+Location";
+    expect(outputURL).toBe(expectedURL);
+  });
+
 });

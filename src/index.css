@@ -68,7 +68,6 @@
   text-decoration: none;
   color: inherit;
   font-size: 13px;
-
 }
 
 .logo-plus-button {
@@ -149,10 +148,9 @@
 .event {
   box-sizing: border-box;
   margin: 1px 0px;
-  font-size: 14px;
+  font-size: 15px;
   position: relative;
-  border-radius: 3px;
-  height: 29px;
+  height: 26px;
 }
 
 .below {
