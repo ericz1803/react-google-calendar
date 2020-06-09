@@ -10,6 +10,14 @@ import "./index.css";
 import Event from "./event";
 import MultiEvent from './multiEvent';
 
+const EventWrapper = React.forwardRef((props, ref) => {
+  return (<Event innerRef={ref} {...props} />);
+});
+
+const MultiEventWrapper = React.forwardRef((props, ref) => {
+  return (<MultiEvent innerRef={ref} {...props} />);
+});
+
 export default class Calendar extends React.Component {
   constructor(props) {
     super(props);
@@ -59,6 +67,8 @@ export default class Calendar extends React.Component {
       eventBackgroundColor: this.props.eventBackgroundColor,
       eventHoverColor: this.props.eventHoverColor,
     };
+
+    this.calendarRef = React.createRef();
 
     this.lastMonth = this.lastMonth.bind(this);
     this.nextMonth = this.nextMonth.bind(this);
@@ -417,14 +427,14 @@ export default class Calendar extends React.Component {
     if (chosenRow < maxBlocks) {
       let node = document.getElementById("day-" + startDate).children[chosenRow];
       node.className = "isEvent";
-      ReactDOM.render(<MultiEvent {...props} {...multiEventProps} length={length} arrowLeft={arrowLeft} arrowRight={arrowRight}></MultiEvent>, node);
+      ReactDOM.render(<MultiEventWrapper ref={this.calendarRef} {...props} {...multiEventProps} length={length} arrowLeft={arrowLeft} arrowRight={arrowRight} />, node);
     }
 
     else {
       let tempNode = document.createElement("div");
       tempNode.className = "isEvent";
       document.getElementById("day-" + startDate).appendChild(tempNode);
-      ReactDOM.render(<MultiEvent {...props} {...multiEventProps} length={length} arrowLeft={arrowLeft} arrowRight={arrowRight}></MultiEvent>, tempNode);
+      ReactDOM.render(<MultiEventWrapper ref={this.calendarRef} {...props} {...multiEventProps} length={length} arrowLeft={arrowLeft} arrowRight={arrowRight} />, tempNode);
     }
     
 
@@ -555,7 +565,7 @@ export default class Calendar extends React.Component {
           
           let tempNode = document.createElement("div");
           document.getElementById("day-" + moment(props.startTime).date()).appendChild(tempNode);
-          ReactDOM.render(<Event {...props} {...eventProps}></Event>, tempNode);
+          ReactDOM.render(<EventWrapper ref={this.calendarRef} {...props} {...eventProps} />, tempNode);
         });
       } else {
         //render event
@@ -564,7 +574,7 @@ export default class Calendar extends React.Component {
         }
         let node = document.createElement("div");
         document.getElementById("day-" + moment(event.startTime).date()).appendChild(node);
-        ReactDOM.render(<Event {...event} {...eventProps}></Event>, node);
+        ReactDOM.render(<EventWrapper ref={this.calendarRef} {...event} {...eventProps} />, node);
       }
     });
   }
@@ -573,7 +583,9 @@ export default class Calendar extends React.Component {
     return (
       <div
         className="calendar"
+        ref={this.calendarRef}
         css={{
+          position: "relative",
           borderColor: this.state.borderColor,
           color: this.state.textColor,
           background: this.state.backgroundColor,
@@ -588,8 +600,7 @@ export default class Calendar extends React.Component {
           </div>
           <div>
             <h2 className="calendar-title">
-              {this.state.monthNames[this.state.current.month()]}{" "}
-              {this.state.current.year()}
+              {this.state.monthNames[this.state.current.month()] + " " + this.state.current.year()}
             </h2>
           </div>
           <div

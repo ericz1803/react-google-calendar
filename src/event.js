@@ -1,4 +1,3 @@
-
 import React from "react";
 import PropTypes from "prop-types";
 
@@ -7,10 +6,13 @@ import moment from "moment-timezone";
 import "./index.css";
 
 import { css } from '@emotion/core';
-
-import Place from "@material-ui/icons/Place";
-import Subject from "@material-ui/icons/Subject";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
+
+import Tooltip from "./tooltip";
+
+const TooltipWrapper = React.forwardRef((props, ref) => {
+  return (<Tooltip innerRef={ref} {...props} />);
+});
 
 export default class Event extends React.Component {
   constructor(props) {
@@ -73,27 +75,7 @@ export default class Event extends React.Component {
     this.setState({hover: !this.state.hover});
   }
 
-  render() { 
-    let description;
-    if (this.state.description) {
-      description = <div className="details description">
-      <div css={{paddingRight: "10px"}}><Subject fontSize="small" /></div>
-      <div dangerouslySetInnerHTML={{__html: this.state.description}} />
-      </div>;
-    } else {
-      description = <div></div>;
-    }
-
-    let location;
-    if (this.state.location) {
-      location = <div className="details location">
-        <div css={{paddingRight: "10px"}}><Place fontSize="small" /></div>
-        <div>{this.state.location}</div>
-      </div>;
-    } else {
-      location = <div></div>;
-    }
-
+  render() {
     return (
       <div 
         className="event"
@@ -109,54 +91,56 @@ export default class Event extends React.Component {
           :focus {
             outline: none;
           }
+          @media (min-width: 600px) {
+            position: relative;
+          }
         `}
       >
         <div 
           className="event-text" 
-          css={{
-            padding: '3px 0px 3px 20px',
-            marginRight: '5px',
-            overflowX: 'hidden',
-            whiteSpace: 'nowrap',
-            position: 'relative',
-            textAlign: 'left',
-            '&:hover': {
-              cursor: 'pointer',
-            },
-          }}
+          css={css`
+            padding: 3px 0px 3px 20px;
+            marginRight: 5px;
+            overflow-x: hidden;
+            white-space: nowrap;
+            position: relative;
+            text-align: left;
+            &:hover: {
+              cursor: pointer,
+            }
+          `}
           onClick={this.toggleTooltip}
         >
-          <span css={{position: "absolute", top: "5px", left: "2px", color: this.state.circleColor }}>
+          <span css={css`
+            position: absolute;
+            top: 5px;
+            left: 2px;
+            color: ${this.state.circleColor};
+          `}>
             <FiberManualRecordIcon fontSize="inherit" />
           </span>
-
-          { this.state.startTime.format("h:mma ") }
+          <span css={css`
+            @media (max-width: 599px) {
+              display: none;
+            }
+          `}>
+            { this.state.startTime.format("h:mma ") }
+          </span>
           <span css={{fontWeight: "500"}}>
             {this.state.name}
           </span>
         </div>
-        <div className="tooltip" css={{
-          visibility: this.state.showTooltip ? "visible" : "hidden",
-          color: this.state.textColor,
-          border: "2px solid " + this.state.tooltipBorderColor,
-        }}>
-          <h2>{this.state.name}</h2>
-          <p className="display-linebreak">
-            { this.state.timeDisplay }
-          </p>
-          {description}
-          {location}
-          <a 
-            href={Event.getCalendarURL(this.state.startTime, this.state.endTime, this.state.name, this.state.description, this.state.location)}
-            target="_blank"
-            onMouseDown={e => e.preventDefault()}
-            css={{
-              fontSize: "13px",
-            }}
-          >
-            Add to Calendar
-          </a>
-        </div>
+        <TooltipWrapper 
+          ref={this.props.innerRef} 
+          name={this.props.name}
+          description={this.props.description}
+          location={this.props.location}
+          tooltipTextColor={this.props.tooltipTextColor}
+          tooltipBorderColor={this.props.tooltipBorderColor}
+          eventURL={Event.getCalendarURL(this.state.startTime, this.state.endTime, this.state.name, this.state.description, this.state.location)}
+          showTooltip={this.state.showTooltip}
+          timeDisplay={this.state.timeDisplay}
+        />
       </div>
     )
   }

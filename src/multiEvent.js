@@ -1,4 +1,3 @@
-
 import React from "react";
 import PropTypes from "prop-types";
 
@@ -8,8 +7,11 @@ import "./index.css";
 
 import { css } from '@emotion/core';
 
-import Place from "@material-ui/icons/Place";
-import Subject from "@material-ui/icons/Subject";
+import Tooltip from "./tooltip";
+
+const TooltipWrapper = React.forwardRef((props, ref) => {
+  return (<Tooltip innerRef={ref} {...props} />);
+});
 
 export default class MultiEvent extends React.Component {
   constructor(props) {
@@ -99,27 +101,7 @@ export default class MultiEvent extends React.Component {
     this.setState({hover: !this.state.hover});
   }
 
-  render() { 
-    let description;
-    if (this.state.description) {
-      description = <div className="details description">
-        <div css={{paddingRight: "10px"}}><Subject fontSize="small" /></div>
-        <div dangerouslySetInnerHTML={{__html: this.state.description}} />
-      </div>;
-    } else {
-      description = <div></div>;
-    }
-
-    let location;
-    if (this.state.location) {
-      location = <div className="details location">
-        <div css={{paddingRight: "10px"}}><Place fontSize="small" /></div>
-        <div>{this.state.location}</div>
-      </div>;
-    } else {
-      location = <div></div>;
-    }
-
+  render() {
     const leftArrow = css`
       margin-left: 8px;
       border-top-left-radius: 0px;
@@ -162,7 +144,6 @@ export default class MultiEvent extends React.Component {
         onMouseEnter={this.toggleHover}
         onMouseLeave={this.toggleHover}
         css={css`
-          
           border-radius: 3px;
           width: ${'calc(' + this.state.length + '00% + ' + (this.state.length - 1 - 8 * (this.state.arrowLeft + this.state.arrowRight)) + 'px)'};
           color: ${this.state.textColor};
@@ -171,6 +152,9 @@ export default class MultiEvent extends React.Component {
           ${this.state.arrowRight && rightArrow}
           :focus {
             outline: none;
+          }
+          @media (min-width: 600px) {
+            position: relative;
           }
         `}
       >
@@ -197,28 +181,17 @@ export default class MultiEvent extends React.Component {
             {this.state.name}
           </span>
         </div>
-        <div className="tooltip" css={{
-          visibility: this.state.showTooltip ? "visible" : "hidden",
-          color: this.state.tooltipTextColor,
-          border: "2px solid " + this.state.tooltipBorderColor,
-        }}>
-          <h2>{this.state.name}</h2>
-          <p className="display-linebreak">
-            { this.state.timeDisplay }
-          </p>
-          {description}
-          {location}
-          <a 
-            href={MultiEvent.getCalendarURL(this.state.startTime, this.state.endTime, this.state.name, this.state.description, this.state.location, this.state.dateOnly)}
-            target="_blank"
-            onMouseDown={e => e.preventDefault()}
-            css={{
-              fontSize: "13px",
-            }}
-          >
-            Add to Calendar
-          </a>
-        </div>
+        <TooltipWrapper 
+          ref={this.props.innerRef} 
+          name={this.props.name}
+          description={this.props.description}
+          location={this.props.location}
+          tooltipTextColor={this.props.tooltipTextColor}
+          tooltipBorderColor={this.props.tooltipBorderColor}
+          eventURL={MultiEvent.getCalendarURL(this.state.startTime, this.state.endTime, this.state.name, this.state.description, this.state.location, this.state.dateOnly)}
+          showTooltip={this.state.showTooltip}
+          timeDisplay={this.state.timeDisplay}
+        />
       </div>
     )
   }

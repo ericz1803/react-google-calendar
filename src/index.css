@@ -8,12 +8,7 @@
 .calendar {
   font-size: 18px;
   border: 1px solid;
-}
-
-@media only screen and (max-width: 600px) {
-  .calendar {
-    overflow: auto;
-  }
+  min-width: 300px;
 }
 
 .calendar-navigate {
@@ -39,7 +34,7 @@
 .calendar-body {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(7, minmax(50px, 1fr));
+  grid-template-columns: repeat(7, minmax(40px, 1fr));
   grid-template-rows: 50px;
   grid-auto-rows: minmax(120px, auto);
 }
@@ -141,36 +136,15 @@
   font-weight: 500;
 }
 
-.event-wrapper {
-  position: relative;
-}
-
 .event {
   box-sizing: border-box;
   margin: 1px 0px;
   font-size: 15px;
-  position: relative;
   height: 26px;
 }
 
 .below {
   z-index: -1;
-}
-
-.tooltip {
-  visibility: hidden;
-  width: 225px;
-  background: #fff;
-  text-align: left;
-  padding: 5px;
-  border-radius: 6px;
-
-  /* position tooltip */
-  position: absolute;
-  z-index: 1;
-  bottom: 110%;
-  left: 0%;
-  margin-left: -5px;
 }
 
 .details {
