@@ -7,27 +7,55 @@ import "./index.css";
 
 import { css } from '@emotion/core';
 
+import { isAllDay, getCalendarURL } from "./helper";
+
 import Place from "@material-ui/icons/Place";
 import Subject from "@material-ui/icons/Subject";
 
 export default class Tooltip extends React.PureComponent {
   constructor(props) {
     super(props);
+    let allDay = isAllDay(this.props.startTime, this.props.endTime);
+
     this.state = {
       //tooltip positioning
       flipX: false,
       flipY: false,
+      timeDisplay: Tooltip.getTimeDisplay(this.props.startTime, this.props.endTime, allDay),
+      eventURL: getCalendarURL(this.props.startTime, this.props.endTime, this.props.name, this.props.description, this.props.location, allDay),
     }
     this.tooltipRef = React.createRef();
   }
 
+  static getTimeDisplay(startTime, endTime, allDay) {
+    if (allDay) {
+      let endDate = moment(endTime).subtract(1, "day");
+
+      if (endDate.isSame(startTime, "day")) {
+        return startTime.format("dddd, MMMM Do");
+      } else {
+        return startTime.format("MMM Do, YYYY") + " - " + endDate.format("MMM Do, YYYY");
+      }
+    } else {
+      if (endTime.isSame(startTime, "day")) {
+        return startTime.format("dddd, MMMM Do") + "\n" 
+          + startTime.format("h:mma") + " - " + endTime.format("h:mma");
+      } else {
+        return startTime.format("MMM Do, YYYY, h:mma") + " -\n" + endTime.format("MMM Do, YYYY, h:mma");
+      }
+    }
+  }
+
+  //if tooltip goes outside calendar flip it to keep it inside
   componentDidMount() {
-    let calendarRect = this.props.innerRef.current.getBoundingClientRect();
-    let tooltipRect = this.tooltipRef.current.getBoundingClientRect();
-    this.setState({
-      flipX: (tooltipRect.x < calendarRect.x),
-      flipY: (tooltipRect.y < calendarRect.y),
-    });
+    if (this.props.innerRef) {
+      let calendarRect = this.props.innerRef.current.getBoundingClientRect();
+      let tooltipRect = this.tooltipRef.current.getBoundingClientRect();
+      this.setState({
+        flipX: (tooltipRect.x < calendarRect.x),
+        flipY: (tooltipRect.y < calendarRect.y),
+      });
+    }
   }
 
   render() {
@@ -79,14 +107,14 @@ export default class Tooltip extends React.PureComponent {
           }
           
       `}>
-        <h2>{this.props.name}</h2>
+        <h2 className="tooltip-text">{this.props.name}</h2>
         <p className="display-linebreak">
-          { this.props.timeDisplay }
+          { this.state.timeDisplay }
         </p>
         {description}
         {location}
         <a 
-          href={this.props.eventURL}
+          href={this.state.eventURL}
           target="_blank"
           onMouseDown={e => e.preventDefault()}
           css={{
@@ -109,5 +137,4 @@ Tooltip.propTypes = {
   location: PropTypes.string,
   tooltipBorderColor: PropTypes.string,
   tooltipTextColor: PropTypes.string,
-  
 }

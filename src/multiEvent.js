@@ -9,6 +9,8 @@ import { css } from '@emotion/core';
 
 import Tooltip from "./tooltip";
 
+import { isAllDay } from "./helper";
+
 const TooltipWrapper = React.forwardRef((props, ref) => {
   return (<Tooltip innerRef={ref} {...props} />);
 });
@@ -17,24 +19,12 @@ export default class MultiEvent extends React.Component {
   constructor(props) {
     super(props);
 
-    let dateOnly = this.isDateOnly(this.props.startTime, this.props.endTime);
-
     this.state = {
-      name: this.props.name,
       startTime: moment.parseZone(this.props.startTime),
       endTime: moment.parseZone(this.props.endTime),
-      description: this.props.description,
-      location: this.props.location,
-      length: this.props.length,
-      dateOnly: dateOnly,
-      
       //arrows on either side
       arrowLeft: this.props.arrowLeft,
       arrowRight: this.props.arrowRight,
-
-      //tooltip
-      tooltipBorderColor: this.props.tooltipBorderColor,
-      tooltipTextColor: this.props.tooltipTextColor,
 
       //event
       textColor: this.props.textColor,
@@ -45,48 +35,11 @@ export default class MultiEvent extends React.Component {
       hover: false,
     }
 
-    //get time display
-    this.state.timeDisplay = this.getTimeDisplay(this.state.startTime, this.state.endTime, dateOnly);
+    this.state.allDay = isAllDay(this.state.startTime, this.state.endTime);
 
     this.toggleTooltip = this.toggleTooltip.bind(this);
     this.closeTooltip = this.closeTooltip.bind(this);
     this.toggleHover = this.toggleHover.bind(this);
-  }
-
-  //get google calendar link
-  static getCalendarURL(startTime, endTime, name, description, location, isDateOnly) {
-    const url = new URL("https://calendar.google.com/calendar/r/eventedit");
-    url.searchParams.append("text", name || "");
-    
-    if (isDateOnly) {
-      url.searchParams.append("dates", startTime.format("YYYYMMDD") + "/" + endTime.format("YYYYMMDD"));
-    } else {
-      url.searchParams.append("dates", startTime.format("YYYYMMDDTHHmmss") + "/" + endTime.format("YYYYMMDDTHHmmss"));
-    }
-    
-    url.searchParams.append("details", description || "");
-    url.searchParams.append("location", location || "");
-    return url.href;
-  }
-
-  // determines if an event is a date only event (times for both start and end are 12am)
-  isDateOnly(startTime, endTime) {
-    return startTime.isSame(moment.parseZone(startTime).startOf("day"), "second")
-      && endTime.isSame(moment.parseZone(endTime).startOf("day"), "second");
-  }
-
-  getTimeDisplay(startTime, endTime, dateOnly) {
-    if (dateOnly) {
-      let endDate = moment(endTime).subtract(1, "day");
-
-      if (endDate.isSame(startTime, "day")) {
-        return startTime.format("dddd, MMMM Do");
-      } else {
-        return startTime.format("MMM Do, YYYY") + " - " + endDate.format("MMM Do, YYYY");
-      }
-    } else {
-      return startTime.format("MMM Do, YYYY, h:mma") + " -\n" + endTime.format("MMM Do, YYYY, h:mma");
-    }
   }
 
   closeTooltip() {
@@ -175,22 +128,22 @@ export default class MultiEvent extends React.Component {
           onClick={this.toggleTooltip}
         >
           {
-            this.state.dateOnly ? "" : this.state.startTime.format("h:mma ")
+            this.state.allDay ? "" : this.state.startTime.format("h:mma ")
           }
           <span css={{fontWeight: "500"}}>
-            {this.state.name}
+            {this.props.name}
           </span>
         </div>
         <TooltipWrapper 
           ref={this.props.innerRef} 
           name={this.props.name}
+          startTime={moment.parseZone(this.props.startTime)}
+          endTime={moment.parseZone(this.props.endTime)}
           description={this.props.description}
           location={this.props.location}
           tooltipTextColor={this.props.tooltipTextColor}
           tooltipBorderColor={this.props.tooltipBorderColor}
-          eventURL={MultiEvent.getCalendarURL(this.state.startTime, this.state.endTime, this.state.name, this.state.description, this.state.location, this.state.dateOnly)}
           showTooltip={this.state.showTooltip}
-          timeDisplay={this.state.timeDisplay}
         />
       </div>
     )

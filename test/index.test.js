@@ -244,8 +244,3 @@ describe("Process Events", () => {
   });
 
 });
-
-
-describe("", () => {
-
-});
