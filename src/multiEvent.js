@@ -1,4 +1,3 @@
-
 import React from "react";
 import PropTypes from "prop-types";
 
@@ -8,31 +7,21 @@ import "./index.css";
 
 import { css } from '@emotion/core';
 
-import Place from "@material-ui/icons/Place";
-import Subject from "@material-ui/icons/Subject";
+import Tooltip from "./tooltip";
+
+import { isAllDay } from "./utils/helper";
+
+const TooltipWrapper = React.forwardRef((props, ref) => {
+  return (<Tooltip innerRef={ref} {...props} />);
+});
 
 export default class MultiEvent extends React.Component {
   constructor(props) {
     super(props);
 
-    let dateOnly = this.isDateOnly(this.props.startTime, this.props.endTime);
-
     this.state = {
-      name: this.props.name,
       startTime: moment.parseZone(this.props.startTime),
       endTime: moment.parseZone(this.props.endTime),
-      description: this.props.description,
-      location: this.props.location,
-      length: this.props.length,
-      dateOnly: dateOnly,
-      
-      //arrows on either side
-      arrowLeft: this.props.arrowLeft,
-      arrowRight: this.props.arrowRight,
-
-      //tooltip
-      tooltipBorderColor: this.props.tooltipBorderColor,
-      tooltipTextColor: this.props.tooltipTextColor,
 
       //event
       textColor: this.props.textColor,
@@ -43,48 +32,11 @@ export default class MultiEvent extends React.Component {
       hover: false,
     }
 
-    //get time display
-    this.state.timeDisplay = this.getTimeDisplay(this.state.startTime, this.state.endTime, dateOnly);
+    this.state.allDay = isAllDay(this.state.startTime, this.state.endTime);
 
     this.toggleTooltip = this.toggleTooltip.bind(this);
     this.closeTooltip = this.closeTooltip.bind(this);
     this.toggleHover = this.toggleHover.bind(this);
-  }
-
-  //get google calendar link
-  static getCalendarURL(startTime, endTime, name, description, location, isDateOnly) {
-    const url = new URL("https://calendar.google.com/calendar/r/eventedit");
-    url.searchParams.append("text", name || "");
-    
-    if (isDateOnly) {
-      url.searchParams.append("dates", startTime.format("YYYYMMDD") + "/" + endTime.format("YYYYMMDD"));
-    } else {
-      url.searchParams.append("dates", startTime.format("YYYYMMDDTHHmmss") + "/" + endTime.format("YYYYMMDDTHHmmss"));
-    }
-    
-    url.searchParams.append("details", description || "");
-    url.searchParams.append("location", location || "");
-    return url.href;
-  }
-
-  // determines if an event is a date only event (times for both start and end are 12am)
-  isDateOnly(startTime, endTime) {
-    return startTime.isSame(moment.parseZone(startTime).startOf("day"), "second")
-      && endTime.isSame(moment.parseZone(endTime).startOf("day"), "second");
-  }
-
-  getTimeDisplay(startTime, endTime, dateOnly) {
-    if (dateOnly) {
-      let endDate = moment(endTime).subtract(1, "day");
-
-      if (endDate.isSame(startTime, "day")) {
-        return startTime.format("dddd, MMMM Do");
-      } else {
-        return startTime.format("MMM Do, YYYY") + " - " + endDate.format("MMM Do, YYYY");
-      }
-    } else {
-      return startTime.format("MMM Do, YYYY, h:mma") + " -\n" + endTime.format("MMM Do, YYYY, h:mma");
-    }
   }
 
   closeTooltip() {
@@ -99,27 +51,7 @@ export default class MultiEvent extends React.Component {
     this.setState({hover: !this.state.hover});
   }
 
-  render() { 
-    let description;
-    if (this.state.description) {
-      description = <div className="details description">
-        <div css={{paddingRight: "10px"}}><Subject fontSize="small" /></div>
-        <div dangerouslySetInnerHTML={{__html: this.state.description}} />
-      </div>;
-    } else {
-      description = <div></div>;
-    }
-
-    let location;
-    if (this.state.location) {
-      location = <div className="details location">
-        <div css={{paddingRight: "10px"}}><Place fontSize="small" /></div>
-        <div>{this.state.location}</div>
-      </div>;
-    } else {
-      location = <div></div>;
-    }
-
+  render() {
     const leftArrow = css`
       margin-left: 8px;
       border-top-left-radius: 0px;
@@ -162,15 +94,17 @@ export default class MultiEvent extends React.Component {
         onMouseEnter={this.toggleHover}
         onMouseLeave={this.toggleHover}
         css={css`
-          
           border-radius: 3px;
-          width: ${'calc(' + this.state.length + '00% + ' + (this.state.length - 1 - 8 * (this.state.arrowLeft + this.state.arrowRight)) + 'px)'};
+          width: ${'calc(' + this.props.length + '00% + ' + (this.props.length - 1 - 8 * (this.props.arrowLeft + this.props.arrowRight)) + 'px)'};
           color: ${this.state.textColor};
           background: ${((this.state.hover || this.state.showTooltip) ? this.state.hoverColor : this.state.backgroundColor)};
-          ${this.state.arrowLeft && leftArrow}
-          ${this.state.arrowRight && rightArrow}
+          ${this.props.arrowLeft && leftArrow}
+          ${this.props.arrowRight && rightArrow}
           :focus {
             outline: none;
+          }
+          @media (min-width: 600px) {
+            position: relative;
           }
         `}
       >
@@ -178,8 +112,8 @@ export default class MultiEvent extends React.Component {
           className="event-text" 
           css={{
             padding: '3px 0px',
-            marginLeft: this.state.arrowLeft ? '2px' : '5px',
-            marginRight: this.state.arrowRight ? '0px' : '5px',
+            marginLeft: this.props.arrowLeft ? '2px' : '5px',
+            marginRight: this.props.arrowRight ? '0px' : '5px',
             overflowX: 'hidden',
             whiteSpace: 'nowrap',
             position: 'relative',
@@ -191,34 +125,23 @@ export default class MultiEvent extends React.Component {
           onClick={this.toggleTooltip}
         >
           {
-            this.state.dateOnly ? "" : this.state.startTime.format("h:mma ")
+            this.state.allDay ? "" : this.state.startTime.format("h:mma ")
           }
           <span css={{fontWeight: "500"}}>
-            {this.state.name}
+            {this.props.name}
           </span>
         </div>
-        <div className="tooltip" css={{
-          visibility: this.state.showTooltip ? "visible" : "hidden",
-          color: this.state.tooltipTextColor,
-          border: "2px solid " + this.state.tooltipBorderColor,
-        }}>
-          <h2>{this.state.name}</h2>
-          <p className="display-linebreak">
-            { this.state.timeDisplay }
-          </p>
-          {description}
-          {location}
-          <a 
-            href={MultiEvent.getCalendarURL(this.state.startTime, this.state.endTime, this.state.name, this.state.description, this.state.location, this.state.dateOnly)}
-            target="_blank"
-            onMouseDown={e => e.preventDefault()}
-            css={{
-              fontSize: "13px",
-            }}
-          >
-            Add to Calendar
-          </a>
-        </div>
+        <TooltipWrapper 
+          ref={this.props.innerRef} 
+          name={this.props.name}
+          startTime={moment.parseZone(this.props.startTime)}
+          endTime={moment.parseZone(this.props.endTime)}
+          description={this.props.description}
+          location={this.props.location}
+          tooltipTextColor={this.props.tooltipTextColor}
+          tooltipBorderColor={this.props.tooltipBorderColor}
+          showTooltip={this.state.showTooltip}
+        />
       </div>
     )
   }

@@ -1,0 +1,28 @@
+{
+  "presets": [
+    "@babel/preset-react", 
+    [
+      "@babel/preset-env",
+      {
+        "useBuiltIns": "usage",
+        "corejs": 3
+      }
+    ], 
+    [
+      "@emotion/babel-preset-css-prop",
+      {
+        "sourceMap": false
+      }
+    ]
+  
+  ],
+  "plugins": [
+    [
+      "emotion",
+      {
+        "sourceMap": false
+      }
+    ],
+    "@babel/plugin-transform-runtime"
+  ]
+}
