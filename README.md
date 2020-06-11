@@ -4,11 +4,13 @@
   
 A react component that displays an event calendar using data from google's calendar api. It is intended to replace the embedded google calendar.
 
+It handles reccuring events, deleted events, and changed events. It also handles and displays events of all lengths in a very similar way to google calendar.
+
 See it in action [here](https://ericz1803.github.io/react-test-calendar/).
 
 ![picture of calendar](example.png)
 
-Design inspired by [this calendar](https://codepen.io/knyttneve/pen/QVqyNg).
+Design inspired by [this calendar](https://codepen.io/knyttneve/pen/QVqyNg) and [google calendar](https://www.google.com/calendar).
 
 ## Installation
 
@@ -22,7 +24,7 @@ First, get an api key from [here](https://developers.google.com/calendar/quickst
 
 Alternately, you can go to https://console.developers.google.com/flows/enableapi?apiid=calendar.
 
-Then, get the calendar id from the google calendar. It will look something like `s9ajkhr604dfrmvm7185lesou0@group.calendar.google.com`.   
+Then, get the calendar id from the google calendar. It will look something like `09opmkrjova8h5k5k46fedmo88@group.calendar.google.com`.   
 You can find it by going to a calendar's settings and scrolling down to the section that is labelled `Integrate calendar`.
 
 ### Properties

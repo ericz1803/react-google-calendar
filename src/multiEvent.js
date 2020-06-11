@@ -9,7 +9,7 @@ import { css } from '@emotion/core';
 
 import Tooltip from "./tooltip";
 
-import { isAllDay } from "./helper";
+import { isAllDay } from "./utils/helper";
 
 const TooltipWrapper = React.forwardRef((props, ref) => {
   return (<Tooltip innerRef={ref} {...props} />);
@@ -22,9 +22,6 @@ export default class MultiEvent extends React.Component {
     this.state = {
       startTime: moment.parseZone(this.props.startTime),
       endTime: moment.parseZone(this.props.endTime),
-      //arrows on either side
-      arrowLeft: this.props.arrowLeft,
-      arrowRight: this.props.arrowRight,
 
       //event
       textColor: this.props.textColor,
@@ -98,11 +95,11 @@ export default class MultiEvent extends React.Component {
         onMouseLeave={this.toggleHover}
         css={css`
           border-radius: 3px;
-          width: ${'calc(' + this.state.length + '00% + ' + (this.state.length - 1 - 8 * (this.state.arrowLeft + this.state.arrowRight)) + 'px)'};
+          width: ${'calc(' + this.props.length + '00% + ' + (this.props.length - 1 - 8 * (this.props.arrowLeft + this.props.arrowRight)) + 'px)'};
           color: ${this.state.textColor};
           background: ${((this.state.hover || this.state.showTooltip) ? this.state.hoverColor : this.state.backgroundColor)};
-          ${this.state.arrowLeft && leftArrow}
-          ${this.state.arrowRight && rightArrow}
+          ${this.props.arrowLeft && leftArrow}
+          ${this.props.arrowRight && rightArrow}
           :focus {
             outline: none;
           }
@@ -115,8 +112,8 @@ export default class MultiEvent extends React.Component {
           className="event-text" 
           css={{
             padding: '3px 0px',
-            marginLeft: this.state.arrowLeft ? '2px' : '5px',
-            marginRight: this.state.arrowRight ? '0px' : '5px',
+            marginLeft: this.props.arrowLeft ? '2px' : '5px',
+            marginRight: this.props.arrowRight ? '0px' : '5px',
             overflowX: 'hidden',
             whiteSpace: 'nowrap',
             position: 'relative',

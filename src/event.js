@@ -21,6 +21,7 @@ export default class Event extends React.Component {
     this.state = {      
       startTime: moment.parseZone(this.props.startTime),
       endTime: moment.parseZone(this.props.endTime),
+      
       //event
       circleColor: this.props.circleColor,
       textColor: this.props.textColor,

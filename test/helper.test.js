@@ -1,4 +1,4 @@
-import { isAllDay, getCalendarURL } from "../src/helper";
+import { isAllDay, getCalendarURL, isMultiEvent } from "../src/utils/helper";
 import moment from "moment-timezone";
 
 describe("isAllDay function", () => {
@@ -106,7 +106,41 @@ describe("getCalendarURL function", () => {
     const expectedURL = "https://calendar.google.com/calendar/r/eventedit?text=Event&dates=20200502T163000%2F20200502T173000&details=Some+Description&location=";
     expect(outputURL).toBe(expectedURL);
   });
+});
 
+describe("isMultiEvent function", () => {
+  test("same day less than 24 hrs", () => {
+    let startTime = moment.parseZone("2020-06-01 04:30");
+    let endTime = moment.parseZone("2020-06-01 15:30");
 
+    expect(isMultiEvent(startTime, endTime)).toBe(false);
+  });
 
+  test("multi day but short event", () => {
+    let startTime = moment.parseZone("2020-06-01 15:30");
+    let endTime = moment.parseZone("2020-06-02 04:30");
+
+    expect(isMultiEvent(startTime, endTime)).toBe(false);
+  });
+
+  test("all day event", () => {
+    let startTime = moment.parseZone("2020-06-01");
+    let endTime = moment.parseZone("2020-06-02");
+
+    expect(isMultiEvent(startTime, endTime)).toBe(true);
+  });
+
+  test("multi day event", () => {
+    let startTime = moment.parseZone("2020-06-01 04:30");
+    let endTime = moment.parseZone("2020-06-02 15:30");
+
+    expect(isMultiEvent(startTime, endTime)).toBe(true);
+  });
+
+  test("multi day all day event", () => {
+    let startTime = moment.parseZone("2020-06-01");
+    let endTime = moment.parseZone("2020-06-05");
+
+    expect(isMultiEvent(startTime, endTime)).toBe(true);
+  });
 });

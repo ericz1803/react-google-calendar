@@ -51,6 +51,4 @@ describe("Event Component", () => {
 
     expect(window.getComputedStyle(container.querySelector('.tooltip')).visibility).toEqual("hidden");
   });
-
-
 });

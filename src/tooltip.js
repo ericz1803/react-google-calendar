@@ -7,7 +7,7 @@ import "./index.css";
 
 import { css } from '@emotion/core';
 
-import { isAllDay, getCalendarURL } from "./helper";
+import { isAllDay, getCalendarURL } from "./utils/helper";
 
 import Place from "@material-ui/icons/Place";
 import Subject from "@material-ui/icons/Subject";
