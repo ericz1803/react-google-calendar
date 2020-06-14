@@ -110,11 +110,8 @@ export default class Event extends React.Component {
           endTime={moment.parseZone(this.props.endTime)}
           description={this.props.description}
           location={this.props.location}
-          tooltipTextColor={this.props.tooltipTextColor}
-          tooltipBorderColor={this.props.tooltipBorderColor}
-          // eventURL={Event.getCalendarURL(this.state.startTime, this.state.endTime, this.state.name, this.state.description, this.state.location)}
+          tooltipStyles={this.props.tooltipStyles}
           showTooltip={this.state.showTooltip}
-          // timeDisplay={this.state.timeDisplay}
         />
       </div>
     )
@@ -127,8 +124,10 @@ Event.propTypes = {
   endTime: PropTypes.instanceOf(moment).isRequired,
   description: PropTypes.string,
   location: PropTypes.string,
-  tooltipBorderColor: PropTypes.string,
-  tooltipTextColor: PropTypes.string,
+  tooltipStyles: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.instanceOf(css),
+  ]),
   circleColor: PropTypes.string,
   textColor: PropTypes.string,
   hoverColor: PropTypes.string,

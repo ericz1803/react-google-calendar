@@ -138,8 +138,7 @@ export default class MultiEvent extends React.Component {
           endTime={moment.parseZone(this.props.endTime)}
           description={this.props.description}
           location={this.props.location}
-          tooltipTextColor={this.props.tooltipTextColor}
-          tooltipBorderColor={this.props.tooltipBorderColor}
+          tooltipStyles={this.props.tooltipStyles}
           showTooltip={this.state.showTooltip}
         />
       </div>
@@ -154,8 +153,10 @@ MultiEvent.propTypes = {
   length: PropTypes.number,
   description: PropTypes.string,
   location: PropTypes.string,
-  tooltipBorderColor: PropTypes.string,
-  tooltipTextColor: PropTypes.string,
+  tooltipStyles: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.instanceOf(css),
+  ]),
   textColor: PropTypes.string,
   backgroundColor: PropTypes.string,
   hoverColor: PropTypes.string,

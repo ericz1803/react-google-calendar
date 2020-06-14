@@ -12,6 +12,9 @@ import MultiEvent from "./multiEvent";
 
 import { isMultiEvent } from "./utils/helper";
 import { loadCalendarAPI, getEventsList } from "./utils/googleCalendarAPI";
+import { css } from "@emotion/core";
+
+import _ from "lodash";
 
 const EventWrapper = React.forwardRef((props, ref) => {
   return (<Event innerRef={ref} {...props} />);
@@ -45,19 +48,6 @@ export default class Calendar extends React.Component {
       events: [],//all day or multi day events
       singleEvents: [], //single day events
       calendarTimezone: "",
-      calendarId: this.props.calendarId,
-      apiKey: this.props.apiKey,
-      
-      //calendar colors
-      borderColor: this.props.borderColor,
-      textColor: this.props.textColor,
-      backgroundColor: this.props.backgroundColor,
-      todayTextColor: this.props.todayTextColor,
-      todayBackgroundColor: this.props.todayBackgroundColor,
-
-      //tooltip colors
-      tooltipBorderColor: this.props.tooltipBorderColor,
-      tooltipTextColor: this.props.tooltipTextColor,
 
       //single event colors
       singleEventHoverColor: this.props.singleEventHoverColor,
@@ -79,7 +69,7 @@ export default class Calendar extends React.Component {
   async componentDidMount() {
     //init and load google calendar api
     try {
-      const res = await loadCalendarAPI(this.state.apiKey);
+      const res = await loadCalendarAPI(this.props.apiKey);
       console.log(res);
     } catch(err) {
       console.error("Error loading GAPI client for API", err);
@@ -88,7 +78,7 @@ export default class Calendar extends React.Component {
     //Get events
     try {
       //query api for events
-      const res = await getEventsList(this.state.calendarId);
+      const res = await getEventsList(this.props.calendarId);
 
       //process events
       const events = Calendar.processEvents(res.result.items);
@@ -217,7 +207,7 @@ export default class Calendar extends React.Component {
       <div
         className="day-name"
         key={"day-of-week-" + i}
-        css={{ borderColor: this.state.borderColor }}
+        css={[{ borderColor: "LightGray" }, _.get(this.props.styles, 'day', {})]}
       >
         {x}
       </div>
@@ -238,7 +228,7 @@ export default class Calendar extends React.Component {
         <div
           className="day"
           key={"empty-day-" + i}
-          css={{ borderColor: this.state.borderColor }}
+          css={[{ borderColor: "LightGray" }, _.get(this.props.styles, 'day', {})]}
         ></div>
       )),
       days.map(x => {
@@ -247,11 +237,7 @@ export default class Calendar extends React.Component {
             <div
               className="day"
               key={"day-" + x}
-              css={{ 
-                borderColor: this.state.borderColor,
-                color: this.state.todayTextColor,
-                background: this.state.todayBackgroundColor,
-              }}
+              css={_.get(this.props.styles, 'today', {})}
             >
               <span
                 css={{
@@ -268,7 +254,7 @@ export default class Calendar extends React.Component {
             <div
               className="day"
               key={"day-" + x}
-              css={{ borderColor: this.state.borderColor }}
+              css={[{ borderColor: "LightGray" }, _.get(this.props.styles, 'day', {})]}
             >
               <span
                 css={{
@@ -286,7 +272,7 @@ export default class Calendar extends React.Component {
         <div
           className="day"
           key={"empty-day-2-" + i}
-          css={{ borderColor: this.state.borderColor }}
+          css={[{ borderColor: "LightGray" }, _.get(this.props.styles, 'day', {})]}
         ></div>
       ))
     ];
@@ -349,8 +335,7 @@ export default class Calendar extends React.Component {
   //handles rendering and proper stacking of individual blocks 
   renderMultiEventBlock(startDate, length, props, arrowLeft, arrowRight) { 
     let multiEventProps = {
-      tooltipBorderColor: this.state.tooltipBorderColor,
-      tooltipTextColor: this.state.tooltipTextColor,
+      tooltipStyles: _.get(this.props.styles, 'tooltip', {}), //gets this.props.styles.tooltip if exists, else empty object
       textColor: this.state.eventTextColor,
       backgroundColor: this.state.eventBackgroundColor,
       hoverColor: this.state.eventHoverColor,
@@ -493,8 +478,7 @@ export default class Calendar extends React.Component {
     });
 
     let eventProps = {
-      tooltipBorderColor: this.state.tooltipBorderColor,
-      tooltipTextColor: this.state.tooltipTextColor,
+      tooltipStyles: _.get(this.props.styles, 'tooltip', {}), //gets this.props.styles.tooltip if exists, else empty object
       borderColor: this.state.singleEventBorderColor,
       hoverColor: this.state.singleEventHoverColor,
       textColor: this.state.singleEventTextColor,
@@ -555,12 +539,11 @@ export default class Calendar extends React.Component {
       <div
         className="calendar"
         ref={this.calendarRef}
-        css={{
+        css={[{
           position: "relative",
-          borderColor: this.state.borderColor,
-          color: this.state.textColor,
-          background: this.state.backgroundColor,
-        }}
+          borderColor: "LightGray",
+          color: "#51565d",
+        }, _.get(this.props.styles, 'calendar', {})]}
       >
         <div className="calendar-header">
           <div
@@ -610,16 +593,14 @@ Calendar.propTypes = {
   calendarId: PropTypes.string.isRequired,
   apiKey: PropTypes.string.isRequired,
 
+  styles: PropTypes.object,
+
   //calendar colors
   borderColor: PropTypes.string,
   textColor: PropTypes.string,
   backgroundColor: PropTypes.string,
   todayTextColor: PropTypes.string,
   todayBackgroundColor: PropTypes.string,
-
-  //tooltip colors
-  tooltipBorderColor: PropTypes.string,
-  tooltipTextColor: PropTypes.string,
 
   //single event colors
   singleEventHoverColor: PropTypes.string,
@@ -633,14 +614,6 @@ Calendar.propTypes = {
 }
 
 Calendar.defaultProps = {
-  //calendar colors
-  textColor: "#51565d",
-  borderColor: "LightGray",
-  
-  //tooltip colors
-  tooltipBorderColor: "rgba(81, 86, 93, 0.1)",
-  tooltipTextColor: "#51565d",
-
   //single event colors
   singleEventHoverColor: "rgba(81, 86, 93, 0.1)",
   singleEventTextColor: "#51565d",

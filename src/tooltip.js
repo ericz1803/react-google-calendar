@@ -83,15 +83,15 @@ export default class Tooltip extends React.PureComponent {
       <div 
         className="tooltip" 
         ref={this.tooltipRef}
-        css={css`
+        css={[css`
           visibility: ${this.props.showTooltip ? "visible" : "hidden"};
           width: 225px;
           background: #fff;
           text-align: left;
           padding: 5px;
           border-radius: 6px;
-          color: ${this.props.tooltipTextColor};
-          border: ${"2px solid " + this.props.tooltipBorderColor};
+          color: #51565d;
+          border: 2px solid rgba(81, 86, 93, 0.1);
           position: absolute;
           z-index: 1;
           @media (max-width: 599px) {
@@ -102,11 +102,10 @@ export default class Tooltip extends React.PureComponent {
           @media (min-width: 600px) {
             bottom: ${!this.state.flipY && "0%"};
             top: ${this.state.flipY && "0%"};
-            right: ${!this.state.flipX && "101%"};
-            left: ${this.state.flipX && "101%"};
+            right: ${!this.state.flipX && "calc(100% + 3px)"};
+            left: ${this.state.flipX && "calc(100% + 3px)"};
           }
-          
-      `}>
+      `, this.props.tooltipStyles]}>
         <h2 className="tooltip-text">{this.props.name}</h2>
         <p className="display-linebreak">
           { this.state.timeDisplay }
