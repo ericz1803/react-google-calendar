@@ -91,9 +91,7 @@ export default class MultiEvent extends React.Component {
           &:focus {
             outline: none;
           }
-          @media (min-width: 600px) {
-            position: relative;
-          }
+          position: relative;
         `}
       >
         <div css={[css`
@@ -141,6 +139,7 @@ export default class MultiEvent extends React.Component {
           location={this.props.location}
           tooltipStyles={this.props.tooltipStyles}
           showTooltip={this.state.showTooltip}
+          closeTooltip={this.closeTooltip}
         />
       </div>
     )

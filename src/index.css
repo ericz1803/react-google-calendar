@@ -13,11 +13,12 @@
 
 .calendar-navigate {
   padding: 10px;
+  opacity: 0.4;
 }
 
 .calendar-navigate:hover {
   cursor: pointer;
-  color: rgba(81, 86, 93, 0.4);
+  opacity: 0.9;
 }
 
 .calendar-header {

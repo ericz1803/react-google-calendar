@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import moment from "moment-timezone";
+import moment, { relativeTimeRounding } from "moment-timezone";
 
 import "./index.css";
 
@@ -21,6 +21,8 @@ export default class Tooltip extends React.PureComponent {
       //tooltip positioning
       flipX: false,
       flipY: false,
+      middleX: false,
+      middleY: false,
       timeDisplay: Tooltip.getTimeDisplay(this.props.startTime, this.props.endTime, allDay),
       eventURL: getCalendarURL(this.props.startTime, this.props.endTime, this.props.name, this.props.description, this.props.location, allDay),
     }
@@ -52,9 +54,30 @@ export default class Tooltip extends React.PureComponent {
       let calendarRect = this.props.innerRef.current.getBoundingClientRect();
       let tooltipRect = this.tooltipRef.current.getBoundingClientRect();
       this.setState({
-        flipX: (tooltipRect.x < calendarRect.x),
-        flipY: (tooltipRect.y < calendarRect.y),
+        flipX: (tooltipRect.left < calendarRect.left),
+        flipY: (tooltipRect.top < calendarRect.top),
       });
+    }
+  }
+
+  //position tooltip in middle of event if it hangs off both sides of calendar
+  componentDidUpdate() {
+    if (this.props.innerRef) {
+      let calendarRect = this.props.innerRef.current.getBoundingClientRect();
+      let tooltipRect = this.tooltipRef.current.getBoundingClientRect();
+      if (this.state.flipX && (tooltipRect.right > calendarRect.right)) {
+        this.setState({
+          middleX: true,
+          flipX: false,
+        });
+      }
+
+      if (this.state.flipY && (tooltipRect.bottom > calendarRect.bottom)) {
+        this.setState({
+          middleY: true,
+          flipY: false,
+        });
+      } 
     }
   }
 
@@ -94,34 +117,49 @@ export default class Tooltip extends React.PureComponent {
           border: 2px solid rgba(81, 86, 93, 0.1);
           position: absolute;
           z-index: 1;
-          @media (max-width: 599px) {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-          }
-          @media (min-width: 600px) {
-            bottom: ${!this.state.flipY && "0%"};
-            top: ${this.state.flipY && "0%"};
-            right: ${!this.state.flipX && "calc(100% + 3px)"};
-            left: ${this.state.flipX && "calc(100% + 3px)"};
-          }
+
+          bottom: ${this.state.middleX ? (!this.state.flipY && "100%") : (!this.state.flipY && "0%")};
+          top: ${this.state.middleX ? (this.state.flipY && "100%") : (this.state.flipY && "0%")};
+          right: ${!this.state.flipX && "calc(100% + 3px)"};
+          left: ${this.state.flipX && "calc(100% + 3px)"};
+          left: ${this.state.middleX && "50%"};
+          transform: ${"translate(" + (this.state.middleX ? "-50%" : "0%") + "," + (this.state.middleY ? "50%" : "0%") + ")"};
       `, this.props.tooltipStyles]}>
-        <h2 className="tooltip-text">{this.props.name}</h2>
-        <p className="display-linebreak">
-          { this.state.timeDisplay }
-        </p>
-        {description}
-        {location}
-        <a 
-          href={this.state.eventURL}
-          target="_blank"
-          onMouseDown={e => e.preventDefault()}
-          css={{
-            fontSize: "13px",
-          }}
-        >
-          Add to Calendar
-        </a>
+        <div css={{
+          position: "relative",
+        }}>
+          <div css={css`
+            position: absolute;
+            right: 2px;
+            top: -5px;
+            opacity: 0.4;
+            font-size: 24px;
+            &:hover {
+              cursor: pointer;
+              opacity: 0.9;
+            }
+          `}
+            onClick={this.props.closeTooltip}
+          >
+            &times;
+          </div>
+          <h2 className="tooltip-text" css={{marginTop: "0px", paddingTop: "18.675px"}}>{this.props.name}</h2>
+          <p className="display-linebreak">
+            { this.state.timeDisplay }
+          </p>
+          {description}
+          {location}
+          <a 
+            href={this.state.eventURL}
+            target="_blank"
+            onMouseDown={e => e.preventDefault()}
+            css={{
+              fontSize: "13px",
+            }}
+          >
+            Add to Calendar
+          </a>
+        </div>
       </div>
     );
   }
@@ -134,6 +172,5 @@ Tooltip.propTypes = {
   endTime: PropTypes.instanceOf(moment),
   description: PropTypes.string,
   location: PropTypes.string,
-  tooltipBorderColor: PropTypes.string,
-  tooltipTextColor: PropTypes.string,
+  closeTooltip: PropTypes.func.isRequired,
 }

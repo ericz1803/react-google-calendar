@@ -44,9 +44,7 @@ export default class Event extends React.Component {
         tabIndex="0"
         onBlur={this.closeTooltip}
         css={css`
-          @media (min-width: 600px) {
-            position: relative;
-          }
+          position: relative;
           &:focus {
             outline: none;
           }
@@ -104,6 +102,7 @@ export default class Event extends React.Component {
           location={this.props.location}
           tooltipStyles={this.props.tooltipStyles}
           showTooltip={this.state.showTooltip}
+          closeTooltip={this.closeTooltip}
         />
       </div>
     )
