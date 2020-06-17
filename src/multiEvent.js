@@ -23,20 +23,13 @@ export default class MultiEvent extends React.Component {
       startTime: moment.parseZone(this.props.startTime),
       endTime: moment.parseZone(this.props.endTime),
 
-      //event
-      textColor: this.props.textColor,
-      backgroundColor: this.props.backgroundColor,
-      hoverColor: this.props.hoverColor,
-
       showTooltip: false,
-      hover: false,
     }
 
     this.state.allDay = isAllDay(this.state.startTime, this.state.endTime);
 
     this.toggleTooltip = this.toggleTooltip.bind(this);
     this.closeTooltip = this.closeTooltip.bind(this);
-    this.toggleHover = this.toggleHover.bind(this);
   }
 
   closeTooltip() {
@@ -47,10 +40,6 @@ export default class MultiEvent extends React.Component {
     this.setState({showTooltip: !this.state.showTooltip});
   }
 
-  toggleHover() {
-    this.setState({hover: !this.state.hover});
-  }
-
   render() {
     const leftArrow = css`
       margin-left: 8px;
@@ -59,13 +48,16 @@ export default class MultiEvent extends React.Component {
       &:before {
         content: "";
         position: absolute;
-        left: -8px;
+        left: 0;
         bottom: 0; 
         width: 0;
         height: 0;
-        border-right: 8px solid ${((this.state.hover || this.state.showTooltip) ? this.state.hoverColor : this.state.backgroundColor)};
+        border-right: 8px solid #4786ff;
         border-top: 13px solid transparent;
         border-bottom: 13px solid transparent;
+      }
+      &:hover::before {
+        border-right-color: #396DCC;
       }
     `;
 
@@ -76,13 +68,16 @@ export default class MultiEvent extends React.Component {
       &:after {
         content: "";
         position: absolute;
-        right: -8px;
+        right: 0;
         bottom: 0; 
         width: 0;
         height: 0;
-        border-left: 8px solid ${((this.state.hover || this.state.showTooltip) ? this.state.hoverColor : this.state.backgroundColor)};
+        border-left: 8px solid #4786ff;
         border-top: 13px solid transparent;
         border-bottom: 13px solid transparent;
+      }
+      &:hover::after {
+        border-left-color: #396DCC;
       }
     `;
 
@@ -91,16 +86,9 @@ export default class MultiEvent extends React.Component {
         className="event"
         tabIndex="0"
         onBlur={this.closeTooltip}
-        onMouseEnter={this.toggleHover}
-        onMouseLeave={this.toggleHover}
         css={css`
-          border-radius: 3px;
-          width: ${'calc(' + this.props.length + '00% + ' + (this.props.length - 1 - 8 * (this.props.arrowLeft + this.props.arrowRight)) + 'px)'};
-          color: ${this.state.textColor};
-          background: ${((this.state.hover || this.state.showTooltip) ? this.state.hoverColor : this.state.backgroundColor)};
-          ${this.props.arrowLeft && leftArrow}
-          ${this.props.arrowRight && rightArrow}
-          :focus {
+          width: ${'calc(' + this.props.length + '00% + ' + (this.props.length - 1) + 'px)'};
+          &:focus {
             outline: none;
           }
           @media (min-width: 600px) {
@@ -108,28 +96,41 @@ export default class MultiEvent extends React.Component {
           }
         `}
       >
-        <div 
-          className="event-text" 
-          css={{
-            padding: '3px 0px',
-            marginLeft: this.props.arrowLeft ? '2px' : '5px',
-            marginRight: this.props.arrowRight ? '0px' : '5px',
-            overflowX: 'hidden',
-            whiteSpace: 'nowrap',
-            position: 'relative',
-            textAlign: 'left',
-            '&:hover': {
-              cursor: 'pointer',
-            },
-          }}
-          onClick={this.toggleTooltip}
-        >
-          {
-            this.state.allDay ? "" : this.state.startTime.format("h:mma ")
+        <div css={[css`
+          width: ${'calc(100% - ' + 8 * (this.props.arrowLeft + this.props.arrowRight) + 'px)'};
+          border-radius: 3px;
+          background: #4786ff;
+          &:hover {
+            background: #396DCC;
           }
-          <span css={{fontWeight: "500"}}>
-            {this.props.name}
-          </span>
+          ${this.props.arrowLeft && leftArrow}
+          ${this.props.arrowRight && rightArrow}
+        `, this.props.multiEventStyles]}>
+          <div 
+            className="event-text" 
+            css={{
+              padding: '3px 0px',
+              color: 'white',
+              marginLeft: this.props.arrowLeft ? '2px' : '5px',
+              marginRight: this.props.arrowRight ? '0px' : '5px',
+              overflowX: 'hidden',
+              whiteSpace: 'nowrap',
+              position: 'relative',
+              textAlign: 'left',
+              '&:hover': {
+                cursor: 'pointer',
+              },
+              
+            }}
+            onClick={this.toggleTooltip}
+          >
+            {
+              this.state.allDay ? "" : this.state.startTime.format("h:mma ")
+            }
+            <span css={{fontWeight: "500"}}>
+              {this.props.name}
+            </span>
+          </div>
         </div>
         <TooltipWrapper 
           ref={this.props.innerRef} 
@@ -153,13 +154,15 @@ MultiEvent.propTypes = {
   length: PropTypes.number,
   description: PropTypes.string,
   location: PropTypes.string,
+
   tooltipStyles: PropTypes.oneOfType([
     PropTypes.object,
     PropTypes.instanceOf(css),
   ]),
-  textColor: PropTypes.string,
-  backgroundColor: PropTypes.string,
-  hoverColor: PropTypes.string,
+  multiEventStyles: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.instanceOf(css),
+  ]),
   arrowLeft: PropTypes.bool,
   arrowRight: PropTypes.bool,
 }

@@ -106,8 +106,9 @@
   font-size: 14px;
   border-bottom: 1px solid;
   border-right: 1px solid;
+  border-color: lightgray;
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
 }
 
 @media only screen and (min-width: 601px) {

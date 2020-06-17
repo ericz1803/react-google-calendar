@@ -21,19 +21,12 @@ export default class Event extends React.Component {
     this.state = {      
       startTime: moment.parseZone(this.props.startTime),
       endTime: moment.parseZone(this.props.endTime),
-      
-      //event
-      circleColor: this.props.circleColor,
-      textColor: this.props.textColor,
-      hoverColor: this.props.hoverColor,
 
       showTooltip: false,
-      hover: false,
     }
 
     this.toggleTooltip = this.toggleTooltip.bind(this);
     this.closeTooltip = this.closeTooltip.bind(this);
-    this.toggleHover = this.toggleHover.bind(this);
   }
 
   closeTooltip() {
@@ -44,64 +37,63 @@ export default class Event extends React.Component {
     this.setState({showTooltip: !this.state.showTooltip});
   }
 
-  toggleHover() {
-    this.setState({hover: !this.state.hover});
-  }
-
   render() {
     return (
       <div 
         className="event"
         tabIndex="0"
         onBlur={this.closeTooltip}
-        onMouseEnter={this.toggleHover}
-        onMouseLeave={this.toggleHover} 
         css={css`
-          border-radius: 3px;
-          width: 100%;
-          color: ${this.state.textColor}; 
-          background: ${(this.state.hover || this.state.showTooltip) && this.state.hoverColor};
-          :focus {
-            outline: none;
-          }
           @media (min-width: 600px) {
             position: relative;
           }
+          &:focus {
+            outline: none;
+          }
         `}
       >
-        <div 
-          className="event-text" 
-          css={{
-            padding: "3px 0px 3px 20px",
-            marginRight: "5px",
-            overflowX: "hidden",
-            whiteSpace: "nowrap",
-            position: "relative",
-            textAlign: "left",
-            '&:hover': {
-              cursor: "pointer",
-            }
-          }}
-          onClick={this.toggleTooltip}
-        >
-          <span css={css`
-            position: absolute;
-            top: 5px;
-            left: 2px;
-            color: ${this.state.circleColor};
-          `}>
-            <FiberManualRecordIcon fontSize="inherit" />
-          </span>
-          <span css={css`
-            @media (max-width: 599px) {
-              display: none;
-            }
-          `}>
-            { this.state.startTime.format("h:mma ") }
-          </span>
-          <span css={{fontWeight: "500"}}>
-            {this.props.name}
-          </span>
+        <div css={[css`
+          border-radius: 3px;
+          width: 100%;
+          &:hover {
+            background: rgba(81, 86, 93, 0.1);
+          }
+        `, this.props.eventStyles]}>
+          <div 
+            className="event-text" 
+            css={[{
+              color: "#51565d",
+              padding: "3px 0px 3px 20px",
+              marginRight: "5px",
+              overflowX: "hidden",
+              whiteSpace: "nowrap",
+              position: "relative",
+              textAlign: "left",
+              '&:hover': {
+                cursor: "pointer",
+              }
+            }, this.props.eventTextStyles]}
+            onClick={this.toggleTooltip}
+          >
+            <span css={[css`
+              position: absolute;
+              top: 5px;
+              left: 2px;
+              color: #4786ff;
+            `, this.props.eventCircleStyles]}>
+              <FiberManualRecordIcon fontSize="inherit" />
+            </span>
+            <span css={css`
+              @media (max-width: 599px) {
+                display: none;
+              }
+            `}>
+              { this.state.startTime.format("h:mma ") }
+            </span>
+            <span css={{fontWeight: "500"}}>
+              {this.props.name}
+            </span>
+          </div>
         </div>
         <TooltipWrapper 
           ref={this.props.innerRef} 
@@ -124,6 +116,18 @@ Event.propTypes = {
   endTime: PropTypes.instanceOf(moment).isRequired,
   description: PropTypes.string,
   location: PropTypes.string,
+  eventStyles: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.instanceOf(css),
+  ]),
+  eventCircleStyles: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.instanceOf(css),
+  ]),
+  eventTextStyles: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.instanceOf(css),
+  ]),
   tooltipStyles: PropTypes.oneOfType([
     PropTypes.object,
     PropTypes.instanceOf(css),
