@@ -5,19 +5,14 @@
   user-select: none;
 }
 
-.calendar {
-  font-size: 18px;
-  border: 1px solid;
-  min-width: 300px;
-}
-
 .calendar-navigate {
   padding: 10px;
+  opacity: 0.5;
 }
 
 .calendar-navigate:hover {
   cursor: pointer;
-  color: rgba(81, 86, 93, 0.4);
+  opacity: 0.9;
 }
 
 .calendar-header {
@@ -46,68 +41,15 @@
   align-items: center;
 }
 
-.footer-text {
-  font-size: 14px;
-  padding-left: 5px;
-  text-align: left;
-}
-
-.footer-button {
-  min-width: 123px;
-  height: 20px;
-  vertical-align: bottom;
-  margin-right: 1px;
-}
-
-#add-to-calendar {
-  text-decoration: none;
-  color: inherit;
-  font-size: 13px;
-}
-
-.logo-plus-button {
-  height: 18px;
-  background-color: #fff;
-  padding-right: 2px;
-  display: inline-block;
-}
-
-.logo-plus-button-plus-icon {
-  background-color: #4285f4;
-  background-image: url(//calendar.google.com/googlecalendar/images/logo-plus.png);
-  background-position: center center;
-  width: 18px;
-  height: 18px;
-  display: inline-block;
-}
-
-.logo-plus-button-lockup {
-  padding-left: 47px;
-  background-image: url(//www.gstatic.com/images/branding/googlelogo/1x/googlelogo_color_46x16dp.png);
-  background-size: 46px 16px;
-  background-repeat: no-repeat;
-  background-position-y: 3px;
-  position: relative;
-  top: -4px;
-  margin-left: 3px;
-  margin-right: 1px;
-  display: inline-block;
-}
-
-.logo-plus-button-lockup-text {
-  padding-left: 1px;
-  font-size: 13px;
-  color: rgba(0, 0, 0, .54);
-}
-
 .day {
   text-align: right;
   padding: 14px 0px;
   font-size: 14px;
   border-bottom: 1px solid;
   border-right: 1px solid;
+  border-color: lightgray;
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
 }
 
 @media only screen and (min-width: 601px) {

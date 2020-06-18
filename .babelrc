@@ -23,6 +23,7 @@
         "sourceMap": false
       }
     ],
-    "@babel/plugin-transform-runtime"
+    "@babel/plugin-transform-runtime",
+    "lodash"
   ]
 }

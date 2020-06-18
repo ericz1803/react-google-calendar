@@ -12,6 +12,9 @@ import MultiEvent from "./multiEvent";
 
 import { isMultiEvent } from "./utils/helper";
 import { loadCalendarAPI, getEventsList } from "./utils/googleCalendarAPI";
+import { css } from "@emotion/core";
+
+import _ from "lodash";
 
 const EventWrapper = React.forwardRef((props, ref) => {
   return (<Event innerRef={ref} {...props} />);
@@ -45,29 +48,6 @@ export default class Calendar extends React.Component {
       events: [],//all day or multi day events
       singleEvents: [], //single day events
       calendarTimezone: "",
-      calendarId: this.props.calendarId,
-      apiKey: this.props.apiKey,
-      
-      //calendar colors
-      borderColor: this.props.borderColor,
-      textColor: this.props.textColor,
-      backgroundColor: this.props.backgroundColor,
-      todayTextColor: this.props.todayTextColor,
-      todayBackgroundColor: this.props.todayBackgroundColor,
-
-      //tooltip colors
-      tooltipBorderColor: this.props.tooltipBorderColor,
-      tooltipTextColor: this.props.tooltipTextColor,
-
-      //single event colors
-      singleEventHoverColor: this.props.singleEventHoverColor,
-      singleEventTextColor: this.props.singleEventTextColor,
-      singleEventCircleColor: this.props.singleEventCircleColor,
-
-      //long event colors
-      eventTextColor: this.props.eventTextColor,
-      eventBackgroundColor: this.props.eventBackgroundColor,
-      eventHoverColor: this.props.eventHoverColor,
     };
 
     this.calendarRef = React.createRef();
@@ -79,7 +59,7 @@ export default class Calendar extends React.Component {
   async componentDidMount() {
     //init and load google calendar api
     try {
-      const res = await loadCalendarAPI(this.state.apiKey);
+      const res = await loadCalendarAPI(this.props.apiKey);
       console.log(res);
     } catch(err) {
       console.error("Error loading GAPI client for API", err);
@@ -88,7 +68,7 @@ export default class Calendar extends React.Component {
     //Get events
     try {
       //query api for events
-      const res = await getEventsList(this.state.calendarId);
+      const res = await getEventsList(this.props.calendarId);
 
       //process events
       const events = Calendar.processEvents(res.result.items);
@@ -217,7 +197,7 @@ export default class Calendar extends React.Component {
       <div
         className="day-name"
         key={"day-of-week-" + i}
-        css={{ borderColor: this.state.borderColor }}
+        css={[{ borderColor: "LightGray" }, _.get(this.props.styles, 'day', {})]}
       >
         {x}
       </div>
@@ -232,13 +212,12 @@ export default class Calendar extends React.Component {
 
     var padDays = (((-this.state.current.daysInMonth() - this.state.current.day()) % 7) + 7) % 7; //number of days to fill out the last row    
 
-
     return [
       [...Array(dayOfWeek)].map((x, i) => (
         <div
           className="day"
           key={"empty-day-" + i}
-          css={{ borderColor: this.state.borderColor }}
+          css={_.get(this.props.styles, 'day', {})}
         ></div>
       )),
       days.map(x => {
@@ -247,11 +226,7 @@ export default class Calendar extends React.Component {
             <div
               className="day"
               key={"day-" + x}
-              css={{ 
-                borderColor: this.state.borderColor,
-                color: this.state.todayTextColor,
-                background: this.state.todayBackgroundColor,
-              }}
+              css={[_.get(this.props.styles, 'day', {}), _.get(this.props.styles, 'today', {})]}
             >
               <span
                 css={{
@@ -268,7 +243,7 @@ export default class Calendar extends React.Component {
             <div
               className="day"
               key={"day-" + x}
-              css={{ borderColor: this.state.borderColor }}
+              css={_.get(this.props.styles, 'day', {})}
             >
               <span
                 css={{
@@ -286,7 +261,7 @@ export default class Calendar extends React.Component {
         <div
           className="day"
           key={"empty-day-2-" + i}
-          css={{ borderColor: this.state.borderColor }}
+          css={_.get(this.props.styles, 'day', {})}
         ></div>
       ))
     ];
@@ -310,7 +285,10 @@ export default class Calendar extends React.Component {
     }
 
     if (moment(props.startTime).utc(true).isBefore(this.state.current)) {
-      arrowLeft = true;
+      if (this.props.showArrow) {
+        arrowLeft = true;
+      }
+      
       startDrawDate = 1;
       curDate = moment(this.state.current).utc(true);
     } else {
@@ -321,7 +299,10 @@ export default class Calendar extends React.Component {
 
     while (curDate.isSameOrBefore(endDate, "day")) {
       if (curDate.date() == this.state.current.daysInMonth() && !endDate.isSame(this.state.current, 'month')) {
-        arrowRight = true;
+        if (this.props.showArrow) {
+          arrowRight = true;
+        }
+        
         //draw then quit
         this.renderMultiEventBlock(startDrawDate, blockLength, props, arrowLeft, arrowRight);
         break;
@@ -349,11 +330,8 @@ export default class Calendar extends React.Component {
   //handles rendering and proper stacking of individual blocks 
   renderMultiEventBlock(startDate, length, props, arrowLeft, arrowRight) { 
     let multiEventProps = {
-      tooltipBorderColor: this.state.tooltipBorderColor,
-      tooltipTextColor: this.state.tooltipTextColor,
-      textColor: this.state.eventTextColor,
-      backgroundColor: this.state.eventBackgroundColor,
-      hoverColor: this.state.eventHoverColor,
+      tooltipStyles: _.get(this.props.styles, 'tooltip', {}), //gets this.props.styles.tooltip if exists, else empty object
+      multiEventStyles: _.get(this.props.styles, 'multiEvent', {}),
     }
 
     let maxBlocks = 0;
@@ -493,12 +471,10 @@ export default class Calendar extends React.Component {
     });
 
     let eventProps = {
-      tooltipBorderColor: this.state.tooltipBorderColor,
-      tooltipTextColor: this.state.tooltipTextColor,
-      borderColor: this.state.singleEventBorderColor,
-      hoverColor: this.state.singleEventHoverColor,
-      textColor: this.state.singleEventTextColor,
-      circleColor: this.state.singleEventCircleColor,
+      tooltipStyles: _.get(this.props.styles, 'tooltip', {}), //gets this.props.styles.tooltip if exists, else empty object
+      eventStyles: _.get(this.props.styles, 'event', {}),
+      eventCircleStyles: _.get(this.props.styles, 'eventCircle', {}),
+      eventTextStyles: _.get(this.props.styles, 'eventText', {}),
     }
 
     this.state.singleEvents.forEach((event) => {
@@ -555,12 +531,14 @@ export default class Calendar extends React.Component {
       <div
         className="calendar"
         ref={this.calendarRef}
-        css={{
+        css={[{
+          fontSize: "18px",
+          border: "1px solid",
+          minWidth: "300px",
           position: "relative",
-          borderColor: this.state.borderColor,
-          color: this.state.textColor,
-          background: this.state.backgroundColor,
-        }}
+          borderColor: "LightGray",
+          color: "#51565d",
+        }, _.get(this.props.styles, 'calendar', {})]}
       >
         <div className="calendar-header">
           <div
@@ -586,17 +564,27 @@ export default class Calendar extends React.Component {
           {this.renderDates()}
         </div>
         <div className="calendar-footer">
-          <div className="footer-text">
+          <div css={css`
+            font-size: 14px;
+            padding-left: 5px;
+            text-align: left;
+          `}>
             All times shown in timezone: {this.state.calendarTimezone.replace("_", " ")}
           </div>
-          <div className="footer-button">
-            <a href={"https://calendar.google.com/calendar/r?cid=" + this.state.calendarId} target="_blank" id="add-to-calendar">
-              <div className="logo-plus-button">
-                <div className="logo-plus-button-plus-icon"></div>
-                <div className="logo-plus-button-lockup">
-                  <span className="logo-plus-button-lockup-text">Calendar</span>
-                </div>
-              </div>
+          <div css={css`
+            vertical-align: top;
+            margin-left: 3px;
+            margin-right: 3px;
+          `}>
+            <a href={"https://calendar.google.com/calendar/r?cid=" + this.props.calendarId} target="_blank" css={css`
+              font-size: 14px;
+              text-decoration: none;
+              color: inherit;
+              &:hover {
+                text-decoration: underline;
+              }
+            `}>
+              &#43; Add Calendar
             </a>
           </div>
         </div>
@@ -604,50 +592,16 @@ export default class Calendar extends React.Component {
     );
   }
 }
-  
 
 Calendar.propTypes = {
   calendarId: PropTypes.string.isRequired,
   apiKey: PropTypes.string.isRequired,
 
-  //calendar colors
-  borderColor: PropTypes.string,
-  textColor: PropTypes.string,
-  backgroundColor: PropTypes.string,
-  todayTextColor: PropTypes.string,
-  todayBackgroundColor: PropTypes.string,
+  showArrow: PropTypes.bool,
 
-  //tooltip colors
-  tooltipBorderColor: PropTypes.string,
-  tooltipTextColor: PropTypes.string,
-
-  //single event colors
-  singleEventHoverColor: PropTypes.string,
-  singleEventTextColor: PropTypes.string,
-  singleEventCircleColor: PropTypes.string,
-
-  //long event colors
-  eventTextColor: PropTypes.string,
-  eventBackgroundColor: PropTypes.string,
-  eventHoverColor: PropTypes.string,
+  styles: PropTypes.object,
 }
 
 Calendar.defaultProps = {
-  //calendar colors
-  textColor: "#51565d",
-  borderColor: "LightGray",
-  
-  //tooltip colors
-  tooltipBorderColor: "rgba(81, 86, 93, 0.1)",
-  tooltipTextColor: "#51565d",
-
-  //single event colors
-  singleEventHoverColor: "rgba(81, 86, 93, 0.1)",
-  singleEventTextColor: "#51565d",
-  singleEventCircleColor: "#4786ff",
-
-  //long event colors
-  eventTextColor: "white",
-  eventBackgroundColor: "#4786ff",
-  eventHoverColor: "#396DCC",
+  showArrow: true,
 }

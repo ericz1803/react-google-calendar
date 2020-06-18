@@ -6,7 +6,7 @@ A react component that displays an event calendar using data from google's calen
 
 It handles reccuring events, deleted events, and changed events. It also handles and displays events of all lengths in a very similar way to google calendar.
 
-See it in action [here](https://ericz1803.github.io/react-test-calendar/).
+See it in action [here](https://ericz1803.github.io/react-test-calendar/) or try it yourself [here](https://codesandbox.io/s/kind-davinci-12qze).
 
 ![picture of calendar](example.png)
 
@@ -15,7 +15,8 @@ Design inspired by [this calendar](https://codepen.io/knyttneve/pen/QVqyNg) and 
 ## Installation
 
 ```
-npm install --save @ericz1803/google-react-calendar
+1. npm install --save react react-dom @emotion/core
+2. npm install --save @ericz1803/google-react-calendar
 ```
 
 ## Usage
@@ -28,67 +29,66 @@ Then, get the calendar id from the google calendar. It will look something like 
 You can find it by going to a calendar's settings and scrolling down to the section that is labelled `Integrate calendar`.
 
 ### Properties
-| Parameter             | Type   | Description                                                                                                                                 | Default |
-|-----------------------|--------|---------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| `apiKey`              | string | google api key (required)                                                                                                                   |         |
-| `calendarId`          | string | google calendar id (required)                                                                                                               |         |
+| Parameter     | Type    | Description                                      | Default |
+|---------------|---------|--------------------------------------------------|---------|
+| `apiKey`      | string  | google api key (required)                        |         |
+| `calendarId`  | string  | google calendar id (required)                    |         |
+| `styles`      | object  | styles (optional, see more below)                |         |
+| `showArrow`   | boolean | shows arrow for events that span multiple months | `true`  |
 
 ### Customization
 
-You can change the color of different aspects of the calendar by passing css colors (eg. `#51565d` or `rgba(166, 168, 179, 0.12)`) into the following props (as a string).
+You can change the color of different aspects of the calendar by passing in a `styles` object. Each of the styles in the `styles` object should be an object style (the same as react inline styles) or  an emotion `css` string style ([see more here](https://emotion.sh/docs/css-prop)). If you choose to use emotion's `css` string styles, make sure to `import { css } from "@emotion/core"`.
 
-#### Calendar Colors
-| Parameter              | Type   | Description                | Default                          |
-|------------------------|--------|----------------------------|----------------------------------|
-| `borderColor`          | string | color of calendar lines    | "LightGray"                      |
-| `textColor`            | string | color of the calendar text | "#51565d"                        |
-| `backgroundColor`      | string | color of the calendar      | null                             |
-| `todayTextColor`       | string | text color of today        | null (same as `textColor`)       |
-| `todayBackgroundColor` | string | color of today             | null (same as `backgroundColor`) |
-
-#### Tooltip Colors
-| Parameter            | Type   | Description                                                     | Default                 |
-|----------------------|--------|-----------------------------------------------------------------|-------------------------|
-| `tooltipBorderColor` | string | border color of tooltip that pops up when you click on an event | "rgba(81, 86, 93, 0.1)" |
-| `tooltipTextColor`   | string | color of tooltip text                                           | "#51565d"               |
-
-#### Single Event Colors 
-Applies to events that are shorter than 24h.
-
-| Parameter                | Type   | Description                                    | Default                 |
-|--------------------------|--------|------------------------------------------------|-------------------------|
-| `singleEventHoverColor`  | string | color of the event on hover                    | "rgba(81, 86, 93, 0.1)" |
-| `singleEventTextColor`   | string | text color of event                            | "#51565d"               |
-| `singleEventCircleColor` | string | color of the circle in front of the event text | "#4786ff"               |
-
-#### Event Colors
-Applies to events that are All Day Events or span multiple days.
-
-
-| Parameter              | Type   | Description                 | Default   |
-|------------------------|--------|-----------------------------|-----------|
-| `eventTextColor`       | string | text color of event         | "white"   |
-| `eventBackgroundColor` | string | background color of event   | "#4786ff" |
-| `eventHoverColor`      | string | color of the event on hover | "#396DCC" |
+#### Style Keys
+- `calendar`
+- `day`
+- `today`
+- `tooltip`
+- `event`
+- `eventText`
+- `eventCircle`
+- `multiEvent`
 
 ### Example
 
 ```js
+import React from "react";
 import Calendar from "@ericz1803/react-google-calendar";
+import { css } from "@emotion/core";
 
 const API_KEY = "YOUR_API_KEY";
 const CALENDAR_ID = "YOUR_CALENDAR_ID";
 
+const styles = {
+  eventCircle: {
+    color: "#B241D1",
+  },
+  multiEvent: css`
+    background: #B241D1;
+    &:hover {
+      background: #86319E;
+    }
+    &:after {
+      border-left-color: #B241D1;
+    }
+    &:hover::after {
+      border-left-color: #86319E;
+    }
+    &:before {
+      border-right-color: #B241D1;
+    }
+    &:hover::before {
+      border-right-color: #86319E;
+    }
+  `,
+}
+
 class Example extends React.Component {
   render() {
-    let props = {
-      singleEventCircleColor: 'SpringGreen',
-      borderColor: 'SlateGrey',
-    }
-
     return (
       <div>
-        <Calendar apiKey={API_KEY} calendarId={CALENDAR_ID} {...props} />
+        <Calendar apiKey={API_KEY} calendarId={CALENDAR_ID} styles={styles} />
       </div>
     )
   }
