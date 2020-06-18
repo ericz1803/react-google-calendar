@@ -132,7 +132,7 @@ export default class Tooltip extends React.PureComponent {
             position: absolute;
             right: 2px;
             top: -5px;
-            opacity: 0.4;
+            opacity: 0.5;
             font-size: 24px;
             &:hover {
               cursor: pointer;
@@ -157,7 +157,7 @@ export default class Tooltip extends React.PureComponent {
               fontSize: "13px",
             }}
           >
-            Add to Calendar
+            Copy to Calendar
           </a>
         </div>
       </div>

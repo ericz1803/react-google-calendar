@@ -532,6 +532,9 @@ export default class Calendar extends React.Component {
         className="calendar"
         ref={this.calendarRef}
         css={[{
+          fontSize: "18px",
+          border: "1px solid",
+          minWidth: "300px",
           position: "relative",
           borderColor: "LightGray",
           color: "#51565d",
@@ -561,17 +564,27 @@ export default class Calendar extends React.Component {
           {this.renderDates()}
         </div>
         <div className="calendar-footer">
-          <div className="footer-text">
+          <div css={css`
+            font-size: 14px;
+            padding-left: 5px;
+            text-align: left;
+          `}>
             All times shown in timezone: {this.state.calendarTimezone.replace("_", " ")}
           </div>
-          <div className="footer-button">
-            <a href={"https://calendar.google.com/calendar/r?cid=" + this.state.calendarId} target="_blank" id="add-to-calendar">
-              <div className="logo-plus-button">
-                <div className="logo-plus-button-plus-icon"></div>
-                <div className="logo-plus-button-lockup">
-                  <span className="logo-plus-button-lockup-text">Calendar</span>
-                </div>
-              </div>
+          <div css={css`
+            vertical-align: top;
+            margin-left: 3px;
+            margin-right: 3px;
+          `}>
+            <a href={"https://calendar.google.com/calendar/r?cid=" + this.props.calendarId} target="_blank" css={css`
+              font-size: 14px;
+              text-decoration: none;
+              color: inherit;
+              &:hover {
+                text-decoration: underline;
+              }
+            `}>
+              &#43; Add Calendar
             </a>
           </div>
         </div>

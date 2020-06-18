@@ -54,9 +54,12 @@ export default class Event extends React.Component {
           border-radius: 3px;
           width: 100%;
           &:hover {
+            cursor: pointer;
             background: rgba(81, 86, 93, 0.1);
           }
-        `, this.props.eventStyles]}>
+        `, this.props.eventStyles]}
+        onClick={this.toggleTooltip}
+        >
           <div 
             className="event-text" 
             css={[{
@@ -67,11 +70,7 @@ export default class Event extends React.Component {
               whiteSpace: "nowrap",
               position: "relative",
               textAlign: "left",
-              '&:hover': {
-                cursor: "pointer",
-              }
             }, this.props.eventTextStyles]}
-            onClick={this.toggleTooltip}
           >
             <span css={[css`
               position: absolute;

@@ -57,6 +57,7 @@ export default class MultiEvent extends React.Component {
         border-bottom: 13px solid transparent;
       }
       &:hover::before {
+        cursor: pointer;
         border-right-color: #396DCC;
       }
     `;
@@ -77,6 +78,7 @@ export default class MultiEvent extends React.Component {
         border-bottom: 13px solid transparent;
       }
       &:hover::after {
+        cursor: pointer;
         border-left-color: #396DCC;
       }
     `;
@@ -103,7 +105,9 @@ export default class MultiEvent extends React.Component {
           }
           ${this.props.arrowLeft && leftArrow}
           ${this.props.arrowRight && rightArrow}
-        `, this.props.multiEventStyles]}>
+        `, this.props.multiEventStyles]}
+        onClick={this.toggleTooltip}
+        >
           <div 
             className="event-text" 
             css={{
@@ -120,7 +124,6 @@ export default class MultiEvent extends React.Component {
               },
               
             }}
-            onClick={this.toggleTooltip}
           >
             {
               this.state.allDay ? "" : this.state.startTime.format("h:mma ")

@@ -28,29 +28,6 @@ Alternately, you can go to https://console.developers.google.com/flows/enableapi
 Then, get the calendar id from the google calendar. It will look something like `09opmkrjova8h5k5k46fedmo88@group.calendar.google.com`.   
 You can find it by going to a calendar's settings and scrolling down to the section that is labelled `Integrate calendar`.
 
-### Example
-
-```js
-import Calendar from "@ericz1803/react-google-calendar";
-
-const API_KEY = "YOUR_API_KEY";
-const CALENDAR_ID = "YOUR_CALENDAR_ID";
-
-class Example extends React.Component {
-  render() {
-    let styles = {
-      
-    }
-
-    return (
-      <div>
-        <Calendar apiKey={API_KEY} calendarId={CALENDAR_ID} styles={styles} />
-      </div>
-    )
-  }
-}
-```
-
 ### Properties
 | Parameter     | Type    | Description                                      | Default |
 |---------------|---------|--------------------------------------------------|---------|
@@ -73,8 +50,50 @@ You can change the color of different aspects of the calendar by passing in a `s
 - `eventCircle`
 - `multiEvent`
 
-#### Default Styles
+### Example
 
+```js
+import React from "react";
+import Calendar from "@ericz1803/react-google-calendar";
+import { css } from "@emotion/core";
+
+const API_KEY = "YOUR_API_KEY";
+const CALENDAR_ID = "YOUR_CALENDAR_ID";
+
+class Example extends React.Component {
+  render() {
+    let styles = {
+      eventCircle: {
+        color: "#B241D1",
+      },
+      multiEvent: css`
+        background: #B241D1;
+        &:hover {
+          background: #86319E;
+        }
+        &:after {
+          border-left-color: #B241D1;
+        }
+        &:hover::after {
+          border-left-color: #86319E;
+        }
+        &:before {
+          border-right-color: #B241D1;
+        }
+        &:hover::before {
+          border-right-color: #86319E;
+        }
+      `,
+    }
+
+    return (
+      <div>
+        <Calendar apiKey={API_KEY} calendarId={CALENDAR_ID} styles={styles} />
+      </div>
+    )
+  }
+}
+```
 
 ## License
 MIT License
