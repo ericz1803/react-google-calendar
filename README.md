@@ -6,7 +6,7 @@ A react component that displays an event calendar using data from google's calen
 
 It handles reccuring events, deleted events, and changed events. It also handles and displays events of all lengths in a very similar way to google calendar.
 
-See it in action [here](https://ericz1803.github.io/react-test-calendar/).
+See it in action [here](https://ericz1803.github.io/react-test-calendar/) or try it yourself [here](https://codesandbox.io/s/kind-davinci-12qze).
 
 ![picture of calendar](example.png)
 
@@ -60,32 +60,32 @@ import { css } from "@emotion/core";
 const API_KEY = "YOUR_API_KEY";
 const CALENDAR_ID = "YOUR_CALENDAR_ID";
 
+const styles = {
+  eventCircle: {
+    color: "#B241D1",
+  },
+  multiEvent: css`
+    background: #B241D1;
+    &:hover {
+      background: #86319E;
+    }
+    &:after {
+      border-left-color: #B241D1;
+    }
+    &:hover::after {
+      border-left-color: #86319E;
+    }
+    &:before {
+      border-right-color: #B241D1;
+    }
+    &:hover::before {
+      border-right-color: #86319E;
+    }
+  `,
+}
+
 class Example extends React.Component {
   render() {
-    let styles = {
-      eventCircle: {
-        color: "#B241D1",
-      },
-      multiEvent: css`
-        background: #B241D1;
-        &:hover {
-          background: #86319E;
-        }
-        &:after {
-          border-left-color: #B241D1;
-        }
-        &:hover::after {
-          border-left-color: #86319E;
-        }
-        &:before {
-          border-right-color: #B241D1;
-        }
-        &:hover::before {
-          border-right-color: #86319E;
-        }
-      `,
-    }
-
     return (
       <div>
         <Calendar apiKey={API_KEY} calendarId={CALENDAR_ID} styles={styles} />

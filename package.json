@@ -1,6 +1,6 @@
 {
   "name": "@ericz1803/react-google-calendar",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "description": "React Google Calendar Component",
   "main": "index.js",
   "scripts": {
@@ -56,7 +56,7 @@
     "verbose": true,
     "transform": {
       "^.+\\.js$": "babel-jest",
-      ".+\\.(css|styl|less|sass|scss)$": "jest-transform-css"
+      ".+\\.css$": "jest-transform-css"
     }
   }
 }
