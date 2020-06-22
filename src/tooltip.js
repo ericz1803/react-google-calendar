@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import moment, { relativeTimeRounding } from "moment-timezone";
+import moment from "moment-timezone";
 
 import "./index.css";
 
@@ -9,8 +9,8 @@ import { css } from '@emotion/core';
 
 import { isAllDay, getCalendarURL } from "./utils/helper";
 
-import Place from "@material-ui/icons/Place";
-import Subject from "@material-ui/icons/Subject";
+import Place from "./svg/place";
+import Subject from "./svg/subject";
 
 export default class Tooltip extends React.PureComponent {
   constructor(props) {
@@ -85,7 +85,7 @@ export default class Tooltip extends React.PureComponent {
     let description;
     if (this.props.description) {
       description = <div className="details description">
-        <div css={{paddingRight: "10px"}}><Subject fontSize="small" /></div>
+        <div css={{ paddingRight: "10px" }}><Subject fill="currentColor" /></div>
         <div dangerouslySetInnerHTML={{__html: this.props.description}} />
       </div>;
     } else {
@@ -95,7 +95,7 @@ export default class Tooltip extends React.PureComponent {
     let location;
     if (this.props.location) {
       location = <div className="details location">
-        <div css={{paddingRight: "10px"}}><Place fontSize="small" /></div>
+        <div css={{ paddingRight: "10px", display: "flex", alignItems: "center" }}><Place fill="currentColor" /></div>
         <div>{this.props.location}</div>
       </div>;
     } else {

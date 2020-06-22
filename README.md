@@ -6,11 +6,11 @@ A react component that displays an event calendar using data from google's calen
 
 It handles reccuring events, deleted events, and changed events. It also handles and displays events of all lengths in a very similar way to google calendar.
 
-See it in action [here](https://ericz1803.github.io/react-test-calendar/) or try it yourself [here](https://codesandbox.io/s/kind-davinci-12qze).
+See it in action [here](https://ericz1803.github.io/react-test-calendar/) or try it yourself in CodeSandbox [here](https://codesandbox.io/s/kind-davinci-12qze).
 
 ![picture of calendar](example.png)
 
-Design inspired by [this calendar](https://codepen.io/knyttneve/pen/QVqyNg) and [google calendar](https://www.google.com/calendar).
+Design inspired by [this calendar](https://codepen.io/knyttneve/pen/QVqyNg) and [Google Calendar](https://www.google.com/calendar). Icons from [Material Design](https://material.io/resources/icons/?style=baseline).
 
 ## Installation
 
@@ -27,6 +27,26 @@ Alternately, you can go to https://console.developers.google.com/flows/enableapi
 
 Then, get the calendar id from the google calendar. It will look something like `09opmkrjova8h5k5k46fedmo88@group.calendar.google.com`.   
 You can find it by going to a calendar's settings and scrolling down to the section that is labelled `Integrate calendar`.
+
+### Basic Example
+
+```js
+import React from "react";
+import Calendar from "@ericz1803/react-google-calendar";
+
+const API_KEY = "YOUR_API_KEY";
+const CALENDAR_ID = "YOUR_CALENDAR_ID";
+
+class Example extends React.Component {
+  render() {
+    return (
+      <div>
+        <Calendar apiKey={API_KEY} calendarId={CALENDAR_ID} />
+      </div>
+    )
+  }
+}
+```
 
 ### Properties
 | Parameter     | Type    | Description                                      | Default |
@@ -50,7 +70,7 @@ You can change the color of different aspects of the calendar by passing in a `s
 - `eventCircle`
 - `multiEvent`
 
-### Example
+### Example With Customization
 
 ```js
 import React from "react";
