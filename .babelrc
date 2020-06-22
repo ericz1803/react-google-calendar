@@ -23,7 +23,11 @@
         "sourceMap": false
       }
     ],
-    "@babel/plugin-transform-runtime",
+    ["@babel/plugin-transform-runtime",
+      {
+        "corejs": 3
+      }
+    ],
     "lodash"
   ]
 }

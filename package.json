@@ -1,6 +1,6 @@
 {
   "name": "@ericz1803/react-google-calendar",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "React Google Calendar Component",
   "main": "index.js",
   "scripts": {
@@ -25,7 +25,7 @@
     "@emotion/core": "^10.0.28"
   },
   "dependencies": {
-    "@babel/runtime": "^7.10.2",
+    "@babel/runtime-corejs3": "^7.10.3",
     "core-js": "^3.6.5",
     "lodash": "^4.17.15",
     "moment": "^2.26.0",
