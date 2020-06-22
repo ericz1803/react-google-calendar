@@ -1,11 +1,11 @@
 {
   "name": "@ericz1803/react-google-calendar",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "React Google Calendar Component",
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "build": "./node_modules/.bin/babel src --out-dir ./dist && cp ./src/index.css ./dist/index.css && cp ./{LICENSE,README.md,package.json,example.png} ./dist"
+    "build": "./node_modules/.bin/babel src --out-dir ./dist && cp ./src/index.css ./dist/index.css && cp ./{LICENSE,README.md,package.json} ./dist"
   },
   "repository": {
     "type": "git",
