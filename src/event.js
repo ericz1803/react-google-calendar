@@ -6,7 +6,8 @@ import moment from "moment-timezone";
 import "./index.css";
 
 import { css } from '@emotion/core';
-import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
+
+import FiberManualRecordIcon from "./svg/fiberManualRecord";
 
 import Tooltip from "./tooltip";
 
@@ -77,8 +78,10 @@ export default class Event extends React.Component {
               top: 5px;
               left: 2px;
               color: #4786ff;
+              height: 15px;
+              width: 15px;
             `, this.props.eventCircleStyles]}>
-              <FiberManualRecordIcon fontSize="inherit" />
+              <FiberManualRecordIcon fill="currentColor" fontSize="inherit" height="inherit" width="inherit" />
             </span>
             <span css={css`
               @media (max-width: 599px) {
