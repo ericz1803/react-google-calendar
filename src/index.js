@@ -14,6 +14,9 @@ import { isMultiEvent } from "./utils/helper";
 import { loadCalendarAPI, getEventsList } from "./utils/googleCalendarAPI";
 import { css } from "@emotion/core";
 
+import "core-js/stable";
+import "regenerator-runtime/runtime";
+
 import _ from "lodash";
 
 const EventWrapper = React.forwardRef((props, ref) => {
