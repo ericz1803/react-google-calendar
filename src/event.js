@@ -81,7 +81,7 @@ export default class Event extends React.Component {
               height: 15px;
               width: 15px;
             `, this.props.eventCircleStyles]}>
-              <FiberManualRecordIcon fill="currentColor" fontSize="inherit" height="inherit" width="inherit" />
+              <FiberManualRecordIcon fill="currentColor" fontSize="inherit" height="auto" width="100%" />
             </span>
             <span css={css`
               @media (max-width: 599px) {

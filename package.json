@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "build": "./node_modules/.bin/babel src --out-dir ./dist && cp ./src/index.css ./dist/index.css && cp ./{LICENSE,README.md,package.json} ./dist"
+    "build": "./node_modules/.bin/babel src --out-dir ./dist --copy-files && cp ./{LICENSE,README.md,package.json} ./dist"
   },
   "repository": {
     "type": "git",
@@ -25,8 +25,7 @@
     "@emotion/core": "^10.0.28"
   },
   "dependencies": {
-    "@babel/runtime-corejs3": "^7.10.3",
-    "core-js": "^3.6.5",
+    "@babel/runtime": "^7.10.3",
     "lodash": "^4.17.15",
     "moment": "^2.26.0",
     "moment-timezone": "^0.5.31",
