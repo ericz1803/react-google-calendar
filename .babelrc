@@ -1,13 +1,7 @@
 {
   "presets": [
     "@babel/preset-react", 
-    [
-      "@babel/preset-env",
-      {
-        "useBuiltIns": "usage",
-        "corejs": 3
-      }
-    ], 
+    "@babel/preset-env", 
     [
       "@emotion/babel-preset-css-prop",
       {
@@ -23,11 +17,7 @@
         "sourceMap": false
       }
     ],
-    ["@babel/plugin-transform-runtime",
-      {
-        "corejs": 3
-      }
-    ],
+    "@babel/plugin-transform-runtime",
     "lodash"
   ]
 }

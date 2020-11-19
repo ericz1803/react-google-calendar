@@ -15,8 +15,8 @@ Design inspired by [this calendar](https://codepen.io/knyttneve/pen/QVqyNg) and 
 ## Installation
 
 ```
-1. npm install --save react react-dom @emotion/core
-2. npm install --save @ericz1803/google-react-calendar
+1. npm install --save react react-dom @emotion/core@10.0.28
+2. npm install --save @ericz1803/react-google-calendar
 ```
 
 ## Usage
