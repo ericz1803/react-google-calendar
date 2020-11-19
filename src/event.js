@@ -5,7 +5,7 @@ import moment from "moment-timezone";
 
 import "./index.css";
 
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
 
 import FiberManualRecordIcon from "./svg/fiberManualRecord";
 

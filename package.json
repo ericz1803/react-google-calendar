@@ -1,6 +1,6 @@
 {
   "name": "@ericz1803/react-google-calendar",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "description": "React Google Calendar Component",
   "main": "index.js",
   "scripts": {
@@ -22,7 +22,7 @@
   "peerDependencies": {
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
-    "@emotion/core": "^10.0.28"
+    "@emotion/react": "^11.1.1"
   },
   "dependencies": {
     "@babel/runtime": "^7.10.3",

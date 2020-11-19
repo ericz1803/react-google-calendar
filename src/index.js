@@ -12,7 +12,7 @@ import MultiEvent from "./multiEvent";
 
 import { isMultiEvent } from "./utils/helper";
 import { loadCalendarAPI, getEventsList } from "./utils/googleCalendarAPI";
-import { css } from "@emotion/core";
+import { css } from "@emotion/react";
 
 import _ from "lodash";
 

@@ -15,8 +15,8 @@ Design inspired by [this calendar](https://codepen.io/knyttneve/pen/QVqyNg) and 
 ## Installation
 
 ```
-1. npm install --save react react-dom @emotion/core
-2. npm install --save @ericz1803/google-react-calendar
+1. npm install --save react react-dom @emotion/react
+2. npm install --save @ericz1803/react-google-calendar
 ```
 
 ## Usage
@@ -58,7 +58,7 @@ class Example extends React.Component {
 
 ### Customization
 
-You can change the color of different aspects of the calendar by passing in a `styles` object. Each of the styles in the `styles` object should be an object style (the same as react inline styles) or  an emotion `css` string style ([see more here](https://emotion.sh/docs/css-prop)). If you choose to use emotion's `css` string styles, make sure to `import { css } from "@emotion/core"`.
+You can change the color of different aspects of the calendar by passing in a `styles` object. Each of the styles in the `styles` object should be an object style (the same as react inline styles) or  an emotion `css` string style ([see more here](https://emotion.sh/docs/css-prop)). If you choose to use emotion's `css` string styles, make sure to `import { css } from "@emotion/react"`.
 
 #### Style Keys
 - `calendar`
@@ -75,7 +75,7 @@ You can change the color of different aspects of the calendar by passing in a `s
 ```js
 import React from "react";
 import Calendar from "@ericz1803/react-google-calendar";
-import { css } from "@emotion/core";
+import { css } from "@emotion/react";
 
 const API_KEY = "YOUR_API_KEY";
 const CALENDAR_ID = "YOUR_CALENDAR_ID";

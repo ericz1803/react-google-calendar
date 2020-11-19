@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - 12
 install:
-  - npm install react react-dom @emotion/core
+  - npm install react react-dom @emotion/react
   - npm install
 script:
   - npm run test
