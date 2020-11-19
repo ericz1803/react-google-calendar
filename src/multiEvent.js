@@ -5,7 +5,8 @@ import moment from "moment-timezone";
 
 import "./index.css";
 
-import { css } from '@emotion/react';
+/** @jsx jsx */
+import { css, jsx } from '@emotion/react'
 
 import Tooltip from "./tooltip";
 
