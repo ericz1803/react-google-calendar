@@ -22,7 +22,7 @@
   "peerDependencies": {
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
-    "@emotion/core": "^10.0.28"
+    "@emotion/core": "~10.0.28"
   },
   "dependencies": {
     "@babel/runtime": "^7.10.3",
