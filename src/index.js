@@ -1,3 +1,5 @@
+/** @jsx jsx */
+
 import React from "react";
 import ReactDOM from "react-dom"
 import PropTypes from "prop-types";
@@ -12,17 +14,10 @@ import MultiEvent from "./multiEvent";
 
 import { isMultiEvent } from "./utils/helper";
 import { loadCalendarAPI, getEventsList } from "./utils/googleCalendarAPI";
-import { css } from "@emotion/core";
+
+import { css, jsx } from '@emotion/react'
 
 import _ from "lodash";
-
-const EventWrapper = React.forwardRef((props, ref) => {
-  return (<Event innerRef={ref} {...props} />);
-});
-
-const MultiEventWrapper = React.forwardRef((props, ref) => {
-  return (<MultiEvent innerRef={ref} {...props} />);
-});
 
 export default class Calendar extends React.Component {
   constructor(props) {
@@ -49,9 +44,7 @@ export default class Calendar extends React.Component {
       singleEvents: [], //single day events
       calendarTimezone: "",
     };
-
-    this.calendarRef = React.createRef();
-
+    
     this.lastMonth = this.lastMonth.bind(this);
     this.nextMonth = this.nextMonth.bind(this);
   }
@@ -380,7 +373,7 @@ export default class Calendar extends React.Component {
     //render event
     let node = document.getElementById("day-" + startDate).children[chosenRow];
     node.className = "isEvent";
-    ReactDOM.render(<MultiEventWrapper ref={this.calendarRef} {...props} {...multiEventProps} length={length} arrowLeft={arrowLeft} arrowRight={arrowRight} />, node);
+    ReactDOM.render(<MultiEvent {...props} {...multiEventProps} length={length} arrowLeft={arrowLeft} arrowRight={arrowRight} />, node);
   }
 
   //attempts to render in a placeholder then at the end
@@ -389,7 +382,7 @@ export default class Calendar extends React.Component {
     let nodes = document.getElementById("day-" + date).children;
     for (let node of nodes) {
       if (node.classList.contains("event") && !node.classList.contains("isEvent")) { //target only placeholders
-        ReactDOM.render(<EventWrapper ref={this.calendarRef} {...props} />, node);
+        ReactDOM.render(<Event {...props} />, node);
         node.className = "";
         foundEmpty = true;
         break;
@@ -398,7 +391,7 @@ export default class Calendar extends React.Component {
     if (!foundEmpty) {
       let tempNode = document.createElement("div");
       document.getElementById("day-" + date).appendChild(tempNode);
-      ReactDOM.render(<EventWrapper ref={this.calendarRef} {...props} />, tempNode);
+      ReactDOM.render(<Event {...props} />, tempNode);
     }
   }
 
@@ -530,7 +523,6 @@ export default class Calendar extends React.Component {
     return (
       <div
         className="calendar"
-        ref={this.calendarRef}
         css={[{
           fontSize: "18px",
           border: "1px solid",

@@ -1,3 +1,5 @@
+/** @jsx jsx */
+
 import React from "react";
 import PropTypes from "prop-types";
 
@@ -5,15 +7,13 @@ import moment from "moment-timezone";
 
 import "./index.css";
 
-import { css } from '@emotion/core';
+import { css, jsx } from '@emotion/react'
 
 import Tooltip from "./tooltip";
 
 import { isAllDay } from "./utils/helper";
 
-const TooltipWrapper = React.forwardRef((props, ref) => {
-  return (<Tooltip innerRef={ref} {...props} />);
-});
+import { Manager, Reference } from 'react-popper';
 
 export default class MultiEvent extends React.Component {
   constructor(props) {
@@ -96,54 +96,62 @@ export default class MultiEvent extends React.Component {
           position: relative;
         `}
       >
-        <div css={[css`
-          width: ${'calc(100% - ' + 8 * (this.props.arrowLeft + this.props.arrowRight) + 'px)'};
-          border-radius: 3px;
-          background: #4786ff;
-          &:hover {
-            background: #396DCC;
-          }
-          ${this.props.arrowLeft && leftArrow}
-          ${this.props.arrowRight && rightArrow}
-        `, this.props.multiEventStyles]}
-        onClick={this.toggleTooltip}
-        >
-          <div 
-            className="event-text" 
-            css={{
-              padding: '3px 0px',
-              color: 'white',
-              marginLeft: this.props.arrowLeft ? '2px' : '5px',
-              marginRight: this.props.arrowRight ? '0px' : '5px',
-              overflowX: 'hidden',
-              whiteSpace: 'nowrap',
-              position: 'relative',
-              textAlign: 'left',
-              '&:hover': {
-                cursor: 'pointer',
-              },
-              
-            }}
-          >
-            {
-              this.state.allDay ? "" : this.state.startTime.format("h:mma ")
-            }
-            <span css={{fontWeight: "500"}}>
-              {this.props.name}
-            </span>
-          </div>
-        </div>
-        <TooltipWrapper 
-          ref={this.props.innerRef} 
-          name={this.props.name}
-          startTime={moment.parseZone(this.props.startTime)}
-          endTime={moment.parseZone(this.props.endTime)}
-          description={this.props.description}
-          location={this.props.location}
-          tooltipStyles={this.props.tooltipStyles}
-          showTooltip={this.state.showTooltip}
-          closeTooltip={this.closeTooltip}
-        />
+        <Manager>
+          <Reference>
+            {({ref}) => (
+              <div css={[css`
+                  width: ${'calc(100% - ' + 8 * (this.props.arrowLeft + this.props.arrowRight) + 'px)'};
+                  border-radius: 3px;
+                  background: #4786ff;
+                  &:hover {
+                    background: #396DCC;
+                  }
+                  ${this.props.arrowLeft && leftArrow}
+                  ${this.props.arrowRight && rightArrow}
+                `, this.props.multiEventStyles]}
+
+                onClick={this.toggleTooltip}
+                ref={ref}
+              >
+                <div 
+                  className="event-text" 
+                  css={{
+                    padding: '3px 0px',
+                    color: 'white',
+                    marginLeft: this.props.arrowLeft ? '2px' : '5px',
+                    marginRight: this.props.arrowRight ? '0px' : '5px',
+                    overflowX: 'hidden',
+                    whiteSpace: 'nowrap',
+                    position: 'relative',
+                    textAlign: 'left',
+                    '&:hover': {
+                      cursor: 'pointer',
+                    },
+                    
+                  }}
+                >
+                  {
+                    this.state.allDay ? "" : this.state.startTime.format("h:mma ")
+                  }
+                  <span css={{fontWeight: "500"}}>
+                    {this.props.name}
+                  </span>
+                </div>
+              </div>
+            )}
+            
+          </Reference>
+          <Tooltip 
+            name={this.props.name}
+            startTime={moment.parseZone(this.props.startTime)}
+            endTime={moment.parseZone(this.props.endTime)}
+            description={this.props.description}
+            location={this.props.location}
+            tooltipStyles={this.props.tooltipStyles}
+            showTooltip={this.state.showTooltip}
+            closeTooltip={this.closeTooltip}
+          />
+        </Manager>
       </div>
     )
   }
