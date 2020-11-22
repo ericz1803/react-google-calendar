@@ -1,3 +1,5 @@
+/** @jsx jsx */
+
 import React from "react";
 import PropTypes from "prop-types";
 
@@ -5,16 +7,13 @@ import moment from "moment-timezone";
 
 import "./index.css";
 
-/** @jsx jsx */
 import { css, jsx } from '@emotion/react'
 
 import FiberManualRecordIcon from "./svg/fiberManualRecord";
 
 import Tooltip from "./tooltip";
 
-const TooltipWrapper = React.forwardRef((props, ref) => {
-  return (<Tooltip innerRef={ref} {...props} />);
-});
+import { Manager, Reference } from 'react-popper';
 
 export default class Event extends React.Component {
   constructor(props) {
@@ -41,73 +40,80 @@ export default class Event extends React.Component {
 
   render() {
     return (
-      <div 
-        className="event"
-        tabIndex="0"
-        onBlur={this.closeTooltip}
-        css={css`
-          position: relative;
-          &:focus {
-            outline: none;
-          }
-        `}
-      >
-        <div css={[css`
-          border-radius: 3px;
-          width: 100%;
-          &:hover {
-            cursor: pointer;
-            background: rgba(81, 86, 93, 0.1);
-          }
-        `, this.props.eventStyles]}
-        onClick={this.toggleTooltip}
+      <Manager>
+          
+        <div 
+          className="event"
+          tabIndex="0"
+          onBlur={this.closeTooltip}
+          css={css`
+            position: relative;
+            &:focus {
+              outline: none;
+            }
+          `}
         >
-          <div 
-            className="event-text" 
-            css={[{
-              color: "#51565d",
-              padding: "3px 0px 3px 20px",
-              marginRight: "5px",
-              overflowX: "hidden",
-              whiteSpace: "nowrap",
-              position: "relative",
-              textAlign: "left",
-            }, this.props.eventTextStyles]}
-          >
-            <span css={[css`
-              position: absolute;
-              top: 5px;
-              left: 2px;
-              color: #4786ff;
-              height: 15px;
-              width: 15px;
-            `, this.props.eventCircleStyles]}>
-              <FiberManualRecordIcon fill="currentColor" fontSize="inherit" height="auto" width="100%" />
-            </span>
-            <span css={css`
-              @media (max-width: 599px) {
-                display: none;
-              }
-            `}>
-              { this.state.startTime.format("h:mma ") }
-            </span>
-            <span css={{fontWeight: "500"}}>
-              {this.props.name}
-            </span>
-          </div>
+          <Reference>
+            {({ref}) => (
+              <div css={[css`
+                  border-radius: 3px;
+                  width: 100%;
+                  &:hover {
+                    cursor: pointer;
+                    background: rgba(81, 86, 93, 0.1);
+                  }
+                `, this.props.eventStyles]}
+                onClick={this.toggleTooltip}
+                ref={ref}
+              >
+                <div 
+                  className="event-text" 
+                  css={[{
+                    color: "#51565d",
+                    padding: "3px 0px 3px 20px",
+                    marginRight: "5px",
+                    overflowX: "hidden",
+                    whiteSpace: "nowrap",
+                    position: "relative",
+                    textAlign: "left",
+                  }, this.props.eventTextStyles]}
+                >
+                  <span css={[css`
+                    position: absolute;
+                    top: 5px;
+                    left: 2px;
+                    color: #4786ff;
+                    height: 15px;
+                    width: 15px;
+                  `, this.props.eventCircleStyles]}>
+                    <FiberManualRecordIcon fill="currentColor" fontSize="inherit" width="100%" />
+                  </span>
+                  <span css={css`
+                    @media (max-width: 599px) {
+                      display: none;
+                    }
+                  `}>
+                    { this.state.startTime.format("h:mma ") }
+                  </span>
+                  <span css={{fontWeight: "500"}}>
+                    {this.props.name}
+                  </span>
+                </div>
+              </div>
+            )}
+          </Reference>
+          <Tooltip
+            name={this.props.name}
+            startTime={moment.parseZone(this.props.startTime)}
+            endTime={moment.parseZone(this.props.endTime)}
+            description={this.props.description}
+            location={this.props.location}
+            tooltipStyles={this.props.tooltipStyles}
+            showTooltip={this.state.showTooltip}
+            closeTooltip={this.closeTooltip}
+          />
         </div>
-        <TooltipWrapper 
-          ref={this.props.innerRef} 
-          name={this.props.name}
-          startTime={moment.parseZone(this.props.startTime)}
-          endTime={moment.parseZone(this.props.endTime)}
-          description={this.props.description}
-          location={this.props.location}
-          tooltipStyles={this.props.tooltipStyles}
-          showTooltip={this.state.showTooltip}
-          closeTooltip={this.closeTooltip}
-        />
-      </div>
+      </Manager>
     )
   }
 }
