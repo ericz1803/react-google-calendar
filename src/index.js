@@ -129,7 +129,7 @@ export default class Calendar extends React.Component {
           singleEvents.push(newEvent);
         }
       } else {
-        console.log("Not categorized: ", newEvent);
+        console.log("Not categorized: ", event);
       }
     });
 
