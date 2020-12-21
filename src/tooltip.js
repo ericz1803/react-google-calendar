@@ -15,6 +15,7 @@ import { isAllDay, getCalendarURL } from "./utils/helper";
 
 import Place from "./svg/place";
 import Subject from "./svg/subject";
+import CalendarToday from "./svg/calendarToday";
 
 export default class Tooltip extends React.Component {
   constructor(props) {
@@ -52,7 +53,7 @@ export default class Tooltip extends React.Component {
     if (this.props.description) {
       description = <div className="details description">
         <div css={{ paddingRight: "10px" }}><Subject fill="currentColor" /></div>
-        <div dangerouslySetInnerHTML={{__html: this.props.description}} />
+        <div onMouseDown={e => {if (e.target.nodeName == 'A') {e.preventDefault()}}} dangerouslySetInnerHTML={{__html: this.props.description}} />
       </div>;
     } else {
       description = <div></div>;
@@ -68,6 +69,16 @@ export default class Tooltip extends React.Component {
       location = <div></div>;
     }
 
+    let calendarName;
+    if (this.props.calendarName) {
+      calendarName = <div className="details">
+        <div css={{ paddingRight: "10px", display: "flex", alignItems: "center" }}><CalendarToday fill="currentColor" /></div>
+        <div>{this.props.calendarName}</div>
+      </div>;
+    } else {
+      calendarName = <div></div>;
+    }
+
     return (
       <Popper modifiers={[{ name: 'preventOverflow', options: { altAxis: true } }]}>
         {({ ref, style, placement, arrowProps }) => (
@@ -78,7 +89,7 @@ export default class Tooltip extends React.Component {
             data-placement={placement}
             css={[css`
               visibility: ${this.props.showTooltip ? "visible" : "hidden"};
-              width: 225px;
+              width: 250px;
               background: #fff;
               text-align: left;
               padding: 5px;
@@ -87,13 +98,6 @@ export default class Tooltip extends React.Component {
               border: 2px solid rgba(81, 86, 93, 0.1);
               position: absolute;
               z-index: 1;
-
-              bottom: ${this.state.middleX ? (!this.state.flipY && "100%") : (!this.state.flipY && "0%")};
-              top: ${this.state.middleX ? (this.state.flipY && "100%") : (this.state.flipY && "0%")};
-              right: ${!this.state.flipX && "calc(100% + 3px)"};
-              left: ${this.state.flipX && "calc(100% + 3px)"};
-              left: ${this.state.middleX && "50%"};
-              transform: ${"translate(" + (this.state.middleX ? "-50%" : "0%") + "," + (this.state.middleY ? "50%" : "0%") + ")"};
             `, this.props.tooltipStyles]}
           >
             <div css={{
@@ -120,12 +124,14 @@ export default class Tooltip extends React.Component {
               </p>
               {description}
               {location}
+              {calendarName}
               <a 
                 href={this.state.eventURL}
                 target="_blank"
                 onMouseDown={e => e.preventDefault()}
                 css={{
                   fontSize: "13px",
+                  tabIndex: -1
                 }}
               >
                 Copy to Calendar
@@ -146,5 +152,6 @@ Tooltip.propTypes = {
   endTime: PropTypes.instanceOf(moment),
   description: PropTypes.string,
   location: PropTypes.string,
+  calendarName: PropTypes.string,
   closeTooltip: PropTypes.func.isRequired,
 }

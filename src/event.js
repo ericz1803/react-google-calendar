@@ -41,7 +41,6 @@ export default class Event extends React.Component {
   render() {
     return (
       <Manager>
-          
         <div 
           className="event"
           tabIndex="0"
@@ -78,14 +77,14 @@ export default class Event extends React.Component {
                     textAlign: "left",
                   }, this.props.eventTextStyles]}
                 >
-                  <span css={[css`
-                    position: absolute;
-                    top: 5px;
-                    left: 2px;
-                    color: #4786ff;
-                    height: 15px;
-                    width: 15px;
-                  `, this.props.eventCircleStyles]}>
+                  <span css={[{
+                    position: "absolute",
+                    top: "5px",
+                    left: "2px",
+                    color: this.props.color,
+                    height: "15px",
+                    width: "15px",
+                  }, this.props.eventCircleStyles]}>
                     <FiberManualRecordIcon fill="currentColor" fontSize="inherit" width="100%" />
                   </span>
                   <span css={css`
@@ -111,6 +110,7 @@ export default class Event extends React.Component {
             tooltipStyles={this.props.tooltipStyles}
             showTooltip={this.state.showTooltip}
             closeTooltip={this.closeTooltip}
+            calendarName={this.props.calendarName}
           />
         </div>
       </Manager>
@@ -140,7 +140,10 @@ Event.propTypes = {
     PropTypes.object,
     PropTypes.instanceOf(css),
   ]),
-  circleColor: PropTypes.string,
-  textColor: PropTypes.string,
-  hoverColor: PropTypes.string,
+  calendarName: PropTypes.string,
+  color: PropTypes.string
+}
+
+Event.defaultProps = {
+  color: '#4786ff'
 }

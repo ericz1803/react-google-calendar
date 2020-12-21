@@ -40,6 +40,7 @@ export default class Calendar extends React.Component {
       days: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
       today: moment(),
       current: moment().startOf("month").utc(true), //current position on calendar (first day of month)
+      calendars: [],
       events: [],//all day or multi day events
       singleEvents: [], //single day events
       calendarTimezone: "",
@@ -58,41 +59,46 @@ export default class Calendar extends React.Component {
       console.error("Error loading GAPI client for API", err);
     }
 
-    //Get events
-    try {
-      //query api for events
-      const res = await getEventsList(this.props.calendarId);
-
-      //process events
-      const events = Calendar.processEvents(res.result.items);
-      
-      //get timezone
-      const timezone = res.result.timeZone;
-
-      //set state with calculated values
-      this.setState({"calendarTimezone": timezone, "events": events[0], "singleEvents": events[1]});
-
-    } catch(err) {
-      console.error("Error getting events", err);
+    //Get events from all calendars
+    for (let calendar of this.props.calendars) {
+      try {
+        //query api for events
+        const res = await getEventsList(calendar.calendarId);
+        console.log("Response", res);
+  
+        //process events
+        const events = Calendar.processEvents(res.result.items, res.result.summary, calendar.color);
+        console.log(events);
+        
+        //get timezone
+        const timezone = res.result.timeZone;
+  
+        //set state with calculated values
+        this.setState({"calendarTimezone": timezone, "events": [...this.state.events, ...events[0]], "singleEvents": [...this.state.singleEvents, ...events[1]]});
+  
+      } catch(err) {
+        console.error("Error getting events", err);
+      }
     }
+    console.log(this.state.events, this.state.singleEvents);
   }
 
   //add in events after rendering calendar
   componentDidUpdate() {
     this.clearEvents();
-    this.renderEvents();
+    this.renderEvents(this.state.events, this.state.singleEvents);
   }
 
   //get easy to work with events and singleEvents from response
-  static processEvents(items) {
+  static processEvents(items, calendarName, color) {
     let singleEvents = [];
     let events = [];
     let changed = [];
     let cancelled = [];
 
     items.forEach((event) => {
-      if (event.originalStartTime) { //cancelled events
-        if (event.status == "cancelled") {
+      if (event.originalStartTime) { //cancelled or changed events
+        if (event.status == "cancelled") { //cancelled events
           cancelled.push({
             recurringEventId: event.recurringEventId,
             originalStartTime: moment.parseZone(event.originalStartTime.dateTime || event.originalStartTime.date), 
@@ -121,6 +127,8 @@ export default class Calendar extends React.Component {
           recurrence: event.recurrence,
           changedEvents: [],
           cancelledEvents: [],
+          calendarName: calendarName,
+          color: color
         };
 
         if (isMultiEvent(newEvent.startTime, newEvent.endTime)) {
@@ -390,6 +398,7 @@ export default class Calendar extends React.Component {
     }
     if (!foundEmpty) {
       let tempNode = document.createElement("div");
+      tempNode.classList.add("isEvent");
       document.getElementById("day-" + date).appendChild(tempNode);
       ReactDOM.render(<Event {...props} />, tempNode);
     }
@@ -411,8 +420,8 @@ export default class Calendar extends React.Component {
     return dates;
   }
 
-  renderEvents() {
-    this.state.events.forEach((event) => {
+  renderEvents(events, singleEvents) {
+    events.forEach((event) => {
       if (event.recurrence) {
         let duration = moment.duration(event.endTime.diff(event.startTime));
         let dates = Calendar.getDatesFromRRule(event.recurrence[0], event.startTime, moment(this.state.current).subtract(duration), moment(this.state.current).add(1, "month"));
@@ -435,6 +444,8 @@ export default class Calendar extends React.Component {
               endTime: changedEvent.newEndTime,
               description: changedEvent.description,
               location: changedEvent.location,
+              calendarName: event.calendarName,
+              color: event.color
             }
           } else {
             let eventStart = moment.utc(date); //since rrule works with utc times
@@ -445,6 +456,8 @@ export default class Calendar extends React.Component {
               endTime: eventEnd,
               description: event.description,
               location: event.location,
+              calendarName: event.calendarName,
+              color: event.color
             };
           }
           
@@ -470,7 +483,7 @@ export default class Calendar extends React.Component {
       eventTextStyles: _.get(this.props.styles, 'eventText', {}),
     }
 
-    this.state.singleEvents.forEach((event) => {
+    singleEvents.forEach((event) => {
       if (event.recurrence) {
         let duration = moment.duration(event.endTime.diff(event.startTime));
         
@@ -493,6 +506,8 @@ export default class Calendar extends React.Component {
               endTime: changedEvent.newEndTime,
               description: changedEvent.description,
               location: changedEvent.location,
+              calendarName: event.calendarName,
+              color: event.color
             }
           } else {
             let eventStart = moment.utc(date); //avoid bad timezone conversions
@@ -503,6 +518,8 @@ export default class Calendar extends React.Component {
               endTime: eventEnd,
               description: event.description,
               location: event.location,
+              calendarName: event.calendarName,
+              color: event.color
             };
           }
           
@@ -520,6 +537,7 @@ export default class Calendar extends React.Component {
   }
 
   render() {
+    // let days = this.calculateEvents();
     return (
       <div
         className="calendar"
@@ -586,7 +604,10 @@ export default class Calendar extends React.Component {
 }
 
 Calendar.propTypes = {
-  calendarId: PropTypes.string.isRequired,
+  calendars: PropTypes.arrayOf(PropTypes.shape({
+    calendarId: PropTypes.string.isRequired,
+    color: PropTypes.string
+  })).isRequired,
   apiKey: PropTypes.string.isRequired,
 
   showArrow: PropTypes.bool,
