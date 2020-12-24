@@ -1,7 +1,6 @@
 /** @jsx jsx */
 
 import React from "react";
-import ReactDOM from "react-dom"
 import PropTypes from "prop-types";
 
 import moment from "moment-timezone";
@@ -18,6 +17,8 @@ import { loadCalendarAPI, getEventsList } from "./utils/googleCalendarAPI";
 import { css, jsx } from '@emotion/react'
 
 import _ from "lodash";
+
+import gud from "gud";
 
 export default class Calendar extends React.Component {
   constructor(props) {
@@ -64,11 +65,9 @@ export default class Calendar extends React.Component {
       try {
         //query api for events
         const res = await getEventsList(calendar.calendarId);
-        console.log("Response", res);
   
         //process events
-        const events = Calendar.processEvents(res.result.items, res.result.summary, calendar.color);
-        console.log(events);
+        const events = this.processEvents(res.result.items, res.result.summary, calendar.color);
         
         //get timezone
         const timezone = res.result.timeZone;
@@ -80,17 +79,10 @@ export default class Calendar extends React.Component {
         console.error("Error getting events", err);
       }
     }
-    console.log(this.state.events, this.state.singleEvents);
-  }
-
-  //add in events after rendering calendar
-  componentDidUpdate() {
-    this.clearEvents();
-    this.renderEvents(this.state.events, this.state.singleEvents);
   }
 
   //get easy to work with events and singleEvents from response
-  static processEvents(items, calendarName, color) {
+  processEvents(items, calendarName, color) {
     let singleEvents = [];
     let events = [];
     let changed = [];
@@ -206,7 +198,7 @@ export default class Calendar extends React.Component {
   }
 
   //renders the blocks for the days of each month
-  renderDates() {
+  renderDates(eventsEachDay) {
     var days = [...Array(this.state.current.daysInMonth() + 1).keys()].slice(1); // create array from 1 to number of days in month
 
     var dayOfWeek = this.state.current.day(); //get day of week of first day in the month
@@ -236,7 +228,7 @@ export default class Calendar extends React.Component {
               >
                 {x}
               </span>
-              <div className="innerDay" id={"day-" + x}></div>
+              <div className="innerDay" id={"day-" + x}>{eventsEachDay[x - 1]}</div>
             </div>
           );
         } else {
@@ -253,7 +245,7 @@ export default class Calendar extends React.Component {
               >
                 {x}
               </span>
-              <div className="innerDay" id={"day-" + x}></div>
+              <div className="innerDay" id={"day-" + x}>{eventsEachDay[x - 1]}</div>
             </div>
           );
         }
@@ -268,159 +260,10 @@ export default class Calendar extends React.Component {
     ];
   }
 
-  //TODO: refactor
-  //decides how to render events
-  drawMultiEvent(props) { 
-    let startDrawDate;
-    let blockLength = 1;
-    let curDate;
-    let endDate;
-
-    let arrowLeft = false;
-    let arrowRight = false;
-
-    if (props.endTime.isSame(moment(props.endTime).startOf("day"), "second")) {
-      endDate = moment(props.endTime).utc(true).subtract(1, "day");
-    } else {
-      endDate = moment(props.endTime).utc(true);
-    }
-
-    if (moment(props.startTime).utc(true).isBefore(this.state.current)) {
-      if (this.props.showArrow) {
-        arrowLeft = true;
-      }
-      
-      startDrawDate = 1;
-      curDate = moment(this.state.current).utc(true);
-    } else {
-      startDrawDate = props.startTime.date();
-      curDate = moment(props.startTime).utc(true);
-    }
-
-
-    while (curDate.isSameOrBefore(endDate, "day")) {
-      if (curDate.date() == this.state.current.daysInMonth() && !endDate.isSame(this.state.current, 'month')) {
-        if (this.props.showArrow) {
-          arrowRight = true;
-        }
-        
-        //draw then quit
-        this.renderMultiEventBlock(startDrawDate, blockLength, props, arrowLeft, arrowRight);
-        break;
-      }
-      if (curDate.date() == this.state.current.daysInMonth() || curDate.isSame(endDate, "day")) {
-        //draw then quit
-        this.renderMultiEventBlock(startDrawDate, blockLength, props, arrowLeft, arrowRight);
-        break;
-      }
-      if (curDate.day() == 6) {
-        //draw then reset
-        this.renderMultiEventBlock(startDrawDate, blockLength, props, arrowLeft, arrowRight);
-        startDrawDate = moment(curDate).add(1, "day").date();
-        blockLength = 0;
-        arrowLeft = false;
-        arrowRight = false;
-      }
-
-      blockLength++;
-      curDate.add(1, "day");
-    }
-  }
-
-  //TODO: refactor this too?
-  //handles rendering and proper stacking of individual blocks 
-  renderMultiEventBlock(startDate, length, props, arrowLeft, arrowRight) { 
-    let multiEventProps = {
-      tooltipStyles: _.get(this.props.styles, 'tooltip', {}), //gets this.props.styles.tooltip if exists, else empty object
-      multiEventStyles: _.get(this.props.styles, 'multiEvent', {}),
-    }
-
-    let maxBlocks = 0;
-    let closedSlots = []; //keep track of rows that the event can't be inserted into
-
-    for (let i = 0; i < length; i++) {
-      let dayEvents = document.getElementById("day-" + (startDate + i)).children;
-      if (dayEvents.length > maxBlocks) {
-        maxBlocks = dayEvents.length;
-      }
-
-      //address rows that are not the last element in closedSlots
-      for (let j = 0; j < maxBlocks; j++) {
-        if (j > dayEvents.length) {
-          break;
-        } else if (closedSlots.includes(j)) {
-          continue;
-        } 
-        if (dayEvents[j].classList.contains("isEvent")) {
-          closedSlots.push(j);
-        }
-      }
-    }
-
-    let chosenRow;
-    for (let i = 0; i <= maxBlocks; i++) {
-      if (!closedSlots.includes(i)) {
-        chosenRow = i;
-        break;
-      }
-    }
-
-    //fill in placeholders
-    for (let i = 0; i < length; i++) {
-      //placeholders
-      while (document.getElementById("day-" + (startDate + i)).children.length <= chosenRow) {
-        let tempNode = document.createElement("div");
-        tempNode.className = "event below";
-        document.getElementById("day-" + (startDate + i)).appendChild(tempNode);
-      }
-
-      //rest of event that is under the main banner
-      document.getElementById("day-" + (startDate + i)).children[chosenRow].className = "isEvent event below";
-    }
-  
-    //render event
-    let node = document.getElementById("day-" + startDate).children[chosenRow];
-    node.className = "isEvent";
-    ReactDOM.render(<MultiEvent {...props} {...multiEventProps} length={length} arrowLeft={arrowLeft} arrowRight={arrowRight} />, node);
-  }
-
-  //attempts to render in a placeholder then at the end
-  renderSingleEvent(date, props) {
-    let foundEmpty = false;
-    let nodes = document.getElementById("day-" + date).children;
-    for (let node of nodes) {
-      if (node.classList.contains("event") && !node.classList.contains("isEvent")) { //target only placeholders
-        ReactDOM.render(<Event {...props} />, node);
-        node.className = "";
-        foundEmpty = true;
-        break;
-      }
-    }
-    if (!foundEmpty) {
-      let tempNode = document.createElement("div");
-      tempNode.classList.add("isEvent");
-      document.getElementById("day-" + date).appendChild(tempNode);
-      ReactDOM.render(<Event {...props} />, tempNode);
-    }
-  }
-
-  //get dates based on rrule string between dates
-  static getDatesFromRRule(str, eventStart, betweenStart, betweenEnd) {    
-    //get recurrences using RRule
-    let options = RRule.parseString(str);
-    options.dtstart = moment.parseZone(eventStart).utc(true).toDate();
-    let rule = new RRule(options);
-    let rruleSet = new RRuleSet();
-    rruleSet.rrule(rule);
+  //get array of arrays of length days in month containing the events in each day
+  getRenderEvents(events, singleEvents) {
+    let eventsEachDay = [...Array(this.state.current.daysInMonth())].map((e) => []); //create array of empty arrays of length daysInMonth
     
-    //get dates
-    let begin = moment(betweenStart).utc(true).toDate();
-    let end = moment(betweenEnd).utc(true).toDate();
-    let dates = rruleSet.between(begin, end);
-    return dates;
-  }
-
-  renderEvents(events, singleEvents) {
     events.forEach((event) => {
       if (event.recurrence) {
         let duration = moment.duration(event.endTime.diff(event.startTime));
@@ -434,7 +277,6 @@ export default class Calendar extends React.Component {
           }
 
           let props;
-
           //update information if event has changed
           const changedEvent = event.changedEvents.find((changedEvent) => (changedEvent.originalStartTime.isSame(date, "day")));
           if (changedEvent) {
@@ -461,7 +303,7 @@ export default class Calendar extends React.Component {
             };
           }
           
-          this.drawMultiEvent(props);   
+          this.drawMultiEvent(eventsEachDay, props);   
         });
       } else {
         //render event
@@ -472,7 +314,7 @@ export default class Calendar extends React.Component {
           return;
         }
 
-        this.drawMultiEvent(event);
+        this.drawMultiEvent(eventsEachDay, event);
       }
     });
 
@@ -523,7 +365,7 @@ export default class Calendar extends React.Component {
             };
           }
           
-          this.renderSingleEvent(moment(props.startTime).date(), {...props, ...eventProps});
+          this.renderSingleEvent(eventsEachDay, moment(props.startTime).date(), {...props, ...eventProps});
         });
       } else {
         //check if event is in current month
@@ -531,13 +373,158 @@ export default class Calendar extends React.Component {
           return;
         }
 
-        this.renderSingleEvent(moment(event.startTime).date(), {...event, ...eventProps});
+        this.renderSingleEvent(eventsEachDay, moment(event.startTime).date(), {...event, ...eventProps});
       }
     });
+
+    return eventsEachDay;
+  }
+
+  //TODO: refactor
+  //decides how to render events
+  drawMultiEvent(eventsEachDay, props) { 
+    let startDrawDate;
+    let blockLength = 1;
+    let curDate;
+    let endDate;
+
+    let arrowLeft = false;
+    let arrowRight = false;
+
+    if (props.endTime.isSame(moment(props.endTime).startOf("day"), "second")) {
+      endDate = moment(props.endTime).utc(true).subtract(1, "day");
+    } else {
+      endDate = moment(props.endTime).utc(true);
+    }
+
+    if (moment(props.startTime).utc(true).isBefore(this.state.current)) {
+      if (this.props.showArrow) {
+        arrowLeft = true;
+      }
+      
+      startDrawDate = 1;
+      curDate = moment(this.state.current).utc(true);
+    } else {
+      startDrawDate = props.startTime.date();
+      curDate = moment(props.startTime).utc(true);
+    }
+
+    while (curDate.isSameOrBefore(endDate, "day")) {
+      if (curDate.date() == this.state.current.daysInMonth() && !endDate.isSame(this.state.current, 'month')) {
+        if (this.props.showArrow) {
+          arrowRight = true;
+        }
+        
+        //draw then quit
+        this.renderMultiEventBlock(eventsEachDay, startDrawDate, blockLength, props, arrowLeft, arrowRight);
+        break;
+      }
+      if (curDate.date() == this.state.current.daysInMonth() || curDate.isSame(endDate, "day")) {
+        //draw then quit
+        this.renderMultiEventBlock(eventsEachDay, startDrawDate, blockLength, props, arrowLeft, arrowRight);
+        break;
+      }
+      if (curDate.day() == 6) {
+        //draw then reset
+        this.renderMultiEventBlock(eventsEachDay, startDrawDate, blockLength, props, arrowLeft, arrowRight);
+        startDrawDate = moment(curDate).add(1, "day").date();
+        blockLength = 0;
+        arrowLeft = false;
+        arrowRight = false;
+      }
+
+      blockLength++;
+      curDate.add(1, "day");
+    }
+  }
+
+  //TODO: refactor this too?
+  //handles rendering and proper stacking of individual blocks 
+  renderMultiEventBlock(eventsEachDay, startDate, length, props, arrowLeft, arrowRight) { 
+    let multiEventProps = {
+      tooltipStyles: _.get(this.props.styles, 'tooltip', {}), //gets this.props.styles.tooltip if exists, else empty object
+      multiEventStyles: _.get(this.props.styles, 'multiEvent', {}),
+    }
+
+    let maxBlocks = 0;
+    let closedSlots = []; //keep track of rows that the event can't be inserted into
+
+    for (let i = 0; i < length; i++) {
+      let dayEvents = eventsEachDay[startDate - 1 + i];
+      if (dayEvents.length > maxBlocks) {
+        maxBlocks = dayEvents.length;
+      }
+
+      //address rows that are not the last element in closedSlots
+      for (let j = 0; j < maxBlocks; j++) {
+        if (j > dayEvents.length) {
+          break;
+        } else if (closedSlots.includes(j)) {
+          continue;
+        } 
+        if (dayEvents[j].props.className.includes("isEvent")) {
+          closedSlots.push(j);
+        }
+      }
+    }
+
+    let chosenRow;
+    for (let i = 0; i <= maxBlocks; i++) {
+      if (!closedSlots.includes(i)) {
+        chosenRow = i;
+        break;
+      }
+    }
+
+    //fill in placeholders
+    for (let i = 0; i < length; i++) {
+      //placeholders
+      while (eventsEachDay[startDate - 1 + i].length <= chosenRow) {
+        eventsEachDay[startDate - 1 + i].push(<div className="event below placeholder" key={`placeholder-${gud()}`}></div>);
+      }
+
+      //rest of event that is under the main banner
+      eventsEachDay[startDate - 1 + i][chosenRow] = <div className="isEvent event below" key={`filler-${gud()}`}></div>;
+    }
+  
+    //render event
+    eventsEachDay[startDate - 1][chosenRow] = <div className="isEvent" key={`multi-event-${chosenRow}`}><MultiEvent {...props} {...multiEventProps} length={length} arrowLeft={arrowLeft} arrowRight={arrowRight} key={`multi-event-${gud()}`}/></div>;
+  }
+
+  //attempts to render in a placeholder then at the end
+  renderSingleEvent(eventsEachDay, date, props) {
+    let foundEmpty = false;
+    let nodes = eventsEachDay[date - 1];
+    for (let i = 0; i < nodes.length; i++) {
+      if (nodes[i].props.className.includes("event") && !nodes[i].props.className.includes("isEvent")) { //target only placeholders
+        nodes[i] = <div className="isEvent" key={`single-event-${gud()}`}><Event {...props} key={`single-event-${gud()}`}/></div>;
+        foundEmpty = true;
+        break;
+      }
+    }
+    if (!foundEmpty) {
+      eventsEachDay[date - 1].push(<div className="isEvent" key={`single-event-${gud()}`}><Event {...props} key={`single-event-${gud()}`}/></div>)
+    }
+  }
+
+  //get dates based on rrule string between dates
+  static getDatesFromRRule(str, eventStart, betweenStart, betweenEnd) {    
+    //get recurrences using RRule
+    let options = RRule.parseString(str);
+    options.dtstart = moment.parseZone(eventStart).utc(true).toDate();
+    let rule = new RRule(options);
+    let rruleSet = new RRuleSet();
+    rruleSet.rrule(rule);
+    
+    //get dates
+    let begin = moment(betweenStart).utc(true).toDate();
+    let end = moment(betweenEnd).utc(true).toDate();
+    let dates = rruleSet.between(begin, end);
+    return dates;
   }
 
   render() {
-    // let days = this.calculateEvents();
+    let eventsEachDay = this.getRenderEvents(this.state.events, this.state.singleEvents);
     return (
       <div
         className="calendar"
@@ -571,7 +558,7 @@ export default class Calendar extends React.Component {
         </div>
         <div className="calendar-body">
           {this.renderDays()}
-          {this.renderDates()}
+          {this.renderDates(eventsEachDay)}
         </div>
         <div className="calendar-footer">
           <div css={css`
