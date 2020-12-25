@@ -71,7 +71,7 @@ export default class Tooltip extends React.Component {
 
     let calendarName;
     if (this.props.calendarName) {
-      calendarName = <div className="details">
+      calendarName = <div className="details calendarName">
         <div css={{ paddingRight: "10px", display: "flex", alignItems: "center" }}><CalendarToday fill="currentColor" /></div>
         <div>{this.props.calendarName}</div>
       </div>;

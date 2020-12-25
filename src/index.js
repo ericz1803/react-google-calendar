@@ -44,7 +44,6 @@ export default class Calendar extends React.Component {
       calendars: [],
       events: [],//all day or multi day events
       singleEvents: [], //single day events
-      calendarTimezone: "",
       userTimezone: moment.tz.guess()
     };
     
@@ -70,12 +69,9 @@ export default class Calendar extends React.Component {
   
         //process events
         const events = this.processEvents(res.result.items, res.result.summary, calendar.color);
-        
-        //get timezone
-        const timezone = res.result.timeZone;
   
         //set state with calculated values
-        this.setState({"calendarTimezone": timezone, "events": [...this.state.events, ...events[0]], "singleEvents": [...this.state.singleEvents, ...events[1]]});
+        this.setState({"events": [...this.state.events, ...events[0]], "singleEvents": [...this.state.singleEvents, ...events[1]]});
   
       } catch(err) {
         console.error("Error getting events", err);

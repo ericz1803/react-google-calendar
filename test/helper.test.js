@@ -1,4 +1,4 @@
-import { isAllDay, getCalendarURL, isMultiEvent } from "../src/utils/helper";
+import { isAllDay, getCalendarURL, isMultiEvent, pSBC } from "../src/utils/helper";
 import moment from "moment-timezone";
 
 describe("isAllDay function", () => {
@@ -142,5 +142,15 @@ describe("isMultiEvent function", () => {
     let endTime = moment.parseZone("2020-06-05");
 
     expect(isMultiEvent(startTime, endTime)).toBe(true);
+  });
+});
+
+describe("pSBC function", () => {
+  test("hex code", () => {
+    expect(pSBC(-0.35, '#4786ff')).toEqual('#396cce');
+  });
+
+  test("rgb", () => {
+    expect(pSBC(-0.35, 'rgb(63, 191, 63)')).toEqual('rgb(51,154,51)');
   });
 });
