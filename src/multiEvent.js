@@ -11,7 +11,7 @@ import { css, jsx } from '@emotion/react'
 
 import Tooltip from "./tooltip";
 
-import { isAllDay } from "./utils/helper";
+import { isAllDay, pSBC } from "./utils/helper";
 
 import { Manager, Reference } from 'react-popper';
 
@@ -20,8 +20,10 @@ export default class MultiEvent extends React.Component {
     super(props);
 
     this.state = {
-      startTime: moment.parseZone(this.props.startTime),
-      endTime: moment.parseZone(this.props.endTime),
+      startTime: moment(this.props.startTime),
+      endTime: moment(this.props.endTime),
+      color: this.props.color,
+      darkColor: pSBC(-0.35, this.props.color),
 
       showTooltip: false,
     }
@@ -52,13 +54,13 @@ export default class MultiEvent extends React.Component {
         bottom: 0; 
         width: 0;
         height: 0;
-        border-right: 8px solid #4786ff;
+        border-right: 8px solid ${this.state.color};
         border-top: 13px solid transparent;
         border-bottom: 13px solid transparent;
       }
       &:hover::before {
         cursor: pointer;
-        border-right-color: #396DCC;
+        border-right-color: ${this.state.darkColor};
       }
     `;
 
@@ -73,13 +75,13 @@ export default class MultiEvent extends React.Component {
         bottom: 0; 
         width: 0;
         height: 0;
-        border-left: 8px solid #4786ff;
+        border-left: 8px solid ${this.state.color};
         border-top: 13px solid transparent;
         border-bottom: 13px solid transparent;
       }
       &:hover::after {
         cursor: pointer;
-        border-left-color: #396DCC;
+        border-left-color: ${this.state.darkColor};
       }
     `;
 
@@ -102,9 +104,9 @@ export default class MultiEvent extends React.Component {
               <div css={[css`
                   width: ${'calc(100% - ' + 8 * (this.props.arrowLeft + this.props.arrowRight) + 'px)'};
                   border-radius: 3px;
-                  background: #4786ff;
+                  background: ${this.state.color};
                   &:hover {
-                    background: #396DCC;
+                    background: ${this.state.darkColor};
                   }
                   ${this.props.arrowLeft && leftArrow}
                   ${this.props.arrowRight && rightArrow}
@@ -143,13 +145,14 @@ export default class MultiEvent extends React.Component {
           </Reference>
           <Tooltip 
             name={this.props.name}
-            startTime={moment.parseZone(this.props.startTime)}
-            endTime={moment.parseZone(this.props.endTime)}
+            startTime={moment(this.props.startTime)}
+            endTime={moment(this.props.endTime)}
             description={this.props.description}
             location={this.props.location}
             tooltipStyles={this.props.tooltipStyles}
             showTooltip={this.state.showTooltip}
             closeTooltip={this.closeTooltip}
+            calendarName={this.props.calendarName}
           />
         </Manager>
       </div>
@@ -164,6 +167,7 @@ MultiEvent.propTypes = {
   length: PropTypes.number,
   description: PropTypes.string,
   location: PropTypes.string,
+  calendarName: PropTypes.string,
 
   tooltipStyles: PropTypes.oneOfType([
     PropTypes.object,
@@ -173,11 +177,13 @@ MultiEvent.propTypes = {
     PropTypes.object,
     PropTypes.instanceOf(css),
   ]),
+  color: PropTypes.string,
   arrowLeft: PropTypes.bool,
   arrowRight: PropTypes.bool,
 }
 
 MultiEvent.defaultProps = {
+  color: '#4786ff',
   length: 1,
   arrowLeft: false,
   arrowRight: false,

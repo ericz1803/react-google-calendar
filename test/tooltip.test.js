@@ -129,4 +129,31 @@ describe("Tooltip Rendering", () => {
     expect(container.querySelector(".location").textContent).toEqual("A location");
   });
 
+  test("correctly has no calendarName",() => {
+    let props = {
+      name: "Test Event",
+      startTime: moment(),
+      endTime: moment(),
+    };
+    act(() => {
+      ReactDOM.render(<Tooltip showTooltip={false} {...props} />, container);
+    });
+
+    expect(container.querySelector(".calendarName")).toBeNull();
+  });
+
+  test("correct calendarName",() => {
+    let props = {
+      name: "Test Event",
+      startTime: moment(),
+      endTime: moment(),
+      calendarName: "Calendar",
+    };
+    act(() => {
+      ReactDOM.render(<Tooltip showTooltip={false} {...props} />, container);
+    });
+
+    expect(container.querySelector(".calendarName").textContent).toEqual("Calendar");
+  });
+
 });
