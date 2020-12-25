@@ -65,7 +65,6 @@ export default class Calendar extends React.Component {
       try {
         //query api for events
         const res = await getEventsList(calendar.calendarId);
-        console.log(res);
   
         //process events
         const events = this.processEvents(res.result.items, res.result.summary, calendar.color);
@@ -77,7 +76,6 @@ export default class Calendar extends React.Component {
         console.error("Error getting events", err);
       }
     }
-    console.log(this.state.events, this.state.singleEvents); 
   }
 
   //get easy to work with events and singleEvents from response
