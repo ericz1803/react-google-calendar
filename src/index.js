@@ -45,6 +45,7 @@ export default class Calendar extends React.Component {
       events: [],//all day or multi day events
       singleEvents: [], //single day events
       calendarTimezone: "",
+      userTimezone: moment.tz.guess()
     };
     
     this.lastMonth = this.lastMonth.bind(this);
@@ -65,6 +66,7 @@ export default class Calendar extends React.Component {
       try {
         //query api for events
         const res = await getEventsList(calendar.calendarId);
+        console.log(res);
   
         //process events
         const events = this.processEvents(res.result.items, res.result.summary, calendar.color);
@@ -79,6 +81,7 @@ export default class Calendar extends React.Component {
         console.error("Error getting events", err);
       }
     }
+    console.log(this.state.events, this.state.singleEvents); 
   }
 
   //get easy to work with events and singleEvents from response
@@ -93,7 +96,7 @@ export default class Calendar extends React.Component {
         if (event.status == "cancelled") { //cancelled events
           cancelled.push({
             recurringEventId: event.recurringEventId,
-            originalStartTime: moment.parseZone(event.originalStartTime.dateTime || event.originalStartTime.date), 
+            originalStartTime: event.originalStartTime.dateTime ? moment(event.originalStartTime.dateTime) : moment.parseZone(event.originalStartTime.date), 
           });
         } else if (event.status == "confirmed") { //changed events
           changed.push({
@@ -101,9 +104,9 @@ export default class Calendar extends React.Component {
             name: event.summary,
             description: event.description,
             location: event.location,
-            originalStartTime: moment.parseZone(event.originalStartTime.dateTime || event.originalStartTime.date),
-            newStartTime: moment.parseZone(event.start.dateTime || event.start.date),
-            newEndTime: moment.parseZone(event.end.dateTime || event.end.date),
+            originalStartTime: event.originalStartTime.dateTime ? moment(event.originalStartTime.dateTime) : moment.parseZone(event.originalStartTime.date),
+            newStartTime: event.start.dateTime ? moment(event.start.dateTime) : moment.parseZone(event.start.date),
+            newEndTime: event.end.dateTime ? moment(event.end.dateTime) : moment.parseZone(event.end.date),
           });
         } else {
           console.log("Not categorized: ", event);
@@ -112,8 +115,8 @@ export default class Calendar extends React.Component {
         let newEvent = {
           id: event.id,
           name: event.summary,
-          startTime: moment.parseZone(event.start.dateTime || event.start.date), //read date if datetime doesn"t exist
-          endTime: moment.parseZone(event.end.dateTime || event.end.date),
+          startTime: event.start.dateTime ? moment(event.start.dateTime) : moment.parseZone(event.start.date),
+          endTime: event.end.dateTime ? moment(event.end.dateTime) : moment.parseZone(event.end.date),
           description: event.description,
           location: event.location,
           recurrence: event.recurrence,
@@ -511,7 +514,7 @@ export default class Calendar extends React.Component {
   static getDatesFromRRule(str, eventStart, betweenStart, betweenEnd) {    
     //get recurrences using RRule
     let options = RRule.parseString(str);
-    options.dtstart = moment.parseZone(eventStart).utc(true).toDate();
+    options.dtstart = moment(eventStart).utc(true).toDate();
     let rule = new RRule(options);
     let rruleSet = new RRuleSet();
     rruleSet.rrule(rule);
@@ -566,7 +569,7 @@ export default class Calendar extends React.Component {
             padding-left: 5px;
             text-align: left;
           `}>
-            All times shown in timezone: {this.state.calendarTimezone.replace("_", " ")}
+            All times shown your timezone ({moment().tz(this.state.userTimezone).format("z")})
           </div>
           <div css={css`
             vertical-align: top;

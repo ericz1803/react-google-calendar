@@ -20,8 +20,8 @@ export default class MultiEvent extends React.Component {
     super(props);
 
     this.state = {
-      startTime: moment.parseZone(this.props.startTime),
-      endTime: moment.parseZone(this.props.endTime),
+      startTime: moment(this.props.startTime),
+      endTime: moment(this.props.endTime),
       color: this.props.color,
       darkColor: pSBC(-0.35, this.props.color),
 
@@ -145,8 +145,8 @@ export default class MultiEvent extends React.Component {
           </Reference>
           <Tooltip 
             name={this.props.name}
-            startTime={moment.parseZone(this.props.startTime)}
-            endTime={moment.parseZone(this.props.endTime)}
+            startTime={moment(this.props.startTime)}
+            endTime={moment(this.props.endTime)}
             description={this.props.description}
             location={this.props.location}
             tooltipStyles={this.props.tooltipStyles}
