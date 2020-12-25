@@ -1,6 +1,21 @@
 import Calendar from "../src/index";
 import moment from "moment-timezone";
 
+describe("simple end to end test", () => {
+  test("test full render", () => {
+    container = document.createElement("div");
+    document.body.appendChild(container);
+
+    let calendars = [
+      {calendarId: "09opmkrjova8h5k5k46fedmo88@group.calendar.google.com"}
+    ]
+
+    act(() => {
+      ReactDOM.render(<Calendar apiKey={process.env.GOOGLE_API_KEY} calendars={calendars} />, container);
+    });
+  })
+})
+
 describe("Use rrule to get recurrences", () => {
   test("proper amount of events", () => {
     let recurrenceString = "RRULE:FREQ=WEEKLY;WKST=SU;COUNT=5;BYDAY=SU"
