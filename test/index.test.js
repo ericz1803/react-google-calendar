@@ -1,3 +1,6 @@
+import React from "react";
+import ReactDOM from "react-dom";
+import { act } from "react-dom/test-utils";
 import Calendar from "../src/index";
 import moment from "moment-timezone";
 
