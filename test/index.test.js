@@ -3,7 +3,7 @@ import moment from "moment-timezone";
 
 describe("simple end to end test", () => {
   test("test full render", () => {
-    container = document.createElement("div");
+    let container = document.createElement("div");
     document.body.appendChild(container);
 
     let calendars = [
