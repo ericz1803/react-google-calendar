@@ -55,4 +55,12 @@ describe("Use rrule to get recurrences", () => {
     let dates = Calendar.getDatesFromRRule(recurrenceString, eventStart, betweenStart, betweenEnd);
     expect(dates.length).toBe(4);
   });
+
+  test("Doesn't break when exdate is passed in", () => {
+    let recurrenceString = "EXDATE;TZID=America/New_York:20181011T120000"
+    let eventStart = moment.parseZone("2020-05-31");
+    let betweenStart = moment.parseZone("2020-08-01").subtract(1, "day");
+    let betweenEnd = moment.parseZone("2020-09-01");
+    Calendar.getDatesFromRRule(recurrenceString, eventStart, betweenStart, betweenEnd);
+  });
 });

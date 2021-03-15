@@ -4,7 +4,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import moment from "moment-timezone";
-import { RRule, RRuleSet } from "rrule";
+import { RRule, RRuleSet, rrulestr } from "rrule";
 
 import "./index.css";
 
@@ -507,11 +507,9 @@ export default class Calendar extends React.Component {
   //get dates based on rrule string between dates
   static getDatesFromRRule(str, eventStart, betweenStart, betweenEnd) {    
     //get recurrences using RRule
-    let options = RRule.parseString(str);
-    options.dtstart = moment(eventStart).utc(true).toDate();
-    let rule = new RRule(options);
-    let rruleSet = new RRuleSet();
-    rruleSet.rrule(rule);
+    let rstr = `DTSTART:${moment(eventStart).utc(true).format('YYYYMMDDTHHmmss')}Z\n${str}`;
+    console.log(rstr);
+    let rruleSet = rrulestr(rstr, {forceset: true});
     
     //get dates
     let begin = moment(betweenStart).utc(true).toDate();
