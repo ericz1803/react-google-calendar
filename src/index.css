@@ -1,3 +1,7 @@
+html {
+  overflow-wrap: inherit;
+}
+
 .unselectable {
   -webkit-user-select: none;
   -moz-user-select: none;

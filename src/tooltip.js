@@ -53,7 +53,9 @@ export default class Tooltip extends React.Component {
     if (this.props.description) {
       description = <div className="details description">
         <div css={{ paddingRight: "10px" }}><Subject fill="currentColor" /></div>
-        <div onMouseDown={e => {if (e.target.nodeName == 'A') {e.preventDefault()}}} dangerouslySetInnerHTML={{__html: this.props.description}} />
+        <div css={{ overflowWrap: "break-word", maxWidth: "calc(100% - 28px)" }}
+          onMouseDown={e => {if (e.target.nodeName == 'A') {e.preventDefault()}}} 
+          dangerouslySetInnerHTML={{__html: this.props.description}} />
       </div>;
     } else {
       description = <div></div>;
@@ -62,8 +64,8 @@ export default class Tooltip extends React.Component {
     let location;
     if (this.props.location) {
       location = <div className="details location">
-        <div css={{ paddingRight: "10px", display: "flex", alignItems: "center" }}><Place fill="currentColor" /></div>
-        <div>{this.props.location}</div>
+        <div css={{ paddingRight: "10px", display: "flex", alignItems: "center"}}><Place fill="currentColor" /></div>
+        <div css={{ overflowWrap: "break-word", maxWidth: "calc(100% - 28px)" }}>{this.props.location}</div>
       </div>;
     } else {
       location = <div></div>;
