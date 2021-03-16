@@ -508,7 +508,6 @@ export default class Calendar extends React.Component {
   static getDatesFromRRule(str, eventStart, betweenStart, betweenEnd) {    
     //get recurrences using RRule
     let rstr = `DTSTART:${moment(eventStart).utc(true).format('YYYYMMDDTHHmmss')}Z\n${str}`;
-    console.log(rstr);
     let rruleSet = rrulestr(rstr, {forceset: true});
     
     //get dates
