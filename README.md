@@ -61,6 +61,7 @@ class Example extends React.Component {
 | `calendars`   | array of objects | google calendar id and display color (required)                                 |
 | `styles`      | object           | styles (optional, see more below)                                               |
 | `showArrow`   | boolean          | shows arrow for events that span multiple months (optional, defaults to `true`) |
+| `showFooter`   | boolean         | whether or not to show footer (optional, defaults to `true`)                    |
 
 ### Customization
 
