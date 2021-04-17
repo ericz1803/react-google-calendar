@@ -1,6 +1,6 @@
 {
   "name": "@ericz1803/react-google-calendar",
-  "version": "4.0.3",
+  "version": "4.1.0",
   "description": "React Google Calendar Component",
   "main": "index.js",
   "scripts": {
@@ -47,7 +47,7 @@
     "babel-plugin-lodash": "^3.3.4",
     "jest": "^25.5.4",
     "jest-emotion": "^10.0.32",
-    "jest-transform-css": "^2.0.0",
+    "jest-transform-css": "^2.1.0",
     "react-test-renderer": "^16.14.0"
   },
   "jest": {

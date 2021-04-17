@@ -44,7 +44,8 @@ export default class Calendar extends React.Component {
       calendars: [],
       events: [],//all day or multi day events
       singleEvents: [], //single day events
-      userTimezone: moment.tz.guess()
+      userTimezone: moment.tz.guess(),
+      showFooter: props.showFooter,
     };
     
     this.lastMonth = this.lastMonth.bind(this);
@@ -554,31 +555,34 @@ export default class Calendar extends React.Component {
           {this.renderDays()}
           {this.renderDates(eventsEachDay)}
         </div>
-        <div className="calendar-footer">
-          <div css={css`
-            font-size: 14px;
-            padding-left: 5px;
-            text-align: left;
-          `}>
-            All times shown your timezone ({moment().tz(this.state.userTimezone).format("z")})
-          </div>
-          <div css={css`
-            vertical-align: top;
-            margin-left: 3px;
-            margin-right: 3px;
-          `}>
-            <a href={"https://calendar.google.com/calendar/r?cid=" + this.props.calendarId} target="_blank" css={css`
+        { this.state.showFooter && 
+          <div className="calendar-footer">
+            <div css={css`
               font-size: 14px;
-              text-decoration: none;
-              color: inherit;
-              &:hover {
-                text-decoration: underline;
-              }
+              padding-left: 5px;
+              text-align: left;
             `}>
-              &#43; Add Calendar
-            </a>
+              All times shown your timezone ({moment().tz(this.state.userTimezone).format("z")})
+            </div>
+            <div css={css`
+              vertical-align: top;
+              margin-left: 3px;
+              margin-right: 3px;
+            `}>
+              <a href={"https://calendar.google.com/calendar/r?cid=" + this.props.calendarId} target="_blank" css={css`
+                font-size: 14px;
+                text-decoration: none;
+                color: inherit;
+                &:hover {
+                  text-decoration: underline;
+                }
+              `}>
+                &#43; Add Calendar
+              </a>
+            </div>
           </div>
-        </div>
+        }
+        
       </div>
     );
   }
@@ -590,6 +594,7 @@ Calendar.propTypes = {
     color: PropTypes.string
   })).isRequired,
   apiKey: PropTypes.string.isRequired,
+  showFooter: PropTypes.bool.isRequired,
 
   showArrow: PropTypes.bool,
 
@@ -598,4 +603,5 @@ Calendar.propTypes = {
 
 Calendar.defaultProps = {
   showArrow: true,
+  showFooter: true
 }
