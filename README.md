@@ -61,7 +61,8 @@ class Example extends React.Component {
 | `calendars`   | array of objects | google calendar id and display color (required)                                 |
 | `styles`      | object           | styles (optional, see more below)                                               |
 | `showArrow`   | boolean          | shows arrow for events that span multiple months (optional, defaults to `true`) |
-| `showFooter`   | boolean         | whether or not to show footer (optional, defaults to `true`)                    |
+| `showFooter`  | boolean          | whether or not to show footer (optional, defaults to `true`)                    |
+| `language`    | string           | Available options : 'ES', 'PT', 'FR', default: 'EN'                             |
 
 ### Customization
 
@@ -107,11 +108,18 @@ let styles = {
   `
 }
 
+const language = 'ES';
+
 class Example extends React.Component {
   render() {
     return (
       <div>
-        <Calendar apiKey={API_KEY} calendars={calendars} styles={styles} />
+        <Calendar 
+        apiKey={API_KEY} 
+        calendars={calendars} 
+        styles={styles} 
+        language={language}
+        />
       </div>
     )
   }
