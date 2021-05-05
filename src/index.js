@@ -20,25 +20,14 @@ import _ from "lodash";
 
 import gud from "gud";
 
+import { Languages, availableLanguages } from "./languages";
+
 export default class Calendar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      monthNames: [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ],
-      days: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+      monthNames: [...Languages.EN.MONTHS],
+      days: [...Languages.EN.DAYS],
       today: moment(),
       current: moment().startOf("month").utc(true), //current position on calendar (first day of month)
       calendars: [],
@@ -53,6 +42,21 @@ export default class Calendar extends React.Component {
   }
 
   async componentDidMount() {
+    if (
+      Boolean(this.props.language) &&
+      availableLanguages.includes(this.props.language.toUpperCase())
+    ) {
+      // try to change langue
+      try {
+        const lang = this.props.language.toUpperCase();
+        this.setState({
+          monthNames: [...Languages[lang].MONTHS],
+          days: [...Languages[lang].DAYS],
+        });
+      } catch (err) {
+        console.error("Error choosing a new language", err);
+      }
+    }
     //init and load google calendar api
     try {
       const res = await loadCalendarAPI(this.props.apiKey);
@@ -599,6 +603,7 @@ Calendar.propTypes = {
   showArrow: PropTypes.bool,
 
   styles: PropTypes.object,
+  language: PropTypes.string,
 }
 
 Calendar.defaultProps = {
