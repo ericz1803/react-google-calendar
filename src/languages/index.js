@@ -86,7 +86,7 @@ export const Languages = {
     ],
     DAYS: ["Ned", "Pon", "Tor", "Sre", "Čet", "Pet", "Sob"],
   },
-  SL: {
+  DE: {
     MONTHS: [
       "Januar",
       "Februar",
