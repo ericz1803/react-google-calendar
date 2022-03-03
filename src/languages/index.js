@@ -86,4 +86,21 @@ export const Languages = {
     ],
     DAYS: ["Ned", "Pon", "Tor", "Sre", "Čet", "Pet", "Sob"],
   },
+  PL: {
+    MONTHS: [
+      "Styczeń",
+      "Luty",
+      "Marzec",
+      "Kwiecień",
+      "Maj",
+      "Czerwiec",
+      "Lipiec",
+      "Sierpień",
+      "Wrzesień",
+      "Październik",
+      "Listopad",
+      "Grudzień",
+    ],
+    DAYS: ["Pon", "Wt", "Śr", "Czw", "Pt", "Sob", "Nd"],
+  },
 }
