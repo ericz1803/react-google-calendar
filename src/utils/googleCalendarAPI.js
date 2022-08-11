@@ -35,6 +35,6 @@ export function loadCalendarAPI(apiKey) {
 export function getEventsList(calendarId, maxResults = 1000) {
   return gapi.client.calendar.events.list({
     calendarId: calendarId,
-    maxResults: maxResults,
+    maxResults: 9999,
   });
 }
