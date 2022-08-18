@@ -56,14 +56,14 @@ class Example extends React.Component {
 
 ### Properties
 
-| Parameter    | Type             | Description                                                                     |
-| ------------ | ---------------- | ------------------------------------------------------------------------------- |
-| `apiKey`     | string           | google api key (required)                                                       |
-| `calendars`  | array of objects | google calendar id and display color (required)                                 |
-| `styles`     | object           | styles (optional, see more below)                                               |
-| `showArrow`  | boolean          | shows arrow for events that span multiple months (optional, defaults to `true`) |
-| `showFooter` | boolean          | whether or not to show footer (optional, defaults to `true`)                    |
-| `language`   | string           | Available options : 'ES', 'PT', 'FR', 'SL', 'DE' default: 'EN'                  |
+| Parameter     | Type             | Description                                                                     |
+|---------------|------------------|---------------------------------------------------------------------------------|
+| `apiKey`      | string           | google api key (required)                                                       |
+| `calendars`   | array of objects | google calendar id and display color (required)                                 |
+| `styles`      | object           | styles (optional, see more below)                                               |
+| `showArrow`   | boolean          | shows arrow for events that span multiple months (optional, defaults to `true`) |
+| `showFooter`  | boolean          | whether or not to show footer (optional, defaults to `true`)                    |
+| `language`    | string           | Available options : 'ES', 'PT', 'FR', 'SL','DE', 'PL' default: 'EN'             |
 
 ### Customization
 
