@@ -1,6 +1,6 @@
 {
   "name": "@ericz1803/react-google-calendar",
-  "version": "4.2.1",
+  "version": "4.2.2",
   "description": "React Google Calendar Component",
   "main": "index.js",
   "scripts": {
@@ -36,7 +36,7 @@
     "rrule": "^2.6.4"
   },
   "devDependencies": {
-    "@babel/cli": "^7.10.1",
+    "@babel/cli": "^7.18.10",
     "@babel/core": "^7.10.1",
     "@babel/plugin-transform-runtime": "^7.10.1",
     "@babel/preset-env": "^7.10.1",

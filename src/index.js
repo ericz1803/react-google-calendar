@@ -46,7 +46,7 @@ export default class Calendar extends React.Component {
       Boolean(this.props.language) &&
       availableLanguages.includes(this.props.language.toUpperCase())
     ) {
-      // try to change langue
+      // try to change language
       try {
         const lang = this.props.language.toUpperCase();
         this.setState({
