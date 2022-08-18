@@ -35,6 +35,23 @@ export const Languages = {
     ],
     DAYS: ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"],
   },
+  DE: {
+    MONTHS: [
+      "Januar",
+      "Februar",
+      "März",
+      "April",
+      "Mai",
+      "Juni",
+      "Juli",
+      "August",
+      "September",
+      "Oktober",
+      "November",
+      "Dezember",
+    ],
+    DAYS: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
+  },
   PT: {
     MONTHS: [
       "Janeiro",
