@@ -118,5 +118,6 @@ export const Languages = {
       "Listopad",
       "Grudzień",
     ],
+    DAYS: ["Pon", "Wt", "Śr", "Czw", "Pt", "Sob", "Nd"],
   },
 }
