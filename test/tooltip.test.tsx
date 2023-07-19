@@ -1,6 +1,12 @@
+/**
+ * @jest-environment jsdom
+ */
+
+import { describe, test, expect, beforeAll, afterAll } from "vitest"; 
+
 import React from "react";
-import ReactDOM from "react-dom";
-import { act } from "react-dom/test-utils";
+import { createRoot } from "react-dom/client";
+import { act } from "@testing-library/react";
 
 import moment from "moment-timezone";
 
@@ -50,15 +56,18 @@ describe("Tooltip Time Display", () => {
 });
 
 let container;
+let root;
 
-beforeEach(() => {
+beforeAll(() => {
   container = document.createElement("div");
   document.body.appendChild(container);
+  root = createRoot(container);
 });
 
-afterEach(() => {
+afterAll(() => {
   document.body.removeChild(container);
   container = null;
+  root.unmount();
 });
 
 describe("Tooltip Rendering", () => {
@@ -69,7 +78,8 @@ describe("Tooltip Rendering", () => {
       endTime: moment(),
     };
     act(() => {
-      ReactDOM.render(<Tooltip showTooltip={false} {...props} />, container);
+      // @ts-ignore
+      root.render(<Tooltip showTooltip={false} {...props} />);
     });
 
     expect(container.querySelector(".tooltip-text").textContent).toEqual(expect.stringContaining("Test Event"));
@@ -82,7 +92,8 @@ describe("Tooltip Rendering", () => {
       endTime: moment(),
     };
     act(() => {
-      ReactDOM.render(<Tooltip showTooltip={false} {...props} />, container);
+      // @ts-ignore
+      root.render(<Tooltip showTooltip={false} {...props} />);
     });
 
     expect(container.querySelector(".description")).toBeNull();
@@ -96,7 +107,8 @@ describe("Tooltip Rendering", () => {
       description: "some description",
     };
     act(() => {
-      ReactDOM.render(<Tooltip showTooltip={false} {...props} />, container);
+      // @ts-ignore
+      root.render(<Tooltip showTooltip={false} {...props} />);
     });
 
     expect(container.querySelector(".description").textContent).toEqual("some description");
@@ -109,7 +121,8 @@ describe("Tooltip Rendering", () => {
       endTime: moment(),
     };
     act(() => {
-      ReactDOM.render(<Tooltip showTooltip={false} {...props} />, container);
+      // @ts-ignore
+      root.render(<Tooltip showTooltip={false} {...props} />);
     });
 
     expect(container.querySelector(".location")).toBeNull();
@@ -123,7 +136,8 @@ describe("Tooltip Rendering", () => {
       location: "A location",
     };
     act(() => {
-      ReactDOM.render(<Tooltip showTooltip={false} {...props} />, container);
+      // @ts-ignore
+      root.render(<Tooltip showTooltip={false} {...props} />);
     });
 
     expect(container.querySelector(".location").textContent).toEqual("A location");
@@ -136,7 +150,8 @@ describe("Tooltip Rendering", () => {
       endTime: moment(),
     };
     act(() => {
-      ReactDOM.render(<Tooltip showTooltip={false} {...props} />, container);
+      // @ts-ignore
+      root.render(<Tooltip showTooltip={false} {...props} />);
     });
 
     expect(container.querySelector(".calendarName")).toBeNull();
@@ -150,7 +165,8 @@ describe("Tooltip Rendering", () => {
       calendarName: "Calendar",
     };
     act(() => {
-      ReactDOM.render(<Tooltip showTooltip={false} {...props} />, container);
+      // @ts-ignore
+      root.render(<Tooltip showTooltip={false} {...props} />);
     });
 
     expect(container.querySelector(".calendarName").textContent).toEqual("Calendar");

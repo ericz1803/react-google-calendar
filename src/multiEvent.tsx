@@ -1,7 +1,6 @@
-/** @jsx jsx */
+/** @jsxImportSource @emotion/react */
 
 import React from "react";
-import PropTypes from "prop-types";
 
 import moment from "moment-timezone";
 
@@ -15,20 +14,24 @@ import { isAllDay, pSBC } from "./utils/helper";
 
 import { Manager, Reference } from 'react-popper';
 
-export default class MultiEvent extends React.Component {
-  constructor(props) {
+import { MultiEventProps, MultiEventState } from './types/multiEvent';
+
+export default class MultiEvent extends React.Component<MultiEventProps, MultiEventState> {
+  constructor(props: MultiEventProps) {
     super(props);
 
-    this.state = {
-      startTime: moment(this.props.startTime),
-      endTime: moment(this.props.endTime),
-      color: this.props.color,
-      darkColor: pSBC(-0.35, this.props.color),
+    let color = this.props.color || '#4786ff';
+    let start_time = moment(this.props.startTime);
+    let end_time = moment(this.props.endTime);
 
+    this.state = {
+      startTime: start_time,
+      endTime: end_time,
+      color: color,
+      darkColor: pSBC(-0.35, color),
+      allDay: isAllDay(start_time, end_time),
       showTooltip: false,
     }
-
-    this.state.allDay = isAllDay(this.state.startTime, this.state.endTime);
 
     this.toggleTooltip = this.toggleTooltip.bind(this);
     this.closeTooltip = this.closeTooltip.bind(this);
@@ -88,10 +91,11 @@ export default class MultiEvent extends React.Component {
     return (
       <div 
         className="event"
+        // @ts-ignore
         tabIndex="0"
         onBlur={this.closeTooltip}
         css={css`
-          width: ${'calc(' + this.props.length + '00% + ' + (this.props.length - 1) + 'px)'};
+          width: ${'calc(' + this.props.length + '00% + ' + ((this.props.length || 1) - 1) + 'px)'};
           &:focus {
             outline: none;
           }
@@ -102,7 +106,10 @@ export default class MultiEvent extends React.Component {
           <Reference>
             {({ref}) => (
               <div css={[css`
-                  width: ${'calc(100% - ' + 8 * (this.props.arrowLeft + this.props.arrowRight) + 'px)'};
+                  width: ${
+                    // @ts-ignore
+                    'calc(100% - ' + 8 * ((this.props.arrowLeft || false) + (this.props.arrowRight || false)) + 'px)'
+                  };
                   border-radius: 3px;
                   background: ${this.state.color};
                   &:hover {
@@ -110,7 +117,9 @@ export default class MultiEvent extends React.Component {
                   }
                   ${this.props.arrowLeft && leftArrow}
                   ${this.props.arrowRight && rightArrow}
-                `, this.props.multiEventStyles]}
+                `, 
+                // @ts-ignore
+                this.props.multiEventStyles]}
 
                 onClick={this.toggleTooltip}
                 ref={ref}
@@ -158,33 +167,4 @@ export default class MultiEvent extends React.Component {
       </div>
     )
   }
-}
-
-MultiEvent.propTypes = {
-  name: PropTypes.string.isRequired,
-  startTime: PropTypes.instanceOf(moment).isRequired,
-  endTime: PropTypes.instanceOf(moment).isRequired,
-  length: PropTypes.number,
-  description: PropTypes.string,
-  location: PropTypes.string,
-  calendarName: PropTypes.string,
-
-  tooltipStyles: PropTypes.oneOfType([
-    PropTypes.object,
-    PropTypes.instanceOf(css),
-  ]),
-  multiEventStyles: PropTypes.oneOfType([
-    PropTypes.object,
-    PropTypes.instanceOf(css),
-  ]),
-  color: PropTypes.string,
-  arrowLeft: PropTypes.bool,
-  arrowRight: PropTypes.bool,
-}
-
-MultiEvent.defaultProps = {
-  color: '#4786ff',
-  length: 1,
-  arrowLeft: false,
-  arrowRight: false,
 }

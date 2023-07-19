@@ -1,6 +1,13 @@
+/**
+ * @jest-environment jsdom
+ */
+
+import { describe, test, expect, beforeAll, afterAll } from "vitest"; 
+
 import React from "react";
-import ReactDOM from "react-dom";
-import { act } from "react-dom/test-utils";
+import { createRoot } from "react-dom/client";
+import { act } from "@testing-library/react";
+
 import Calendar from "../src/index";
 import moment from "moment-timezone";
 
@@ -8,13 +15,14 @@ describe("simple end to end test", () => {
   test("test full render", () => {
     let container = document.createElement("div");
     document.body.appendChild(container);
-
+    let root = createRoot(container);
     let calendars = [
       {calendarId: "09opmkrjova8h5k5k46fedmo88@group.calendar.google.com"}
     ]
 
     act(() => {
-      ReactDOM.render(<Calendar apiKey={process.env.GOOGLE_API_KEY} calendars={calendars} />, container);
+      // @ts-ignore
+      root.render(<Calendar apiKey={process.env.GOOGLE_API_KEY} calendars={calendars} />);
     });
   })
 })

@@ -1,6 +1,6 @@
 import * as React from "react"
 
-function SvgComponent(props) {
+function SvgComponent(props: any) {
   return (
     <svg
       viewBox="0 0 24 24"

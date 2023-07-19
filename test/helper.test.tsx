@@ -1,5 +1,8 @@
+import { describe, test, expect } from "vitest";
+
 import { isAllDay, getCalendarURL, isMultiEvent, pSBC } from "../src/utils/helper";
 import moment from "moment-timezone";
+
 
 describe("isAllDay function", () => {
   test("single day all day event", () => {
@@ -87,6 +90,7 @@ describe("getCalendarURL function", () => {
       location: "A Location",
     };
 
+    //@ts-ignore
     const outputURL = getCalendarURL(props.startTime, props.endTime, props.name, props.description, props.location);
 
     const expectedURL = "https://calendar.google.com/calendar/r/eventedit?text=Event&dates=20200502T163000%2F20200502T173000&details=&location=A+Location";
@@ -101,6 +105,7 @@ describe("getCalendarURL function", () => {
       name: "Event",
     };
 
+    //@ts-ignore
     const outputURL = getCalendarURL(props.startTime, props.endTime, props.name, props.description, props.location);
 
     const expectedURL = "https://calendar.google.com/calendar/r/eventedit?text=Event&dates=20200502T163000%2F20200502T173000&details=Some+Description&location=";

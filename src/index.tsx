@@ -1,10 +1,10 @@
-/** @jsx jsx */
-
+/** @jsxImportSource @emotion/react */
 import React from "react";
-import PropTypes from "prop-types";
 
-import moment from "moment-timezone";
+import moment, { Moment } from "moment-timezone";
 import { RRule, RRuleSet, rrulestr } from "rrule";
+
+import { CalendarProps, CalendarState } from './types';
 
 import "./index.css";
 
@@ -18,12 +18,13 @@ import { css, jsx } from '@emotion/react'
 
 import _ from "lodash";
 
+//@ts-ignore
 import gud from "gud";
 
 import { Languages, availableLanguages } from "./languages";
 
-export default class Calendar extends React.Component {
-  constructor(props) {
+export default class Calendar extends React.Component<CalendarProps, CalendarState> {
+  constructor(props: CalendarProps) {
     super(props);
     this.state = {
       monthNames: [...Languages.EN.MONTHS],
@@ -34,7 +35,8 @@ export default class Calendar extends React.Component {
       events: [],//all day or multi day events
       singleEvents: [], //single day events
       userTimezone: moment.tz.guess(),
-      showFooter: props.showFooter,
+      showFooter: props.showFooter || true,
+      showArrow: props.showArrow || true,
     };
     
     this.lastMonth = this.lastMonth.bind(this);
@@ -50,7 +52,9 @@ export default class Calendar extends React.Component {
       try {
         const lang = this.props.language.toUpperCase();
         this.setState({
+          //@ts-ignore
           monthNames: [...Languages[lang].MONTHS],
+          //@ts-ignore
           days: [...Languages[lang].DAYS],
         });
       } catch (err) {
@@ -60,7 +64,6 @@ export default class Calendar extends React.Component {
     //init and load google calendar api
     try {
       const res = await loadCalendarAPI(this.props.apiKey);
-      console.log(res);
     } catch(err) {
       console.error("Error loading GAPI client for API", err);
     }
@@ -84,11 +87,11 @@ export default class Calendar extends React.Component {
   }
 
   //get easy to work with events and singleEvents from response
-  processEvents(items, calendarName, color) {
-    let singleEvents = [];
-    let events = [];
-    let changed = [];
-    let cancelled = [];
+  processEvents(items: any[], calendarName: string, color: string): any[] {
+    let singleEvents: any[] = [];
+    let events: any[] = [];
+    let changed: any[] = [];
+    let cancelled: any[] = [];
 
     items.forEach((event) => {
       if (event.originalStartTime) { //cancelled or changed events
@@ -179,7 +182,7 @@ export default class Calendar extends React.Component {
 
   clearEvents() {
     for (let i = 1; i <= this.state.current.daysInMonth(); i++) {
-      const node = document.getElementById("day-" + i);
+      const node: any = document.getElementById("day-" + i);
       while (node.lastElementChild) {
         node.removeChild(node.lastElementChild);
       }
@@ -200,7 +203,8 @@ export default class Calendar extends React.Component {
   }
 
   //renders the blocks for the days of each month
-  renderDates(eventsEachDay) {
+  renderDates(eventsEachDay: any[]): any[] {
+    //@ts-ignore
     var days = [...Array(this.state.current.daysInMonth() + 1).keys()].slice(1); // create array from 1 to number of days in month
 
     var dayOfWeek = this.state.current.day(); //get day of week of first day in the month
@@ -263,7 +267,7 @@ export default class Calendar extends React.Component {
   }
 
   //get array of arrays of length days in month containing the events in each day
-  getRenderEvents(events, singleEvents) {
+  getRenderEvents(events: any[], singleEvents: any[]) {
     let eventsEachDay = [...Array(this.state.current.daysInMonth())].map((e) => []); //create array of empty arrays of length daysInMonth
     
     events.forEach((event) => {
@@ -274,13 +278,13 @@ export default class Calendar extends React.Component {
         //render recurrences
         dates.forEach((date) => {
           //don't render if it is cancelled
-          if (event.cancelledEvents.some((cancelledMoment) => (cancelledMoment.isSame(date, "day")))) {
+          if (event.cancelledEvents.some((cancelledMoment: any) => (cancelledMoment.isSame(date, "day")))) {
             return;
           }
 
           let props;
           //update information if event has changed
-          const changedEvent = event.changedEvents.find((changedEvent) => (changedEvent.originalStartTime.isSame(date, "day")));
+          const changedEvent = event.changedEvents.find((changedEvent: any) => (changedEvent.originalStartTime.isSame(date, "day")));
           if (changedEvent) {
             props = {
               name: changedEvent.name,
@@ -337,14 +341,15 @@ export default class Calendar extends React.Component {
         //render recurrences
         dates.forEach((date) => {
           //check if it is in cancelled
-          if (event.cancelledEvents.some((cancelledMoment) => (cancelledMoment.isSame(date, "day")))) {
+          if (event.cancelledEvents.some((cancelledMoment: any) => (cancelledMoment.isSame(date, "day")))) {
             return;
           }
 
           //if event has changed
-          const changedEvent = event.changedEvents.find((changedEvent) => (changedEvent.originalStartTime.isSame(date, "day")));
+          const changedEvent = event.changedEvents.find((changedEvent: any) => (changedEvent.originalStartTime.isSame(date, "day")));
+          let props;
           if (changedEvent) {
-            var props = {
+            props = {
               name: changedEvent.name,
               startTime: changedEvent.newStartTime,
               endTime: changedEvent.newEndTime,
@@ -356,7 +361,7 @@ export default class Calendar extends React.Component {
           } else {
             let eventStart = moment.utc(date); //avoid bad timezone conversions
             let eventEnd = moment(eventStart).add(duration);
-            var props = {
+            props = {
               name: event.name,
               startTime: eventStart,
               endTime: eventEnd,
@@ -384,7 +389,7 @@ export default class Calendar extends React.Component {
 
   //TODO: refactor
   //decides how to render events
-  drawMultiEvent(eventsEachDay, props) { 
+  drawMultiEvent(eventsEachDay: any[], props: any) { 
     let startDrawDate;
     let blockLength = 1;
     let curDate;
@@ -400,7 +405,7 @@ export default class Calendar extends React.Component {
     }
 
     if (moment(props.startTime).utc(true).isBefore(this.state.current)) {
-      if (this.props.showArrow) {
+      if (this.state.showArrow) {
         arrowLeft = true;
       }
       
@@ -413,7 +418,7 @@ export default class Calendar extends React.Component {
 
     while (curDate.isSameOrBefore(endDate, "day")) {
       if (curDate.date() == this.state.current.daysInMonth() && !endDate.isSame(this.state.current, 'month')) {
-        if (this.props.showArrow) {
+        if (this.state.showArrow) {
           arrowRight = true;
         }
         
@@ -442,14 +447,14 @@ export default class Calendar extends React.Component {
 
   //TODO: refactor this too?
   //handles rendering and proper stacking of individual blocks 
-  renderMultiEventBlock(eventsEachDay, startDate, length, props, arrowLeft, arrowRight) { 
+  renderMultiEventBlock(eventsEachDay: any[], startDate: any, length: number, props: any, arrowLeft: boolean, arrowRight: boolean) { 
     let multiEventProps = {
       tooltipStyles: _.get(this.props.styles, 'tooltip', {}), //gets this.props.styles.tooltip if exists, else empty object
       multiEventStyles: _.get(this.props.styles, 'multiEvent', {}),
     }
 
     let maxBlocks = 0;
-    let closedSlots = []; //keep track of rows that the event can't be inserted into
+    let closedSlots: any[] = []; //keep track of rows that the event can't be inserted into
 
     for (let i = 0; i < length; i++) {
       let dayEvents = eventsEachDay[startDate - 1 + i];
@@ -470,7 +475,7 @@ export default class Calendar extends React.Component {
       }
     }
 
-    let chosenRow;
+    let chosenRow = -1;
     for (let i = 0; i <= maxBlocks; i++) {
       if (!closedSlots.includes(i)) {
         chosenRow = i;
@@ -494,7 +499,7 @@ export default class Calendar extends React.Component {
   }
 
   //attempts to render in a placeholder then at the end
-  renderSingleEvent(eventsEachDay, date, props) {
+  renderSingleEvent(eventsEachDay: any[], date: number, props: any) {
     let foundEmpty = false;
     let nodes = eventsEachDay[date - 1];
     for (let i = 0; i < nodes.length; i++) {
@@ -510,7 +515,7 @@ export default class Calendar extends React.Component {
   }
 
   //get dates based on rrule string between dates
-  static getDatesFromRRule(str, eventStart, betweenStart, betweenEnd) {    
+  static getDatesFromRRule(str: string, eventStart: Moment, betweenStart: Moment, betweenEnd: Moment) {    
     //get recurrences using RRule
     let rstr = `DTSTART:${moment(eventStart).utc(true).format('YYYYMMDDTHHmmss')}Z\n${str}`;
     let rruleSet = rrulestr(rstr, {forceset: true});
@@ -573,7 +578,7 @@ export default class Calendar extends React.Component {
               margin-left: 3px;
               margin-right: 3px;
             `}>
-              <a href={"https://calendar.google.com/calendar/r?cid=" + this.props.calendarId} target="_blank" css={css`
+              <a href={"https://calendar.google.com/calendar/r?cid=" + this.props.calendars[0].calendarId} target="_blank" css={css`
                 font-size: 14px;
                 text-decoration: none;
                 color: inherit;
@@ -590,23 +595,4 @@ export default class Calendar extends React.Component {
       </div>
     );
   }
-}
-
-Calendar.propTypes = {
-  calendars: PropTypes.arrayOf(PropTypes.shape({
-    calendarId: PropTypes.string.isRequired,
-    color: PropTypes.string
-  })).isRequired,
-  apiKey: PropTypes.string.isRequired,
-  showFooter: PropTypes.bool.isRequired,
-
-  showArrow: PropTypes.bool,
-
-  styles: PropTypes.object,
-  language: PropTypes.string,
-}
-
-Calendar.defaultProps = {
-  showArrow: true,
-  showFooter: true
 }

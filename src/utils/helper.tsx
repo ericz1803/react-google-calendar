@@ -1,11 +1,12 @@
-import moment from "moment-timezone";
+// @ts-nocheck
+import moment, { Moment } from "moment-timezone";
 
 /** determines whether event is an all day event
   * @param {moment} startTime start of event
   * @param {moment} endTime end of event
   * @return {boolean} Whether or not it is an all day event
   */
-export function isAllDay(startTime, endTime) {
+export function isAllDay(startTime: Moment, endTime: Moment): boolean {
   return startTime.isSame(moment.parseZone(startTime).startOf("day"), "second")
     && endTime.isSame(moment.parseZone(endTime).startOf("day"), "second");
 }
@@ -19,7 +20,8 @@ export function isAllDay(startTime, endTime) {
   * @param {boolean} allDay whether or not it is an all day event
   * @return {string} url of the link
   */
-export function getCalendarURL(startTime, endTime, name, description, location, allDay) {
+export function getCalendarURL(startTime: Moment, endTime: Moment, 
+  name: string, description?: string, location?: string, allDay?: boolean): string {
   const url = new URL("https://calendar.google.com/calendar/r/eventedit");
   url.searchParams.append("text", name || "");
   
@@ -40,13 +42,13 @@ export function getCalendarURL(startTime, endTime, name, description, location, 
  * @param {moment} endTime 
  * @return {boolean} whether or not it is a single event
  */
-export function isMultiEvent(startTime, endTime) {
+export function isMultiEvent(startTime: Moment, endTime: Moment): boolean {
   return moment.duration(endTime.diff(startTime)).asHours() >= 24 || (!startTime.isSame(endTime, 'day') && endTime.hour() >= 12)
 }
 
 //function to shade colors
 //modified from https://github.com/PimpTrizkit/PJs/wiki/12.-Shade,-Blend-and-Convert-a-Web-Color-(pSBC.js)#stackoverflow-archive-begin
-export function pSBC(p,c0,c1,l) {
+export function pSBC(p,c0,c1?,l?): string {
   let r,g,b,P,f,t,h,i=parseInt,m=Math.round,a=typeof(c1)=="string";
   if(typeof(p)!="number"||p<-1||p>1||typeof(c0)!="string"||(c0[0]!='r'&&c0[0]!='#')||(c1&&!a))return null;
   

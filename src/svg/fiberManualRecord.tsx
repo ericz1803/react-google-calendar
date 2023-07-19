@@ -1,6 +1,6 @@
 import * as React from "react"
 
-function SvgComponent(props) {
+function SvgComponent(props: any) {
   return (
     <svg viewBox="0 0 24 24" {...props}>
       <path d="M24 24H0V0h24v24z" fill="none" />

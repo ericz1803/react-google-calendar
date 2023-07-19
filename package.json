@@ -1,11 +1,18 @@
 {
   "name": "@ericz1803/react-google-calendar",
-  "version": "4.2.2",
+  "version": "4.3.0",
   "description": "React Google Calendar Component",
-  "main": "index.js",
+  "main": "dist/react-google-calendar.cjs.js",
+  "module": "dist/react-google-calendar.es.js",
+  "types": "dist/types/index.d.ts",
   "scripts": {
-    "test": "jest",
-    "build": "./node_modules/.bin/babel src --out-dir ./dist --copy-files && cp ./{LICENSE,README.md,package.json} ./dist"
+    "test": "vitest",
+    "coverage": "vitest --coverage",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "repository": {
     "type": "git",
@@ -20,41 +27,46 @@
     "google-calendar"
   ],
   "peerDependencies": {
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0",
-    "@emotion/react": "^11.1.1"
+    "@emotion/react": "^11.11.1",
+    "react": "^16.8.0 || ^17 || ^18",
+    "react-dom": "^16.8.0 || ^17 || ^18"
   },
   "dependencies": {
-    "@babel/runtime": "^7.10.3",
-    "@popperjs/core": "^2.5.4",
+    "@popperjs/core": "^2.11.8",
     "gud": "^1.0.0",
-    "lodash": "^4.17.15",
-    "moment": "^2.26.0",
-    "moment-timezone": "^0.5.31",
-    "prop-types": "^15.7.2",
-    "react-popper": "^2.2.4",
-    "rrule": "^2.6.4"
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "moment-timezone": "^0.5.43",
+    "react-popper": "^2.3.0",
+    "rrule": "^2.7.2"
   },
   "devDependencies": {
-    "@babel/cli": "^7.18.10",
-    "@babel/core": "^7.10.1",
-    "@babel/plugin-transform-runtime": "^7.10.1",
-    "@babel/preset-env": "^7.10.1",
-    "@babel/preset-react": "^7.10.1",
-    "@emotion/babel-plugin": "^11.0.0",
-    "@emotion/babel-preset-css-prop": "^10.2.1",
-    "babel-jest": "^25.5.1",
-    "babel-plugin-lodash": "^3.3.4",
-    "jest": "^25.5.4",
-    "jest-emotion": "^10.0.32",
-    "jest-transform-css": "^4.0.1",
-    "react-test-renderer": "^16.14.0"
-  },
-  "jest": {
-    "verbose": true,
-    "transform": {
-      "^.+\\.js$": "babel-jest",
-      ".+\\.css$": "jest-transform-css"
-    }
+    "@emotion/react": "^11.11.1",
+    "@storybook/addon-essentials": "^7.1.0",
+    "@storybook/addon-interactions": "^7.1.0",
+    "@storybook/addon-links": "^7.1.0",
+    "@storybook/addon-mdx-gfm": "^7.1.0",
+    "@storybook/addon-onboarding": "^1.0.7",
+    "@storybook/blocks": "^7.1.0",
+    "@storybook/react": "^7.1.0",
+    "@storybook/react-vite": "^7.1.0",
+    "@storybook/testing-library": "^0.2.0",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/user-event": "^14.4.3",
+    "@types/jest": "^29.5.3",
+    "@types/lodash": "^4.14.195",
+    "@types/react": "^18.2.15",
+    "@vitejs/plugin-react": "^4.0.3",
+    "@vitejs/plugin-react-refresh": "^1.3.6",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-test-renderer": "^18.2.0",
+    "rollup-plugin-postcss": "^4.0.2",
+    "storybook": "^7.1.0",
+    "typescript": "^5.1.6",
+    "vite": "^4.4.4",
+    "vite-plugin-dts": "^3.3.1",
+    "vitest": "^0.33.0"
   }
 }
