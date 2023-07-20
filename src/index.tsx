@@ -46,7 +46,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
 
   async componentDidMount() {
     if (
-      Boolean(this.props.language) &&
+      this.props.language &&
       availableLanguages.includes(this.props.language.toUpperCase())
     ) {
       // try to change language
@@ -76,12 +76,11 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
         const res = await getEventsList(calendar.calendarId);
 
         //process events
+        //@ts-ignore
         const events = this.processEvents(res.result.items, res.result.summary, calendar.color);
 
-        //only run if calendar.calendarId not in processedCalendars
+        //fix duplicate calendars
         if (!this.state.processedCalendars.includes(calendar.calendarId)) {
-          console.log("Getting events for calendar", calendar.calendarId);
-
           //set state with calculated values
           this.setState({
             "events": [...this.state.events, ...events[0]], 
@@ -278,7 +277,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
   //get array of arrays of length days in month containing the events in each day
   getRenderEvents(events: any[], singleEvents: any[]) {
     let eventsEachDay = [...Array(this.state.current.daysInMonth())].map((e) => []); //create array of empty arrays of length daysInMonth
-    
+    let eventsToRender: any[] = [];
     events.forEach((event) => {
       if (event.recurrence) {
         let duration = moment.duration(event.endTime.diff(event.startTime));
@@ -317,8 +316,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
               color: event.color
             };
           }
-          
-          this.drawMultiEvent(eventsEachDay, props);   
+          eventsToRender.push(props);
         });
       } else {
         //render event
@@ -328,9 +326,20 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
         ) {
           return;
         }
-
-        this.drawMultiEvent(eventsEachDay, event);
+        eventsToRender.push(event);
       }
+    });
+
+    eventsToRender = eventsToRender.sort((a, b) => {
+      if (a.startTime.diff(b.startTime) != 0) {
+        return a.startTime.diff(b.startTime);
+      } else {
+        return b.endTime.diff(a.endTime);
+      }
+    })
+
+    eventsToRender.forEach((event) => {
+      this.drawMultiEvent(eventsEachDay, event);
     });
 
     let eventProps = {
@@ -340,6 +349,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       eventTextStyles: _.get(this.props.styles, 'eventText', {}),
     }
 
+    let singleEventsToRender: any[] = [];
     singleEvents.forEach((event) => {
       if (event.recurrence) {
         let duration = moment.duration(event.endTime.diff(event.startTime));
@@ -381,7 +391,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
             };
           }
           
-          this.renderSingleEvent(eventsEachDay, moment(props.startTime).date(), {...props, ...eventProps});
+          singleEventsToRender.push(props);
         });
       } else {
         //check if event is in current month
@@ -389,8 +399,13 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           return;
         }
 
-        this.renderSingleEvent(eventsEachDay, moment(event.startTime).date(), {...event, ...eventProps});
+        singleEventsToRender.push(event);
       }
+    });
+
+    singleEventsToRender = singleEventsToRender.sort((a, b) => (a.startTime.diff(b.startTime)));
+    singleEventsToRender.forEach((event) => {
+      this.renderSingleEvent(eventsEachDay, moment(event.startTime).date(), {...event, ...eventProps});
     });
 
     return eventsEachDay;
