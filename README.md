@@ -15,8 +15,8 @@ Design inspired by [this calendar](https://codepen.io/knyttneve/pen/QVqyNg) and 
 ## Installation
 
 ```
-1. npm install --save react react-dom @emotion/react
-2. npm install --save @ericz1803/react-google-calendar
+1. npm install react react-dom @emotion/react
+2. npm install @ericz1803/react-google-calendar
 ```
 
 ## Usage
@@ -63,7 +63,7 @@ class Example extends React.Component {
 | `styles`      | object           | styles (optional, see more below)                                               |
 | `showArrow`   | boolean          | shows arrow for events that span multiple months (optional, defaults to `true`) |
 | `showFooter`  | boolean          | whether or not to show footer (optional, defaults to `true`)                    |
-| `language`    | string           | Available options : `ES`, `PT`, `FR`, `SL`, `DE`, `PL` default: `EN`            |
+| `language`    | string           | Available options : `EN`, `ES`, `PT`, `FR`, `SL`, `DE`, `PL` default: `EN`      |
 
 ### Customization
 
@@ -133,6 +133,14 @@ class Example extends React.Component {
   }
 }
 ```
+
+### Local Development
+
+1. `git clone`
+2. `npm install`
+3. `npm run storybook` // use storybook to test locally
+4. `npm run build` // build the project
+5. `npm run test` // run tests
 
 ## License
 

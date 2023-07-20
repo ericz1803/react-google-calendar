@@ -1,7 +1,6 @@
-/** @jsx jsx */
+/** @jsxImportSource @emotion/react */
 
 import React from "react";
-import PropTypes from "prop-types";
 
 import moment from "moment-timezone";
 
@@ -15,14 +14,15 @@ import Tooltip from "./tooltip";
 
 import { Manager, Reference } from 'react-popper';
 
-export default class Event extends React.Component {
-  constructor(props) {
+import { EventProps, EventState } from './types/event';
+
+export default class Event extends React.Component<EventProps, EventState> {
+  constructor(props: EventProps) {
     super(props);
 
     this.state = {      
       startTime: moment(this.props.startTime),
       endTime: moment(this.props.endTime),
-
       showTooltip: false,
     }
 
@@ -43,6 +43,7 @@ export default class Event extends React.Component {
       <Manager>
         <div 
           className="event"
+          // @ts-ignore
           tabIndex="0"
           onBlur={this.closeTooltip}
           css={css`
@@ -61,7 +62,9 @@ export default class Event extends React.Component {
                     cursor: pointer;
                     background: rgba(81, 86, 93, 0.1);
                   }
-                `, this.props.eventStyles]}
+                `, 
+                // @ts-ignore
+                this.props.eventStyles]}
                 onClick={this.toggleTooltip}
                 ref={ref}
               >
@@ -75,16 +78,20 @@ export default class Event extends React.Component {
                     whiteSpace: "nowrap",
                     position: "relative",
                     textAlign: "left",
-                  }, this.props.eventTextStyles]}
+                  }, 
+                  // @ts-ignore
+                  this.props.eventTextStyles]}
                 >
                   <span css={[{
                     position: "absolute",
                     top: "5px",
                     left: "2px",
-                    color: this.props.color,
+                    color: this.props.color || "#4786ff",
                     height: "15px",
                     width: "15px",
-                  }, this.props.eventCircleStyles]}>
+                  }, 
+                  // @ts-ignore
+                  this.props.eventCircleStyles]}>
                     <FiberManualRecordIcon fill="currentColor" fontSize="inherit" width="100%" />
                   </span>
                   <span css={css`
@@ -116,34 +123,4 @@ export default class Event extends React.Component {
       </Manager>
     )
   }
-}
-
-Event.propTypes = {
-  name: PropTypes.string.isRequired,
-  startTime: PropTypes.instanceOf(moment).isRequired,
-  endTime: PropTypes.instanceOf(moment).isRequired,
-  description: PropTypes.string,
-  location: PropTypes.string,
-  eventStyles: PropTypes.oneOfType([
-    PropTypes.object,
-    PropTypes.instanceOf(css),
-  ]),
-  eventCircleStyles: PropTypes.oneOfType([
-    PropTypes.object,
-    PropTypes.instanceOf(css),
-  ]),
-  eventTextStyles: PropTypes.oneOfType([
-    PropTypes.object,
-    PropTypes.instanceOf(css),
-  ]),
-  tooltipStyles: PropTypes.oneOfType([
-    PropTypes.object,
-    PropTypes.instanceOf(css),
-  ]),
-  calendarName: PropTypes.string,
-  color: PropTypes.string
-}
-
-Event.defaultProps = {
-  color: '#4786ff'
 }

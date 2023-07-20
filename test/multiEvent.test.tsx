@@ -1,12 +1,17 @@
+/**
+ * @jest-environment jsdom
+ */
+
+import { describe, test, expect, beforeAll, afterAll } from "vitest"; 
+
 import React from "react";
-import ReactDOM from "react-dom";
-import { act } from "react-dom/test-utils";
+import { createRoot } from "react-dom/client";
+import { act } from "@testing-library/react";
+
 
 import moment from "moment-timezone";
 
-import Event from "../src/event";
-
-let container;
+import MultiEvent from "../src/multiEvent";
 
 let basicProps = {
   borderColor: "black",
@@ -15,17 +20,22 @@ let basicProps = {
   circleColor: "green",
 }
 
-beforeEach(() => {
+let container;
+let root;
+
+beforeAll(() => {
   container = document.createElement("div");
   document.body.appendChild(container);
+  root = createRoot(container);
 });
 
-afterEach(() => {
+afterAll(() => {
   document.body.removeChild(container);
   container = null;
+  root.unmount();
 });
 
-describe("Event Component", () => {
+describe("Multi Event Component", () => {
   test("opens and closes properly on click",() => {
     let props = {
       name: "Test Event",
@@ -34,7 +44,7 @@ describe("Event Component", () => {
     };
 
     act(() => {
-      ReactDOM.render(<Event {...basicProps} {...props} />, container);
+      root.render(<MultiEvent {...basicProps} {...props} />);
     });
 
     expect(window.getComputedStyle(container.querySelector('.tooltip')).visibility).toEqual("hidden");

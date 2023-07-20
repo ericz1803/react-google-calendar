@@ -1,8 +1,8 @@
+dist: jammy
 language: node_js
 node_js:
-  - 12
+  - lts/*
 install:
-  - npm install react react-dom @emotion/react
   - npm install
 script:
   - npm run test

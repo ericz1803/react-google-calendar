@@ -1,7 +1,6 @@
-/** @jsx jsx */
+/** @jsxImportSource @emotion/react */
 
 import React from "react";
-import PropTypes from "prop-types";
 
 import moment from "moment-timezone";
 
@@ -17,8 +16,10 @@ import Place from "./svg/place";
 import Subject from "./svg/subject";
 import CalendarToday from "./svg/calendarToday";
 
-export default class Tooltip extends React.Component {
-  constructor(props) {
+import { TooltipProps, TooltipState } from './types/tooltip';
+
+export default class Tooltip extends React.Component<TooltipProps, TooltipState> {
+  constructor(props: TooltipProps) {
     super(props);
     let allDay = isAllDay(this.props.startTime, this.props.endTime);
 
@@ -29,7 +30,7 @@ export default class Tooltip extends React.Component {
     
   }
 
-  static getTimeDisplay(startTime, endTime, allDay) {
+  static getTimeDisplay(startTime: moment.Moment, endTime: moment.Moment, allDay: boolean): string {
     if (allDay) {
       let endDate = moment(endTime).subtract(1, "day");
 
@@ -49,11 +50,12 @@ export default class Tooltip extends React.Component {
   }
 
   render() {
-    let description;
+    let description: JSX.Element;
     if (this.props.description) {
       description = <div className="details description">
         <div css={{ paddingRight: "10px" }}><Subject fill="currentColor" /></div>
         <div css={{ overflowWrap: "break-word", maxWidth: "calc(100% - 28px)" }}
+          // @ts-ignore
           onMouseDown={e => {if (e.target.nodeName == 'A') {e.preventDefault()}}} 
           dangerouslySetInnerHTML={{__html: this.props.description}} />
       </div>;
@@ -61,7 +63,7 @@ export default class Tooltip extends React.Component {
       description = <div></div>;
     }
 
-    let location;
+    let location: JSX.Element;
     if (this.props.location) {
       location = <div className="details location">
         <div css={{ paddingRight: "10px", display: "flex", alignItems: "center"}}><Place fill="currentColor" /></div>
@@ -71,7 +73,7 @@ export default class Tooltip extends React.Component {
       location = <div></div>;
     }
 
-    let calendarName;
+    let calendarName: JSX.Element;
     if (this.props.calendarName) {
       calendarName = <div className="details calendarName">
         <div css={{ paddingRight: "10px", display: "flex", alignItems: "center" }}><CalendarToday fill="currentColor" /></div>
@@ -100,7 +102,9 @@ export default class Tooltip extends React.Component {
               border: 2px solid rgba(81, 86, 93, 0.1);
               position: absolute;
               z-index: 1;
-            `, this.props.tooltipStyles]}
+            `, 
+            // @ts-ignore
+            this.props.tooltipStyles]}
           >
             <div css={{
               position: "relative",
@@ -145,15 +149,4 @@ export default class Tooltip extends React.Component {
       
     );
   }
-}
-
-Tooltip.propTypes = {
-  showTooltip: PropTypes.bool.isRequired,
-  name: PropTypes.string.isRequired,
-  startTime: PropTypes.instanceOf(moment),
-  endTime: PropTypes.instanceOf(moment),
-  description: PropTypes.string,
-  location: PropTypes.string,
-  calendarName: PropTypes.string,
-  closeTooltip: PropTypes.func.isRequired,
 }

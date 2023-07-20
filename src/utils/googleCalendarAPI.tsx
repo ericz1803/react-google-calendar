@@ -1,10 +1,10 @@
-
+// @ts-nocheck
 
 /** Loads google calendar api
  * @param {string} apiKey api key for google's calendar api
  * @return {Promise} resolves when api is successfully loaded and rejects when an error occurs
  */
-export function loadCalendarAPI(apiKey) {
+export function loadCalendarAPI(apiKey: string): Promise<any> {
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");
     script.src = "https://apis.google.com/js/api.js";
@@ -19,7 +19,7 @@ export function loadCalendarAPI(apiKey) {
               )
               .then(
                 () => resolve("GAPI client successfully loaded for API"),
-                (err) => reject(err)
+                (err: any) => reject(err)
               );
           });
       });
@@ -32,7 +32,7 @@ export function loadCalendarAPI(apiKey) {
  * @param {number} [maxResults=1000] maximum number of events returned, can be up to 2500, currently doesn't support more events
  * @returns {Object} see https://developers.google.com/calendar/v3/reference/events/list for shape of response object
  */
-export function getEventsList(calendarId, maxResults = 1000) {
+export function getEventsList(calendarId: string, maxResults = 1000): Promise<any> {
   return gapi.client.calendar.events.list({
     calendarId: calendarId,
     maxResults: maxResults,

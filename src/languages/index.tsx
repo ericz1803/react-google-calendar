@@ -1,8 +1,8 @@
 export const availableLanguages = ['ES', 'PT', 'FR', 'SL', 'DE', 'PL']
 
 export const Languages = {
-  EN: {
-    MONTHS: [
+  'EN': {
+    'MONTHS': [
       "January",
       "February",
       "March",
@@ -16,10 +16,10 @@ export const Languages = {
       "November",
       "December",
     ],
-    DAYS: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    'DAYS': ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
   },
-  ES: {
-    MONTHS: [
+  'ES': {
+    'MONTHS': [
       "Enero",
       "Febrero",
       "Marzo",
@@ -33,10 +33,10 @@ export const Languages = {
       "Nombre",
       "Diciembre",
     ],
-    DAYS: ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"],
+    'DAYS': ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"],
   },
-  PT: {
-    MONTHS: [
+  'PT': {
+    'MONTHS': [
       "Janeiro",
       "Fevereiro",
       "Março",
@@ -50,10 +50,10 @@ export const Languages = {
       "Nome",
       "Dezembro",
     ],
-    DAYS: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
+    'DAYS': ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
   },
-  FR: {
-    MONTHS: [
+  'FR': {
+    'MONTHS': [
       "Janvier",
       "Février",
       "Mars",
@@ -67,10 +67,10 @@ export const Languages = {
       "Nom",
       "Décembre",
     ],
-    DAYS: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
+    'DAYS': ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
   },
-  SL: {
-    MONTHS: [
+  'SL': {
+    'MONTHS': [
       "Januar",
       "Februar",
       "Marec",
@@ -84,10 +84,10 @@ export const Languages = {
       "November",
       "December",
     ],
-    DAYS: ["Ned", "Pon", "Tor", "Sre", "Čet", "Pet", "Sob"],
+    'DAYS': ["Ned", "Pon", "Tor", "Sre", "Čet", "Pet", "Sob"],
   },
-  DE: {
-    MONTHS: [
+  'DE': {
+    'MONTHS': [
       "Januar",
       "Februar",
       "März",
@@ -101,10 +101,10 @@ export const Languages = {
       "November",
       "Dezember",
     ],
-    DAYS: ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],
+    'DAYS': ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],
   },
-  PL: {
-    MONTHS: [
+  'PL': {
+    'MONTHS': [
       "Styczeń",
       "Luty",
       "Marzec",
@@ -118,6 +118,6 @@ export const Languages = {
       "Listopad",
       "Grudzień",
     ],
-    DAYS: ["Pon", "Wt", "Śr", "Czw", "Pt", "Sob", "Nd"],
+    'DAYS': ["Pon", "Wt", "Śr", "Czw", "Pt", "Sob", "Nd"],
   },
 }
