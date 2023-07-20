@@ -20,4 +20,5 @@ export interface CalendarState {
   userTimezone: string;
   showArrow: boolean;
   showFooter: boolean;
+  processedCalendars: string[];
 }

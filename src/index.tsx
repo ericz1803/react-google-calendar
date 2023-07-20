@@ -37,6 +37,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       userTimezone: moment.tz.guess(),
       showFooter: props.showFooter || true,
       showArrow: props.showArrow || true,
+      processedCalendars: [],
     };
     
     this.lastMonth = this.lastMonth.bind(this);
@@ -73,13 +74,21 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       try {
         //query api for events
         const res = await getEventsList(calendar.calendarId);
-  
+
         //process events
         const events = this.processEvents(res.result.items, res.result.summary, calendar.color);
-  
-        //set state with calculated values
-        this.setState({"events": [...this.state.events, ...events[0]], "singleEvents": [...this.state.singleEvents, ...events[1]]});
-  
+
+        //only run if calendar.calendarId not in processedCalendars
+        if (!this.state.processedCalendars.includes(calendar.calendarId)) {
+          console.log("Getting events for calendar", calendar.calendarId);
+
+          //set state with calculated values
+          this.setState({
+            "events": [...this.state.events, ...events[0]], 
+            "singleEvents": [...this.state.singleEvents, ...events[1]], 
+            "processedCalendars": [...this.state.processedCalendars, calendar.calendarId]
+          });
+        }
       } catch(err) {
         console.error("Error getting events", err);
       }
