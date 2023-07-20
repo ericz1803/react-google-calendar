@@ -1,12 +1,15 @@
 import { Moment } from 'moment-timezone';
 
 export interface CalendarProps {
-  language: string;
   apiKey: string;
-  calendars: any[];
-  styles: any;
-  showArrow: boolean;
-  showFooter: boolean;
+  calendars: {
+    calendarId: string,
+    color?: string,
+  }[];
+  language?: string;
+  styles?: object;
+  showArrow?: boolean;
+  showFooter?: boolean;
 }
 
 export interface CalendarState {
@@ -14,7 +17,10 @@ export interface CalendarState {
   days: string[];
   today: Moment;
   current: Moment;
-  calendars: any[];
+  calendars: {
+    calendarId: string,
+    color?: string,
+  }[];
   events: any[];
   singleEvents: any[];
   userTimezone: string;
