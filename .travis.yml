@@ -1,6 +1,7 @@
+dist: jammy
 language: node_js
 node_js:
-  - 18
+  - lts/*
 install:
   - npm install
 script:
