@@ -63,7 +63,7 @@ class Example extends React.Component {
 | `styles`      | object           | styles (optional, see more below)                                               |
 | `showArrow`   | boolean          | shows arrow for events that span multiple months (optional, defaults to `true`) |
 | `showFooter`  | boolean          | whether or not to show footer (optional, defaults to `true`)                    |
-| `language`    | string           | Available options : `EN`, `ES`, `PT`, `FR`, `SL`, `DE`, `PL` default: `EN`      |
+| `language`    | string           | Available options : `EN`, `ES`, `PT`, `FR`, `SL`, `DE`, `PL`, `IS` default: `EN`|
 
 ### Customization
 

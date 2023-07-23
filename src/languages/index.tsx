@@ -120,4 +120,21 @@ export const Languages = {
     ],
     'DAYS': ["Pon", "Wt", "Śr", "Czw", "Pt", "Sob", "Nd"],
   },
+  'IS': {
+    'MONTHS': [
+      "Janúar",
+      "Febrúar",
+      "Mars",
+      "Apríl",
+      "Maí",
+      "Júní",
+      "Júlí",
+      "Ágúst",
+      "September",
+      "Október",
+      "Nóvember",
+      "Desember",
+    ],
+    'DAYS': ["Sun", "Mán", "Þri", "Mið", "Fim", "Fös", "Lau"],
+  },
 }
