@@ -1,6 +1,6 @@
 # React Google Calendar
 
-![npm (scoped)](https://img.shields.io/npm/v/@ericz1803/react-google-calendar) [![Build Status](https://travis-ci.com/ericz1803/react-google-calendar.svg?token=kgRjisW2saVwCyBzYyN5&branch=master)](https://travis-ci.com/ericz1803/react-google-calendar)
+[![npm version](https://badge.fury.io/js/@ericz1803%2Freact-google-calendar.svg)](https://badge.fury.io/js/@ericz1803%2Freact-google-calendar) [![Build Status](https://travis-ci.com/ericz1803/react-google-calendar.svg?token=kgRjisW2saVwCyBzYyN5&branch=master)](https://travis-ci.com/ericz1803/react-google-calendar)
 
 A react component that displays an event calendar using data from google's calendar api. It is intended to replace the embedded google calendar.
 
