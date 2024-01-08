@@ -8,7 +8,12 @@ import path from 'path';
 export default defineConfig(({ command, mode }) => {
   return {
     plugins: [
-      react({ jsxImportSource: '@emotion/react' }),
+      react({ 
+        jsxImportSource: '@emotion/react',
+        babel: {
+          plugins: ["@emotion/babel-plugin"],
+        },
+      }),
       dts({
         insertTypesEntry: true,
         copyDtsFiles: true
@@ -16,6 +21,8 @@ export default defineConfig(({ command, mode }) => {
       cssInjectedByJsPlugin()
     ],
     build: {
+      // sourcemap: true,
+      // minify: false,
       lib: {
         entry: path.resolve(__dirname, 'src/index.tsx'),
         name: 'react-google-calendar',
@@ -23,11 +30,12 @@ export default defineConfig(({ command, mode }) => {
         fileName: (format) => `react-google-calendar.${format}.js`,
       },
       rollupOptions: {
-        external: ['react', 'react-dom'],
+        external: ['react', 'react-dom', '@emotion/react'],
         output: {
           globals: {
             react: 'React',
             'react-dom': 'ReactDOM',
+            '@emotion/react': '@emotion/react',
           },
         }
       },

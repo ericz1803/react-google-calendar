@@ -19,4 +19,8 @@ const meta = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
-export const DefaultCalendar: Story = {};
+export const DefaultCalendar: Story = {
+  args: {
+    calendars: [{ calendarId: "09opmkrjova8h5k5k46fedmo88@group.calendar.google.com" }]
+  }
+};
