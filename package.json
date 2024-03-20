@@ -8,7 +8,8 @@
   "exports": {
     ".": {
       "import": "./dist/react-google-calendar.es.js",
-      "require": "./dist/react-google-calendar.umd.js"
+      "require": "./dist/react-google-calendar.umd.js",
+      "types": "./dist/types/index.d.ts"
     }
   },
   "files": [
