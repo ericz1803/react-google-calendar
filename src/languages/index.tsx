@@ -1,4 +1,4 @@
-export const availableLanguages = ['ES', 'PT', 'FR', 'SL', 'DE', 'PL']
+export const availableLanguages = ['EN', 'IT', 'ES', 'PT', 'FR', 'SL', 'DE', 'PL', 'IS']
 
 export const Languages = {
   'EN': {
@@ -17,6 +17,23 @@ export const Languages = {
       "December",
     ],
     'DAYS': ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  },
+  'IT': {
+    'MONTHS': [
+      "Gennaio",
+      "Febbraio",
+      "Marzo",
+      "Aprile",
+      "Maggio",
+      "Giugno",
+      "Luglio",
+      "Agosto",
+      "Settembre",
+      "Ottobre",
+      "Novembre",
+      "Dicembre",
+    ],
+    'DAYS': ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"],
   },
   'ES': {
     'MONTHS': [
